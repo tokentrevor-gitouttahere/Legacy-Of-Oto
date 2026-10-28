@@ -7,3 +7,6 @@ __pycache__/
 *.pyc
 # Local tool settings
 tools/godot_path.txt
+
+# Local Claude Code settings
+.claude/
