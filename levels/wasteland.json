@@ -1,0 +1,323 @@
+{
+ "id": "wasteland",
+ "name": "The Wasteland",
+ "sky": "wasteland",
+ "base": "wasteland",
+ "backdrop": "mesas",
+ "spawns": {
+  "default": [
+   40,
+   35
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "world"
+  }
+ },
+ "props": [
+  {
+   "type": "crater",
+   "at": [
+    36,
+    28
+   ],
+   "params": {
+    "r": 3.5
+   }
+  },
+  {
+   "type": "space_pod",
+   "at": [
+    36,
+    28
+   ]
+  },
+  {
+   "type": "crater",
+   "at": [
+    45,
+    27
+   ],
+   "params": {
+    "r": 3.5
+   }
+  },
+  {
+   "type": "space_pod",
+   "at": [
+    45,
+    27
+   ]
+  },
+  {
+   "type": "save_lantern",
+   "at": [
+    43,
+    36
+   ]
+  },
+  {
+   "type": "level_gate",
+   "at": [
+    65.5,
+    42
+   ],
+   "params": {
+    "level": 5
+   }
+  }
+ ],
+ "enemies": [
+  {
+   "at": [
+    34.0,
+    22
+   ],
+   "hp": 60,
+   "damage": 6,
+   "xp": 25,
+   "name": "Saibaman",
+   "drop": "green",
+   "behavior": "pack"
+  },
+  {
+   "at": [
+    36.5,
+    22
+   ],
+   "hp": 60,
+   "damage": 6,
+   "xp": 25,
+   "name": "Saibaman",
+   "drop": "red",
+   "behavior": "pack"
+  },
+  {
+   "at": [
+    39.0,
+    22
+   ],
+   "hp": 60,
+   "damage": 6,
+   "xp": 25,
+   "name": "Saibaman",
+   "drop": "red",
+   "behavior": "pack"
+  },
+  {
+   "at": [
+    41.5,
+    22
+   ],
+   "hp": 60,
+   "damage": 6,
+   "xp": 25,
+   "name": "Saibaman",
+   "drop": "",
+   "behavior": "pack"
+  },
+  {
+   "at": [
+    44.0,
+    22
+   ],
+   "hp": 60,
+   "damage": 6,
+   "xp": 25,
+   "name": "Saibaman",
+   "drop": "",
+   "behavior": "pack"
+  },
+  {
+   "at": [
+    46.5,
+    22
+   ],
+   "hp": 60,
+   "damage": 6,
+   "xp": 25,
+   "name": "Saibaman",
+   "drop": "",
+   "behavior": "pack"
+  },
+  {
+   "at": [
+    64,
+    48
+   ],
+   "beast": "scorpion",
+   "tier": 2,
+   "name": "Scorpion",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    66,
+    44
+   ],
+   "beast": "scorpion",
+   "tier": 2,
+   "name": "Scorpion",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    8,
+    45
+   ],
+   "beast": "scorpion",
+   "tier": 1,
+   "name": "Scorpion",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    17,
+    51
+   ],
+   "beast": "scorpion",
+   "tier": 1,
+   "name": "Scorpion",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    15,
+    44
+   ],
+   "beast": "scorpion",
+   "tier": 1,
+   "name": "Scorpion",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    62,
+    7
+   ],
+   "beast": "pterodactyl",
+   "tier": 1,
+   "name": "Pterodactyl",
+   "hp": 50,
+   "damage": 6,
+   "speed": 2.8,
+   "xp": 28,
+   "behavior": "shooter",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    70,
+    13
+   ],
+   "beast": "pterodactyl",
+   "tier": 1,
+   "name": "Pterodactyl",
+   "hp": 50,
+   "damage": 6,
+   "speed": 2.8,
+   "xp": 28,
+   "behavior": "shooter",
+   "food": "haunch"
+  }
+ ],
+ "pickups": [
+  {
+   "kind": "blue3",
+   "at": [
+    63,
+    46
+   ]
+  },
+  {
+   "kind": "green3",
+   "at": [
+    68,
+    46
+   ]
+  }
+ ],
+ "grid": [
+  "11111111111111111111111111111111111111111111111111111111111111111111111111111111",
+  "1oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1oooooooooooooooooooroooooooooooooooooooooooroooooooooooooooooooooooooooooooooo1",
+  "1oooooooorooooooooooooooooooooooooorooooooooooooooooooooooooooooooooooooooooooo1",
+  "1oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooMooooooooMooo1",
+  "1ooooooMroooooroooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1ooooooooooooooooroooooooooooooooooooooorooooooooooooooooooooooooooooooooooooMo1",
+  "1ooMoooooooooooooooroooooooooooooooooooooooooooooooroooMooooooooooooooooooooooo1",
+  "1oooooooooooooooooorooooooooooorooooooroooooooooooooooooooooooooooooooooooooooo1",
+  "1oMoooooMoooooooooooooorooooooooooooooooooooooroooooooooorooooooooooooooooooooo1",
+  "1oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooMoooooooooooooo1",
+  "1oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooMoo1",
+  "1oooooooooooroooooooooooooooooooooooooorooooooooooMoooooMoooooooooooooooooooooo1",
+  "1ooooooooooooooooorMooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1ooroooMooooooooooooooooooooooooooooooooooooooooooooorooooooooooooooooooooooMoo1",
+  "1oooooooooooooooooooooooooooooooooooMoooooooooooooooooooooorooooooooooooooooooo1",
+  "1oooooooooooooooooooooooooooorooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1ooooMoooooooooooooooooMoooooooooooooooooooooooooooooMooooooooooooooooooooooooo1",
+  "1oooooooooooooooooooooooroooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1ooooooooooooooooooooooooooooooooooooooooooooooooMooMoooooroooooooooooooorooooo1",
+  "1ooooooooooooooMooooooooooooooooooooooooooooooorooorooooooooooooooooooooorooooo1",
+  "1oooooooooooorooooooooooooooooooooooooooooooooooooooooooooooooooooooooorooooooo1",
+  "1oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1oMoooooooooMooooooooooooooMooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooorooooooooooooo1",
+  "1oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooorooroo1",
+  "1ooorooooMo;oo;oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1oooooooo;M;;o;;;;ooooo;;;ooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1oMoooooo;;;;;;;oooooooo;;;M;oooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1oooooo;;;r;;;;;;;ooooo;;;;;;oooooooooooooooooooooooooooooooooooooooooooooooroo1",
+  "1ooooo;o;;;;;;;;;;ooo;;;;;;;;oooooooooooooooooooooooooorooooooooooooooooooooooo1",
+  "1oooooo;;;;;;;;;;o;ooo;;;;;;;;ooooooooooooooooooooooooooooooooooroMoooooooooooo1",
+  "1ooooo;;;;;;;;;;;;oor;;;r;;;;oooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1ooooo;o;r;;;;;;;;;oo;o;;;;;;;ooooooooooooooooooooooooooroooooooooooooooooooooo1",
+  "1oooMo;;;;;;;;;;;;Mooooo;;;;ooooooooooooooooooooooooorooooooooooooooooooooooooo1",
+  "1ooooooo;;;;;;;;;;ooooooooooooooooooooooooooooooooooooooooooooooooooorooooooooo1",
+  "1ooooooo;;;;;;;;;ooMoooooooooooooooooooooooooooooooooooooooooooooMooooooororooo1",
+  "1ooooooooo;;;;;oooooooooroooooooooooMoooooooooooooooooooooooooooooooooooooooooo1",
+  "1oooooooooo;M;o;ooooooooooooooooorooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1oooorooooooooooooooooooooooooooooooooooooooooooooorooooooooroorooooroooooooooo1",
+  "1ooo;;;;;oooooooMoooooooMoooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1ooooo;;ooooooooooooooMooooooooooooooooooooooooooooooooooooooMooooooooooMoooooo1",
+  "1ooo;;;;;oooooooooooooooooMooooooooooooooooooooooooooooooooorrrrroorrrroooooooo1",
+  "1oo;;;;;;;roooooooooooooooooooooooooooooooooooooooooooooooooroooooooooroooooooo1",
+  "1oo;;;;;;;ooooooooorooorooooooooooooooooooooooooooooooooooooroooooooooroooooooo1",
+  "1oooo;;;;oooooooooooooooooooMoooooooooooooooooooooooooooooooroooooooooroooooooo1",
+  "1oooo;o;oooooMroooooooooooooooooooooooooooooooooooooooooooooroooooooooroooooooo1",
+  "1oooooooooooooooooooroooooooooooooooooooooooooroooooooooooooroooooooooroooooooo1",
+  "1ooooooMooooooooooooooooooooooMooooooooooooooooooooooooooooMroooooooooroooooooo1",
+  "1ooooooooooooooooooooMooooooooooooooMoooooooooooooooooooMoooroooooooooroooorooo1",
+  "1ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooorrrrrrrrrrroorooooo1",
+  "1oooooooooooooooooooooooooooooooooooorooooooooooooroooooooooooooooooooooooroooo1",
+  "1ooooooooooooooooooooooooooooooooooooooooooooooooooMooooooooooooooooroooooooooo1",
+  "1ooroooorooooooooooooooooooooooooooooooooooooMooooooooooooooooooooooooooorooooo1",
+  "1oooooooooooooooooooooooooooooooooooooooooorooooooooooooooooooooooooooooooooooo1",
+  "1oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "1oooooooooooooooooooooooooooooroooooooooooooooooroooooooooooooooooooooooooooooo1",
+  "1ooooooooooooroooMooooooooooooooooooooooooooooooorooooooooooooooooooooooooooooo1",
+  "1oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo1",
+  "11111111111111111111111111111111111111111111111111111111111111111111111111111111"
+ ]
+}

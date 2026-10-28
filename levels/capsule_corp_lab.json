@@ -1,0 +1,197 @@
+{
+ "id": "capsule_corp_lab",
+ "name": "Capsule Corp: Laboratory",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "floor": "tile",
+ "wall_color": [
+  0.88,
+  0.92,
+  0.98
+ ],
+ "wall_tex": "panels",
+ "spawns": {
+  "default": [
+   14,
+   15
+  ],
+  "door": [
+   14,
+   15
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "west_city",
+   "spawn": "cc_door"
+  }
+ },
+ "props": [
+  {
+   "type": "lab_bench",
+   "at": [
+    5,
+    7
+   ]
+  },
+  {
+   "type": "lab_bench",
+   "at": [
+    13,
+    7
+   ]
+  },
+  {
+   "type": "lab_bench",
+   "at": [
+    21,
+    7
+   ]
+  },
+  {
+   "type": "computer",
+   "at": [
+    4,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "computer",
+   "at": [
+    9,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "computer",
+   "at": [
+    14,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "computer",
+   "at": [
+    19,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "computer",
+   "at": [
+    24,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "capsule_rack",
+   "at": [
+    2.5,
+    12
+   ],
+   "rot": 90
+  },
+  {
+   "type": "capsule_rack",
+   "at": [
+    25.5,
+    12
+   ],
+   "rot": 270
+  },
+  {
+   "type": "gravity_machine",
+   "at": [
+    13.5,
+    12
+   ]
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    2.5,
+    2.5
+   ]
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    25.5,
+    2.5
+   ]
+  },
+  {
+   "type": "rug",
+   "at": [
+    13.5,
+    12
+   ],
+   "params": {
+    "w": 8,
+    "d": 5,
+    "color": [
+     0.3,
+     0.45,
+     0.75
+    ]
+   }
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Bulma",
+   "at": [
+    9,
+    10
+   ],
+   "lines": [
+    "Bulma|That column is a gravity machine. Dad says it goes up to a hundred times.",
+    "Bulma|Please don't set it to a hundred times.",
+    "Bulma|Oh, and Mom baked again. Take the tray before Dad finds it."
+   ],
+   "outfit": "bulma",
+   "rot": 180,
+   "dish": "capsule_corp_cookies"
+  },
+  {
+   "name": "Dr. Brief",
+   "at": [
+    18,
+    9
+   ],
+   "lines": [
+    "Dr. Brief|A Saiyan with no tail? Fascinating. Would you mind standing on this scale?",
+    "Oto|...Is it food?",
+    "Dr. Brief|It is not food."
+   ],
+   "outfit": "scientist",
+   "rot": 180
+  }
+ ],
+ "grid": [
+  "                            ",
+  " ########################## ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #############1############ ",
+  "                            "
+ ]
+}

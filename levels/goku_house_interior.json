@@ -1,0 +1,187 @@
+{
+ "id": "goku_house_interior",
+ "name": "Goku's House",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "floor": "wood",
+ "wall_color": [
+  0.95,
+  0.9,
+  0.8
+ ],
+ "wall_tex": "planks",
+ "spawns": {
+  "default": [
+   8,
+   9
+  ],
+  "door": [
+   8,
+   9
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "mt_paozu",
+   "spawn": "house_door"
+  }
+ },
+ "props": [
+  {
+   "type": "dinner_table",
+   "at": [
+    7.5,
+    5.5
+   ]
+  },
+  {
+   "type": "chair",
+   "at": [
+    6.5,
+    4.4
+   ]
+  },
+  {
+   "type": "chair",
+   "at": [
+    6.5,
+    6.6
+   ],
+   "rot": 180
+  },
+  {
+   "type": "chair",
+   "at": [
+    8.5,
+    4.4
+   ]
+  },
+  {
+   "type": "chair",
+   "at": [
+    8.5,
+    6.6
+   ],
+   "rot": 180
+  },
+  {
+   "type": "stove",
+   "at": [
+    2.5,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "counter",
+   "at": [
+    5,
+    2.2
+   ],
+   "rot": 180,
+   "params": {
+    "length": 2.5
+   }
+  },
+  {
+   "type": "fridge",
+   "at": [
+    7.5,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "bed",
+   "at": [
+    12.5,
+    3.5
+   ],
+   "params": {
+    "color": [
+     0.85,
+     0.5,
+     0.3
+    ]
+   }
+  },
+  {
+   "type": "bed",
+   "at": [
+    12.5,
+    7.5
+   ],
+   "params": {
+    "color": [
+     0.4,
+     0.55,
+     0.85
+    ],
+    "scale": 0.7
+   }
+  },
+  {
+   "type": "rug",
+   "at": [
+    7.5,
+    8.5
+   ],
+   "params": {
+    "w": 4,
+    "d": 2,
+    "color": [
+     0.7,
+     0.3,
+     0.25
+    ]
+   }
+  },
+  {
+   "type": "shelf",
+   "at": [
+    1.5,
+    7
+   ],
+   "rot": 90
+  },
+  {
+   "type": "food_pot",
+   "at": [
+    5,
+    2.2
+   ],
+   "y": 0.95
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Chi-Chi",
+   "at": [
+    4,
+    5
+   ],
+   "lines": [
+    "Chi-Chi|Sit. Eat. You are too thin for someone who eats like that.",
+    "Oto|Every meal on this planet, at least once.",
+    "Chi-Chi|Then start with seconds."
+   ],
+   "outfit": "chichi",
+   "dish": "chichi_dumplings"
+  }
+ ],
+ "grid": [
+  "                ",
+  " ############## ",
+  " #WWWWWWWWWWWW# ",
+  " #WWWWWWWWWWWW# ",
+  " #WWWWWWWWWWWW# ",
+  " #WWWWWWWWWWWW# ",
+  " #WWWWWWWWWWWW# ",
+  " #WWWWWWWWWWWW# ",
+  " #WWWWWWWWWWWW# ",
+  " #WWWWWWWWWWWW# ",
+  " #######1###### ",
+  "                "
+ ]
+}

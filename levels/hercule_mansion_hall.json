@@ -1,0 +1,184 @@
+{
+ "id": "hercule_mansion_hall",
+ "name": "Hercule's Mansion",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "floor": "carpet",
+ "wall_color": [
+  0.98,
+  0.95,
+  0.85
+ ],
+ "wall_tex": "panels",
+ "spawns": {
+  "default": [
+   12,
+   13
+  ],
+  "door": [
+   12,
+   13
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "hercule_city",
+   "spawn": "mansion_door"
+  }
+ },
+ "props": [
+  {
+   "type": "rug",
+   "at": [
+    12,
+    8
+   ],
+   "params": {
+    "w": 6,
+    "d": 9,
+    "color": [
+     0.9,
+     0.7,
+     0.2
+    ]
+   }
+  },
+  {
+   "type": "trophy",
+   "at": [
+    3,
+    2.2
+   ]
+  },
+  {
+   "type": "trophy",
+   "at": [
+    6,
+    2.2
+   ]
+  },
+  {
+   "type": "trophy",
+   "at": [
+    9,
+    2.2
+   ]
+  },
+  {
+   "type": "trophy",
+   "at": [
+    12,
+    2.2
+   ]
+  },
+  {
+   "type": "trophy",
+   "at": [
+    15,
+    2.2
+   ]
+  },
+  {
+   "type": "trophy",
+   "at": [
+    18,
+    2.2
+   ]
+  },
+  {
+   "type": "trophy",
+   "at": [
+    21,
+    2.2
+   ]
+  },
+  {
+   "type": "sofa",
+   "at": [
+    6,
+    10
+   ],
+   "params": {
+    "color": [
+     0.8,
+     0.2,
+     0.2
+    ]
+   }
+  },
+  {
+   "type": "tv",
+   "at": [
+    6,
+    6.5
+   ],
+   "rot": 180
+  },
+  {
+   "type": "shelf",
+   "at": [
+    21.5,
+    8
+   ],
+   "rot": 270
+  },
+  {
+   "type": "dinner_table",
+   "at": [
+    17,
+    11.5
+   ]
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    2.5,
+    12.5
+   ]
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    21.5,
+    12.5
+   ]
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Hercule",
+   "at": [
+    15,
+    8
+   ],
+   "lines": [
+    "Hercule|Every one of these trophies is real. Mostly.",
+    "Hercule|You fight? Ha! Maybe one day you'll be as strong as me.",
+    "Oto|Maybe one day.",
+    "Hercule|Help yourself to the buffet! A champion feeds his fans!"
+   ],
+   "outfit": "hercule",
+   "rot": 180,
+   "dish": "champions_buffet"
+  }
+ ],
+ "grid": [
+  "                        ",
+  " ###################### ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " ###########1########## ",
+  "                        "
+ ]
+}

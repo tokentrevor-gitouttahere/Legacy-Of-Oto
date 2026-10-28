@@ -1,0 +1,39 @@
+{
+ "_doc": "Hand-checked body landmarks, read from docs/model_sheets/*.png (tools/model_sheet.py). Units: fraction of body height; body stands on y=0, centred on x/z, faces +z. Arm points are [x, y] for the right arm (+x); outfits mirror them. tools/measure_model.py writes a rough automatic draft to landmarks_auto.json for new models.",
+ "oto": {
+  "head_c": [0.0, 0.895, 0.0], "head_r": 0.075, "head_ry": 0.105, "head_rz": 0.08,
+  "neck_y": 0.785, "neck_r": 0.022,
+  "shoulder_y": 0.755, "shoulder_x": 0.085,
+  "chest_y": 0.69, "chest_hw": 0.068, "chest_hd": 0.072, "chest_z": 0.015,
+  "waist_y": 0.6, "waist_hw": 0.05, "waist_hd": 0.052, "waist_z": 0.0,
+  "hip_y": 0.5, "hip_hw": 0.102, "hip_hd": 0.072,
+  "crotch_y": 0.47, "leg_x": 0.055, "thigh_r": 0.047, "knee_y": 0.27, "calf_r": 0.035,
+  "ankle_y": 0.05, "ankle_r": 0.026, "foot_z": 0.07,
+  "arm_root": [0.09, 0.74], "elbow": [0.25, 0.725], "wrist": [0.37, 0.71], "hand_tip": [0.415, 0.7],
+  "arm_r": 0.022, "forearm_r": 0.018
+ },
+ "male_base": {
+  "head_c": [0.0, 1.055, 0.0], "head_r": 0.1, "head_ry": 0.14, "head_rz": 0.11,
+  "neck_y": 0.9, "neck_r": 0.05,
+  "shoulder_y": 0.86, "shoulder_x": 0.17,
+  "chest_y": 0.77, "chest_hw": 0.15, "chest_hd": 0.115, "chest_z": 0.0,
+  "waist_y": 0.6, "waist_hw": 0.118, "waist_hd": 0.098, "waist_z": 0.0,
+  "hip_y": 0.5, "hip_hw": 0.128, "hip_hd": 0.108,
+  "crotch_y": 0.47, "leg_x": 0.075, "thigh_r": 0.07, "knee_y": 0.3, "calf_r": 0.05,
+  "ankle_y": 0.06, "ankle_r": 0.04, "foot_z": 0.1,
+  "arm_root": [0.2, 0.84], "elbow": [0.235, 0.66], "wrist": [0.215, 0.5], "hand_tip": [0.2, 0.42],
+  "arm_r": 0.05, "forearm_r": 0.045
+ },
+ "goku": {
+  "head_c": [0.0, 0.77, 0.06], "head_r": 0.05, "head_ry": 0.06, "head_rz": 0.06,
+  "neck_y": 0.71, "neck_r": 0.035,
+  "shoulder_y": 0.69, "shoulder_x": 0.1,
+  "chest_y": 0.62, "chest_hw": 0.1, "chest_hd": 0.08, "chest_z": 0.03,
+  "waist_y": 0.53, "waist_hw": 0.07, "waist_hd": 0.06, "waist_z": 0.03,
+  "hip_y": 0.48, "hip_hw": 0.08, "hip_hd": 0.06,
+  "crotch_y": 0.3, "leg_x": 0.05, "thigh_r": 0.07, "knee_y": 0.2, "calf_r": 0.04,
+  "ankle_y": 0.05, "ankle_r": 0.035, "foot_z": 0.12,
+  "arm_root": [0.1, 0.67], "elbow": [0.25, 0.66], "wrist": [0.37, 0.65], "hand_tip": [0.42, 0.63],
+  "arm_r": 0.03, "forearm_r": 0.025
+ }
+}

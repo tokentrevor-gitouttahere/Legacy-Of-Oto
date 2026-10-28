@@ -1,0 +1,223 @@
+{
+ "id": "korin_forest",
+ "name": "Korin's Holy Land",
+ "sky": "day",
+ "base": "grass",
+ "backdrop": "mountains",
+ "spawns": {
+  "default": [
+   25,
+   27
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "world"
+  }
+ },
+ "props": [
+  {
+   "type": "korin_tower",
+   "at": [
+    25,
+    18
+   ],
+   "params": {
+    "h": 90
+   }
+  },
+  {
+   "type": "torii",
+   "at": [
+    25,
+    25
+   ]
+  },
+  {
+   "type": "sign",
+   "at": [
+    27,
+    27
+   ],
+   "params": {
+    "text": "KORIN TOWER"
+   }
+  },
+  {
+   "type": "fishing_spot",
+   "at": [
+    18,
+    22
+   ],
+   "rot": 90
+  },
+  {
+   "type": "save_lantern",
+   "at": [
+    27,
+    27
+   ]
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Pilgrim",
+   "at": [
+    22,
+    24
+   ],
+   "lines": [
+    "Pilgrim|They say a cat lives at the top. And he makes beans."
+   ],
+   "outfit": "civilian_m2"
+  },
+  {
+   "name": "Yajirobe",
+   "at": [
+    29,
+    22
+   ],
+   "lines": [
+    "Yajirobe|What? I'm on break. There's rice on the fire if you want some. Don't touch my fish."
+   ],
+   "outfit": "yajirobe",
+   "rot": 200,
+   "dish": "yajirobe_rice",
+   "talk": "yajirobe"
+  }
+ ],
+ "enemies": [
+  {
+   "at": [
+    41,
+    5
+   ],
+   "beast": "wolf",
+   "tier": 2,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    44,
+    4
+   ],
+   "beast": "wolf",
+   "tier": 2,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    40,
+    4
+   ],
+   "beast": "wolf",
+   "tier": 2,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    43,
+    31
+   ],
+   "beast": "boar",
+   "tier": 2,
+   "name": "Boar",
+   "hp": 90,
+   "damage": 8,
+   "speed": 2.6,
+   "xp": 30,
+   "behavior": "charger",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    35,
+    32
+   ],
+   "beast": "boar",
+   "tier": 2,
+   "name": "Boar",
+   "hp": 90,
+   "damage": 8,
+   "speed": 2.6,
+   "xp": 30,
+   "behavior": "charger",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    10,
+    4
+   ],
+   "beast": "raptor",
+   "tier": 2,
+   "name": "Raptor",
+   "hp": 60,
+   "damage": 7,
+   "speed": 3.6,
+   "xp": 22,
+   "behavior": "chase",
+   "food": "haunch"
+  }
+ ],
+ "grid": [
+  "11111111111111111111111111111111111111111111111111",
+  "1................................................1",
+  "1.................................bb.............1",
+  "1....b.....................b...................b.1",
+  "1..b................................b............1",
+  "1....b..........................................T1",
+  "1.....TbT..T..................................T..1",
+  "1..bb..TTT.T.....b............T..............TTTT1",
+  "1..TTTTTTTTTT........b.......TT..T............TTT1",
+  "1.TTTTTTTTTTTTT............TTTTTTTT.........TTTTT1",
+  "1.bTTTTTTTTTTTTT.........TTTTTTTTTTTT.........TTT1",
+  "1.bTTTTTTTTTTT.........TTTTTTTTTTTTTTT.......TTTT1",
+  "1TTTTTTTTTTTTTT..b...............TTTTbT.....TTTTT1",
+  "1.TTTTTTTTTTTTTT.................TTTTT......T.TTT1",
+  "1T.TTTTTTTTTTTTT.................TTTTTT.......TTT1",
+  "1..TTTTTTTTTTTT..................TTTTTTT......TTT1",
+  "1.TTTTTTTTTTTT...b...............TTTTTTT.......TT1",
+  "1.TTTTTTTTTTT....................TTTTTT........bT1",
+  "1...TTTTTTTT.....................TTTTTTT.........1",
+  "1....TTTTTTTT....................TTTTTT..........1",
+  "1.....T...T......................TTTTTTT.........1",
+  "1.......b........................TTTTTT..........1",
+  "1..............~.~...............TTTTT...........1",
+  "1...........~~~~~~...............TTT.T...........1",
+  "1.....T.....~~~~~~...............TTTT............1",
+  "1..T........~~~~~~................T..............1",
+  "1TTT.TTTTT.~~~~~~~...............T...............1",
+  "1TTTTTTTTTT~~~~~~~...............................1",
+  "1TTTTTTTTTTT~~~~~~...............................1",
+  "1TTTTTTTTTTTT~~~T~T~TTTTTTT....................T.1",
+  "1TTTTTTTTTTTTT~~~~TTTTTTTT.....................T.1",
+  "1TTTTTTTTTTTTT~TTTTTTTTTTT.T..................TTT1",
+  "1TTTTTTTTTTTTTTTTTTTTTTTTT...................TTTT1",
+  "1TTTTTTTTTTTTTTTTTTTTTTTTTT..bb.............TTTTT1",
+  "1TTTTTTTTTTTTTTTTTTTTTTTTTT...........b......TTTT1",
+  "1TTTTTTTTTTTTTTTTTTTTTTTTTT..................TTTT1",
+  "1TTTTTTTTTTTTTTTTTTTTTTTTTTTb................TTTT1",
+  "1TTTTTTTTTTTTTTTTTTTTTTTTTT..................TTTT1",
+  "1TTTTTTTTTTTT.TTTTTTTTTTT.....................T..1",
+  "11111111111111111111111111111111111111111111111111"
+ ]
+}

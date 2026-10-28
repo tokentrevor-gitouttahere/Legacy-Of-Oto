@@ -1,0 +1,105 @@
+{
+ "size": 3000,
+ "seed": 21,
+ "locations": [
+  {
+   "id": "west_city",
+   "name": "West City",
+   "pos": [
+    -850,
+    150
+   ],
+   "icon": "city",
+   "color": [
+    0.4,
+    0.7,
+    1.0
+   ]
+  },
+  {
+   "id": "mt_paozu",
+   "name": "Mt. Paozu",
+   "pos": [
+    900,
+    -750
+   ],
+   "icon": "mountain",
+   "color": [
+    0.5,
+    1.0,
+    0.5
+   ]
+  },
+  {
+   "id": "hercule_city",
+   "name": "Hercule City",
+   "pos": [
+    450,
+    250
+   ],
+   "icon": "city",
+   "color": [
+    1.0,
+    0.8,
+    0.3
+   ]
+  },
+  {
+   "id": "kame_house",
+   "name": "Kame House",
+   "pos": [
+    250,
+    1150
+   ],
+   "icon": "island",
+   "color": [
+    1.0,
+    0.6,
+    0.7
+   ]
+  },
+  {
+   "id": "wasteland",
+   "name": "The Wasteland",
+   "pos": [
+    -700,
+    800
+   ],
+   "icon": "desert",
+   "color": [
+    1.0,
+    0.55,
+    0.3
+   ]
+  },
+  {
+   "id": "korin_forest",
+   "name": "Korin Tower",
+   "pos": [
+    -100,
+    -350
+   ],
+   "icon": "tower",
+   "color": [
+    0.95,
+    0.95,
+    0.8
+   ]
+  },
+  {
+   "id": "kami_lookout",
+   "name": "Kami's Lookout",
+   "pos": [
+    -100,
+    -420
+   ],
+   "icon": "lookout",
+   "color": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "altitude": 260
+  }
+ ]
+}

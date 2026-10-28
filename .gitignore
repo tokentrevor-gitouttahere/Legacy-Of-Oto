@@ -1,0 +1,9 @@
+# Godot cache and local build output
+.godot/
+/export/
+/build/
+tools/out/
+__pycache__/
+*.pyc
+# Local tool settings
+tools/godot_path.txt
