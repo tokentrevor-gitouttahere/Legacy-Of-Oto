@@ -106,6 +106,8 @@ func _process(_delta: float) -> void:
 
 ## Gates, doors and bridges: sync blocked cells, prompt and visuals with `open`.
 func _apply(instant: bool) -> void:
+	if not is_instance_valid(level):
+		return
 	if type == "bridge":
 		level.set_cells_blocked(cells, not open)
 		var deck := prop.get_node("deck") as Node3D

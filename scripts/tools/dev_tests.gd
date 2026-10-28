@@ -16,6 +16,7 @@ func _ready() -> void:
 	await _test_boss_kit()
 	await _test_content()
 	await _test_cloth()
+	await _test_sigil_and_silver()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -101,6 +102,8 @@ func _test_fixtures() -> void:
 	var door: Fixture = by_type["key_door"]
 	var dc: Vector2i = door.cells[0]
 	_check(lv.is_blocked(lv.cell_pos(dc.x, dc.y)), "a key door blocks without its key")
+	for fx: Fixture in by_type.values():
+		fx.queue_free()
 	lv.queue_free()
 
 ## Runs enemies against a stationary Oto for a few simulated seconds.
@@ -288,14 +291,49 @@ func _test_cloth() -> void:
 	tw.tween_property(ch, "position", ch.position + Vector3(-14, 22, 8), 1.5)
 	tw.tween_property(ch, "rotation:x", TAU * 2.0, 1.5)
 	await tw.finished
+	for i in 90:  # mid-spin it may trail far behind; what matters is that it comes back whole
+		await get_tree().physics_frame
 	finite = true
 	var pin := outfit.global_transform * front.pin_center
 	var far := 0.0
 	for p in front.particles():
 		finite = finite and p.is_finite()
 		far = maxf(far, p.distance_to(pin))
-	_check(finite and far < front.length * 1.6, "a fling through the air does not tear the cloth apart")
+	_check(finite and far < front.length * 1.2, "after a fling through the air the cloth hangs whole again (%.2f m)" % far)
 	ch.queue_free()
+	await get_tree().process_frame
+
+## The Wall sigil sits on the front panel only and is engraved on both gauntlets; Shadow
+## forms turn every bit of her outfit's gold silver, and base form turns it back.
+func _test_sigil_and_silver() -> void:
+	GameState.new_run()
+	GameState.max_form = 3
+	var p := Player.new()
+	add_child(p)
+	await get_tree().physics_frame
+	var front: ClothPanel = p.visual.find_child("ScapularFront", true, false)
+	var back: ClothPanel = p.visual.find_child("ScapularBack", true, false)
+	_check(front.decal_texture != null and back.decal_texture == null, "the sigil is on the front panel only")
+	_check(p.visual.find_children("SigilEngraving_*", "", true, false).size() == 2, "both gauntlets carry the engraved sigil")
+	var mats: Array = p.visual.get_meta("gold_mats", [])
+	var is_silver := func() -> bool:
+		for m: StandardMaterial3D in mats:
+			if not m.albedo_color.is_equal_approx(m.get_meta("silver_color")):
+				return false
+		return not front.color_swap.is_empty()
+	_check(mats.size() >= 4 and not is_silver.call(), "her gold is gold in base form")
+	p.set_form(1, true)
+	_check(is_silver.call(), "Shadow Saiyan turns all of the outfit's gold silver")
+	var black := true
+	for m: StandardMaterial3D in p.visual.get_meta("hair_mats", []):
+		black = black and m.albedo_color.is_equal_approx(Color(0, 0, 0))
+	_check(black, "and her hair pitch black")
+	p.set_form(0, true)
+	var gold := true
+	for m: StandardMaterial3D in mats:
+		gold = gold and m.albedo_color.is_equal_approx(m.get_meta("base_color"))
+	_check(gold and front.color_swap.is_empty(), "back in base form, the gold returns")
+	p.queue_free()
 	await get_tree().process_frame
 
 func _enemy(kind: String, pos: Vector3, arena: Rect2, target: Player) -> Enemy:

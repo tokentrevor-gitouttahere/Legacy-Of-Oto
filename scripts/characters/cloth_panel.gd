@@ -5,6 +5,8 @@ extends MeshInstance3D
 ## light wind, keeps its size through distance constraints, and is pushed out of sphere
 ## colliders (hips, legs) and above the ground, so it drapes over the body instead of
 ## passing through it. Colours are per face (face_color), so trim and hems stay crisp.
+## An optional decal (decal_texture over decal_rect) is drawn on the outer face and moves
+## with the cloth. color_swap recolours faces and the decal (Shadow forms: gold to silver).
 ## Configure the vars, then add it under the outfit root; it starts settled on its first
 ## physics frame. Units are metres in the parent's space.
 
@@ -25,6 +27,13 @@ var max_step := 0.25  # metres a particle may move per frame (keeps flings stabl
 var face_color := Callable()  # (column, row) -> Color; default white
 var base_color := Color.WHITE
 var tex_scale := Vector2(3, 6)
+var decal_texture: Texture2D = null
+var decal_rect := Rect2()  # in panel space: x across (0..1), y down from the pins (0..1)
+var decal_color := Color.WHITE
+var color_swap := {}  # Color -> Color
+
+var _cloth_mat: StandardMaterial3D
+var _decal_mat: StandardMaterial3D
 
 var _p := PackedVector3Array()  # positions (world)
 var _q := PackedVector3Array()  # previous positions (world)
@@ -47,7 +56,14 @@ func _ready() -> void:
 	m.roughness = 0.92
 	m.albedo_texture = Mats.texture("noise")
 	m.uv1_scale = Vector3(tex_scale.x, tex_scale.y, 1)
-	material_override = m
+	_cloth_mat = m
+	if decal_texture:
+		_decal_mat = StandardMaterial3D.new()
+		_decal_mat.albedo_texture = decal_texture
+		_decal_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		_decal_mat.metallic = 0.7
+		_decal_mat.roughness = 0.35
+		_decal_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	extra_cull_margin = 2.0
 
 ## Rest position of particle (i, j) in the parent's space.
@@ -158,6 +174,7 @@ func _rebuild(_xf: Transform3D) -> void:
 	for j in rows - 1:
 		for i in cols - 1:
 			var c: Color = face_color.call(i, j) if face_color.is_valid() else base_color
+			c = color_swap.get(c, c)
 			for corner: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 0), Vector2i(1, 1), Vector2i(0, 1)]:
 				var ii := i + corner.x
 				var jj := j + corner.y
@@ -168,6 +185,41 @@ func _rebuild(_xf: Transform3D) -> void:
 				st.add_vertex(local[k])
 	_mesh.clear_surfaces()
 	st.commit(_mesh)
+	_mesh.surface_set_material(0, _cloth_mat)
+	if _decal_mat:
+		_decal_mat.albedo_color = color_swap.get(decal_color, decal_color)
+		var sd := SurfaceTool.new()
+		sd.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var nu := 3
+		var nv := 6
+		for b in nv:
+			for a in nu:
+				for corner: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 0), Vector2i(1, 1), Vector2i(0, 1)]:
+					var s := float(a + corner.x) / nu
+					var t := float(b + corner.y) / nv
+					var at := _sample(local, normals, decal_rect.position.x + s * decal_rect.size.x, decal_rect.position.y + t * decal_rect.size.y)
+					sd.set_normal(at[1])
+					sd.set_uv(Vector2(s, t))
+					sd.add_vertex(at[0] + at[1] * 0.0025)
+		sd.commit(_mesh)
+		_mesh.surface_set_material(1, _decal_mat)
+
+## Position and normal at panel coordinates (u across, v down), bilinear on the particle grid.
+func _sample(local: PackedVector3Array, normals: PackedVector3Array, u: float, v: float) -> Array:
+	var i := 0
+	while i < cols - 2 and u > float(us[i + 1]):
+		i += 1
+	var fu := clampf((u - float(us[i])) / maxf(float(us[i + 1]) - float(us[i]), 0.0001), 0.0, 1.0)
+	var rv := clampf(v, 0.0, 1.0) * (rows - 1)
+	var j := mini(int(rv), rows - 2)
+	var fv := rv - j
+	var k00 := j * cols + i
+	var k10 := k00 + 1
+	var k01 := k00 + cols
+	var k11 := k01 + 1
+	var p := local[k00].lerp(local[k10], fu).lerp(local[k01].lerp(local[k11], fu), fv)
+	var n := normals[k00].lerp(normals[k10], fu).lerp(normals[k01].lerp(normals[k11], fu), fv)
+	return [p, n.normalized() if n.length() > 0.0001 else Vector3.FORWARD]
 
 ## Lowest point of the cloth in world space (tests).
 func lowest_y() -> float:

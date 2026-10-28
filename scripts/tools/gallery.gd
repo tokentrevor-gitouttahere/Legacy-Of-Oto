@@ -3,7 +3,8 @@ extends Node3D
 ##   --gallery outfits [--page N]   dressed characters, 6 per page
 ##   --gallery props   [--page N]   prop library, 8 per page
 ##   --gallery beasts                 every Beast kind, walking in place
-##   --gallery turnaround [--preset oto]  one outfit up close: front, side and back
+##   --gallery turnaround [--preset oto] [--shadow]  one outfit up close: front, side and back
+##                                    (--shadow: black hair and silver for gold, as in Shadow forms)
 ## Use with tools/run.py shot to get screenshots.
 
 const PER_PAGE := {"outfits": 6, "props": 8}
@@ -89,6 +90,10 @@ func _models(cam: Camera3D) -> void:
 func _turnaround(preset: String, cam: Camera3D) -> void:
 	for k in 3:
 		var ch := Outfits.make_character(preset)
+		if "--shadow" in OS.get_cmdline_user_args():
+			Outfits.set_silver(ch, true)
+			for m: StandardMaterial3D in ch.get_meta("hair_mats", []):
+				m.albedo_color = Color(0, 0, 0)
 		ch.position = Vector3((k - 1) * 1.15, 0, 0)
 		ch.rotation.y = [0.0, PI / 2.0, PI][k]
 		add_child(ch)
@@ -96,6 +101,10 @@ func _turnaround(preset: String, cam: Camera3D) -> void:
 	cam.position = Vector3(0, 1.0, 4.2)
 	cam.look_at(Vector3(0, 0.9, 0))
 	cam.fov = 42
+	if "--closeup" in OS.get_cmdline_user_args():  # the front figure's left gauntlet and the plaque
+		cam.position = Vector3(-0.85, 1.32, 0.75)
+		cam.look_at(Vector3(-0.85, 1.05, 0.0))
+		cam.fov = 40
 
 func _beasts(cam: Camera3D) -> void:
 	for k in Beast.KINDS.size():

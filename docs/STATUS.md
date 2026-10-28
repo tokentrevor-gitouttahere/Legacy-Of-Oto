@@ -29,7 +29,8 @@ Test Arena, Prop and Outfit Gallery.
   textures (windows, bricks, planks, tiles, roof tiles, rock strata). See the gallery.
 - **Oto's queen's attire** (`docs/OTO_OUTFIT.md`): wrap bodice, a scapular with real cloth
   physics, a linen sash, a gold royal cord, golden gauntlets, arm and shin wraps, and bare feet.
-  The old bodysuit is kept as `oto_stage`.
+  Her tribe's sigil, The Wall, is on the front panel and engraved on the gauntlets. In Shadow
+  forms all her gold turns silver. The old bodysuit is kept as `oto_stage`.
 - **Characters:** 24 outfit presets with hair, clothes and accessories fitted to measured body
   landmarks: Oto, Chi-Chi, Gohan, Bulma, Krillin, Yamcha, Tien, Piccolo, Kami, Vegeta, Raditz,
   Nappa, Hercule, Master Roshi, the life-energy Saiyan, Saiyan soldier, scientist,

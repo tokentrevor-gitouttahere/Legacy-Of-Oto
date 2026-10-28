@@ -24,22 +24,49 @@ forearms and shins. They were for mood, not to copy. The design document adds th
 | Layer | Look | Style key |
 | --- | --- | --- |
 | Bodice | Sleeveless deep-green linen, crossed over at the chest, low standing collar. Arms and shoulders bare | top `wrap_bodice` |
-| Scapular | One long panel over both shoulders, hanging front and back to mid-shin. Gold-thread edges, gold hem; on the front, a black emblem near the hem (the hole in the world, her tribe's absence motif) | acc `scapular` |
+| Scapular | One long panel over both shoulders, hanging front and back to mid-shin. Gold-thread edges, gold hem; on the front only, a gold plaque bearing the sigil in black | acc `scapular` |
 | Sash | Wide undyed linen wound twice, knotted at her left hip, two tails hanging free | acc `wide_sash` |
 | Royal cord | Gold cord over the sash, gold disc clasp with a black stone, a short gold tassel | acc `royal_cord` |
 | Trousers | Loose, muted charcoal-green, gathered into cross-bound linen shin wraps. Bare feet | bottom `wrapped` |
-| Gauntlets | Rigid gold bracers from just behind the wrist to halfway to the elbow, slightly flared. Two raised ridges, a spine along the back of the forearm, a black inlaid stone: the queen's insignia | acc `gauntlets` |
+| Gauntlets | Rigid gold bracers from just behind the wrist to halfway to the elbow, slightly flared. Two raised ridges, a spine along the back of the forearm, and the sigil engraved on the outer face | acc `gauntlets` |
 | Wraps | Linen over the knuckles, and from the gauntlets up to below the elbow, with a loose trailing end | acc `arm_wraps` |
 
 **Palette:**
 - bodice `#174529`
 - scapular `#24663d`
 - trim and gold `#e6b84c` / `#edba4c`
-- emblem near-black violet
+- sigil black on gold
 - linen `#d1c7b2`
 - trousers `#333d33`
 
 Her skin is chocolate brown and her hair pale grey, as before.
+
+## The sigil: The Wall
+
+The Shadow Saiyans' mark, chosen by the owner on 2026-10-28. It is a frame with one upright
+line through it: the line of sunlight that split their world, with her people on its dark
+side.
+- **Colours:** black on gold.
+- **Where:** a plaque on the scapular's front panel (not the back), and engraved on the outer
+  face of both gauntlets. On the gauntlets its long axis runs along the forearm, so the line
+  stands upright when her arms are down.
+- **Code:** `scripts/characters/sigil.gd` draws it in code.
+  - The plaque is a white field with a black sigil, tinted by its material.
+  - The engraving is the black sigil on transparent.
+  - On the cloth it is a decal that follows the moving panel.
+
+## Shadow forms: gold turns silver
+
+In any Shadow Saiyan form her hair goes pitch black and all of the outfit's gold turns
+brushed silver. That covers the gauntlets, the cord, clasp and tassel, the gold-thread edges
+and hem, and the sigil plaque. Base form turns it back to gold. This keeps the design rule
+that Shadow forms never use gold.
+- `OutfitBuilder.metal()` makes each gold material unique to the character and registers its
+  silver.
+- `Outfits.set_silver(visual, on)` swaps them, along with the cloth panels' gold faces.
+  `Player._apply_form_visual` calls it on every form change.
+- To preview it: `--gallery turnaround --preset oto --shadow`. Add `--closeup` to frame the
+  gauntlet and the plaque.
 
 ## Cloth physics
 

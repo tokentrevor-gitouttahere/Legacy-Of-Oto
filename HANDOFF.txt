@@ -47,8 +47,14 @@ WHAT WAS BUILT (full design: docs/OTO_OUTFIT.md)
   - The gallery has a new view: python tools/run.py shot gallery
     --args="--gallery turnaround --preset oto" shows front, side and back.
   - Palette follows the design doc: green with gold trim, a panel that swings.
-  - Open for the owner: whether the emblem should be a specific sigil (it is a plain black
-    block for now), the exact greens, and whether to add gold armlets like the references.
+  - The owner's sigil decision: The Wall, a frame with one upright line through it (the line
+    of sunlight that split her world). Black on gold, on the front panel only, and engraved
+    on both gauntlets. Code: scripts/characters/sigil.gd.
+  - The owner's form rule: in Shadow Saiyan forms her hair turns pitch black (it already did)
+    and all of the outfit's gold turns silver. Code: Outfits.set_silver, called from
+    Player._apply_form_visual.
+  - Still open for the owner: the exact greens, and whether to add gold armlets like the
+    references.
 
 ----------------------------------------------------------------
 SESSION 2 (2026-10-28)

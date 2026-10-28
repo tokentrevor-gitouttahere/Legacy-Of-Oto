@@ -27,7 +27,7 @@ const PRESETS := {
 		"top": {"style": "wrap_bodice", "color": [0.09, 0.27, 0.16], "under": [0.05, 0.17, 0.1]},
 		"bottom": {"style": "wrapped", "color": [0.2, 0.24, 0.2], "wrap": [0.84, 0.8, 0.7]},
 		"acc": [
-			{"style": "scapular", "color": [0.14, 0.4, 0.24], "trim": [0.9, 0.72, 0.3], "emblem": [0.03, 0.02, 0.05]},
+			{"style": "scapular", "color": [0.14, 0.4, 0.24], "trim": [0.9, 0.72, 0.3], "sigil": [0.93, 0.73, 0.3]},
 			{"style": "wide_sash", "color": [0.82, 0.78, 0.66]},
 			{"style": "royal_cord", "color": [0.93, 0.73, 0.3]},
 			{"style": "gauntlets", "color": [0.93, 0.73, 0.3]},
@@ -263,8 +263,23 @@ static func apply(visual: Node3D, preset: String) -> void:
 	b.root.name = "Outfit"
 	visual.add_child(b.root)
 	visual.set_meta("hair_mats", b.hair_mats)
+	visual.set_meta("gold_mats", b.gold_mats)
+	visual.set_meta("cloth_panels", b.cloth_panels)
+	visual.set_meta("metal_swap", b.metal_swap)
 	if b.form3_hair:
 		visual.set_meta("form3_hair", b.form3_hair)
+
+## Shadow forms: the outfit's gold turns silver (and back). Hair is handled by the Player.
+static func set_silver(visual: Node3D, on: bool) -> void:
+	for m: StandardMaterial3D in visual.get_meta("gold_mats", []):
+		m.albedo_color = m.get_meta("silver_color") if on else m.get_meta("base_color")
+		var rough: float = m.get_meta("base_rough", 0.3)
+		var metal_k: float = m.get_meta("base_metal", 0.65)
+		m.roughness = maxf(rough, 0.42) if on else rough  # brushed, so it does not mirror the sky
+		m.metallic = minf(metal_k, 0.5) if on else metal_k
+	var swap: Dictionary = visual.get_meta("metal_swap", {}) if on else {}
+	for p: ClothPanel in visual.get_meta("cloth_panels", []):
+		p.color_swap = swap
 
 static func _c(v: Variant) -> Color:
 	if v is Color:

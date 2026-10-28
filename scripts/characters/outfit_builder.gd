@@ -8,6 +8,9 @@ var H: float
 var root := Node3D.new()
 var hair_mats: Array = []
 var form3_hair: Node3D = null
+var gold_mats: Array = []  # unique per character: Shadow forms turn them silver (Outfits.set_silver)
+var cloth_panels: Array = []
+var metal_swap := {}  # gold face colours on cloth panels -> their silver
 
 func _init(landmarks: Dictionary, height: float) -> void:
 	L = landmarks
@@ -38,6 +41,26 @@ static func col(v: Variant, fallback := Color.WHITE) -> Color:
 
 func cloth(c: Color, tex := "noise", scale := 6.0) -> StandardMaterial3D:
 	return Mats.get_mat(c, tex, scale, {"rough": 0.9})
+
+## Gold that turns silver in Shadow forms: a unique material registered in gold_mats.
+func metal(c: Color, rough := 0.3, metal_k := 0.65) -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = c
+	m.metallic = metal_k
+	m.roughness = rough
+	m.set_meta("base_color", c)
+	m.set_meta("silver_color", to_silver(c))
+	m.set_meta("base_rough", rough)
+	m.set_meta("base_metal", metal_k)
+	gold_mats.append(m)
+	metal_swap[c] = to_silver(c)
+	return m
+
+## A neutral silver that stands in for a gold of the same brightness (a cool tint turns
+## blue once the metal reflects the sky).
+static func to_silver(c: Color) -> Color:
+	var l := maxf(c.r, maxf(c.g, c.b)) * 0.86
+	return Color(l * 1.02, l, l * 0.96)  # a touch warm, against blue skies
 
 func hair_mat(c: Color) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()  # unique per character: forms recolour it
@@ -131,6 +154,7 @@ func cloth_panel(pin: Vector3, across: Vector3, w: float, length: float, cols: i
 	p.base_color = color
 	p.name = "Cloth"
 	root.add_child(p)
+	cloth_panels.append(p)
 	return p
 
 ## Spheres along the legs and hips (in metres) that hanging cloth drapes over.
@@ -510,13 +534,13 @@ func _acc(a: Dictionary) -> void:
 		"third_eye":
 			ball(h + Vector3(0, f("head_ry") * 0.4, f("head_rz") * 0.97), Vector3(f("head_r") * 0.12, f("head_r") * 0.08, f("head_r") * 0.05), Mats.get_mat(Color(0.95, 0.9, 0.85)))
 		"scapular":
-			_scapular(c, col(a.get("trim"), Color(0.9, 0.72, 0.3)), col(a.get("emblem"), Color(0.03, 0.02, 0.05)))
+			_scapular(c, col(a.get("trim"), Color(0.9, 0.72, 0.3)), col(a.get("sigil"), Color(0.93, 0.73, 0.3)))
 		"wide_sash":
 			_wide_sash(c)
 		"royal_cord":
 			_royal_cord(c)
 		"gauntlets":
-			_gauntlets(c, col(a.get("inlay"), Color(0.02, 0.01, 0.04)))
+			_gauntlets(c)
 		"arm_wraps":
 			_arm_wraps(c)
 		"tail":
@@ -532,11 +556,12 @@ func _sash_front() -> float:
 	return _sash_r() * f("waist_hd") / maxf(f("waist_hw"), 0.001)
 
 ## A long panel over both shoulders, hanging front and back to mid-shin. Above the sash it
-## lies on the body; below it, it is cloth: gold-edged, gold hem, and on the front a black
-## emblem near the hem (the hole in the world).
-func _scapular(c: Color, trim: Color, emblem: Color) -> void:
+## lies on the body; below it, it is cloth: gold-edged, gold hem, and on the front a gold
+## plaque bearing the sigil in black (Sigil, "The Wall").
+func _scapular(c: Color, trim: Color, plaque: Color) -> void:
 	var pm := cloth(c, "noise", 5.0)
-	var tm := Mats.get_mat(trim, "", 1.0, {"metal": 0.5, "rough": 0.45})
+	var tm := metal(trim, 0.45, 0.5)
+	metal_swap[plaque] = to_silver(plaque)
 	var w := f("hip_hw") * 1.05
 	var t := 0.006 * H
 	var top_y := f("shoulder_y") + 0.012 * H
@@ -559,13 +584,14 @@ func _scapular(c: Color, trim: Color, emblem: Color) -> void:
 		var p := cloth_panel(Vector3(0, f("waist_y") - 0.035 * H, zs * (_sash_front() + 0.003 * H)), Vector3.RIGHT, w, drop, us.size(), rows, cols, c)
 		p.us = us
 		p.name = "ScapularFront" if zs > 0.0 else "ScapularBack"
-		var show_emblem := zs > 0.0
 		p.face_color = func(i: int, j: int) -> Color:
 			if i == 0 or i == us.size() - 2 or j == rows - 2:
 				return trim
-			if show_emblem and (i == 2 or i == 3) and (j == rows - 4 or j == rows - 5):
-				return emblem
 			return c
+		if zs > 0.0:  # the sigil: front panel only
+			p.decal_texture = Sigil.texture(false)
+			p.decal_rect = Rect2(0.32, 0.48, 0.36, 0.28)
+			p.decal_color = plaque
 
 ## A wide linen sash wound twice and knotted at her left hip, two tails hanging free.
 func _wide_sash(c: Color) -> void:
@@ -585,7 +611,7 @@ func _wide_sash(c: Color) -> void:
 
 ## The queen's cord: gold over the sash, a gold clasp with a black stone, a short tassel.
 func _royal_cord(c: Color) -> void:
-	var gold := Mats.get_mat(c, "", 1.0, {"metal": 0.85, "rough": 0.3})
+	var gold := metal(c)
 	ring(f("waist_y") - 0.027 * H, _sash_r() * 1.05, _sash_front() * 1.07, 0.18, gold, f("waist_z"))
 	var at := Vector3(0, f("waist_y") - 0.004 * H, _sash_front() + 0.004 * H)
 	var disc := limb(at - Vector3(0, 0, 0.003 * H), at + Vector3(0, 0, 0.003 * H), 0.017 * H, 0.017 * H, gold, 14)
@@ -599,11 +625,17 @@ func _royal_cord(c: Color) -> void:
 	tassel.tex_scale = Vector2(1, 1)
 
 ## Rigid gold bracers from just behind the wrist to halfway to the elbow: two raised
-## ridges, a spine along the back of the forearm, and a black stone, the queen's insignia.
-func _gauntlets(c: Color, inlay: Color) -> void:
-	var gold := Mats.get_mat(c, "", 1.0, {"metal": 0.85, "rough": 0.28})
-	var deep := Mats.get_mat(c.darkened(0.3), "", 1.0, {"metal": 0.85, "rough": 0.35})
-	var stone := Mats.get_mat(inlay, "", 1.0, {"rough": 0.06, "metal": 0.2})
+## ridges, a spine along the back of the forearm, and the sigil engraved on the outer face.
+func _gauntlets(c: Color) -> void:
+	var gold := metal(c, 0.28)
+	var deep := metal(c.darkened(0.3), 0.35)
+	var ink := StandardMaterial3D.new()
+	ink.albedo_texture = Sigil.texture(true)
+	ink.albedo_color = Color(0.04, 0.03, 0.03)
+	ink.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+	ink.alpha_scissor_threshold = 0.5
+	ink.roughness = 0.6
+	ink.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	for side: float in [1.0, -1.0]:
 		var w := pt("wrist", side)
 		var e := pt("elbow", side)
@@ -618,7 +650,18 @@ func _gauntlets(c: Color, inlay: Color) -> void:
 			var r := lerpf(r0, r1, t) * 1.1
 			limb(p - dir * 0.004 * H, p + dir * 0.004 * H, r, r, deep, 14)
 		limb(a0 + Vector3(0, r0 * 0.98, 0), a1 + Vector3(0, r1 * 0.98, 0), 0.0035 * H, 0.0045 * H, deep, 6)
-		ball(a0.lerp(a1, 0.5) + Vector3(0, (r0 + r1) * 0.5 + 0.002 * H, 0), Vector3(0.012, 0.005, 0.009) * H, stone)
+		# The engraving faces forward (+Z, toward the camera), its long axis along the forearm.
+		var rm := (r0 + r1) * 0.5
+		var quad := QuadMesh.new()
+		quad.size = Vector2(rm * 0.75, a0.distance_to(a1) * 0.62)
+		var eng := MeshInstance3D.new()
+		eng.name = "SigilEngraving_L" if side > 0.0 else "SigilEngraving_R"  # her left is +X
+		eng.mesh = quad
+		eng.material_override = ink
+		var za := Vector3(0, 0, 1)
+		eng.basis = Basis(dir.cross(za), dir, za)
+		eng.position = a0.lerp(a1, 0.5) + Vector3(0, 0, rm + 0.0015 * H)
+		root.add_child(eng)
 
 ## Linen wraps: over the knuckles, and from the gauntlet up to below the elbow, with a loose end.
 func _arm_wraps(c: Color) -> void:

@@ -149,6 +149,7 @@ func _apply_form_visual() -> void:
 		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if form == 2 else BaseMaterial3D.TRANSPARENCY_DISABLED
 	_form_fx.visible = form > 0
 	(_form_fx.material_override as StandardMaterial3D).albedo_color = FORM_FX[form]
+	Outfits.set_silver(visual, form > 0)  # Shadow forms: no gold anywhere on her
 	var long_hair: Node3D = visual.get_meta("form3_hair", null)
 	if long_hair:
 		long_hair.visible = form == 3  # Cohesion: hair past her knees, perfectly still
