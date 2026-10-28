@@ -1,0 +1,187 @@
+LEGACY OF OTO - HANDOFF
+Last updated: 2026-10-28, end of session 2. The whole gameplay backlog was built, the wild areas
+got content, and the game was put on GitHub and deployed to the web. Read SESSION 2 first.
+
+HOW TO USE THIS FILE
+Paste this whole file (or attach it) at the start of your next prompt. It records what was asked
+and built, the owner's locked decisions, lines waiting for review, and how to test and ship.
+Then, in the project folder, read:
+  CLAUDE.md                     the agents' guide (layout, tools, conventions)
+  docs/STATUS.md                what the game has now and the gaps
+  docs/MECHANICS_REFERENCE.md   Legacy of Goku II system by system, decisions, backlog status
+  docs/LEVEL_FORMAT.md          level JSON, enemy keys, fixtures
+
+LINKS
+  Repo (public):  https://github.com/tokentrevor-gitouttahere/Legacy-Of-Oto   (branch main)
+  Play in a browser:  https://tokentrevor-gitouttahere.github.io/Legacy-Of-Oto/
+                  (branch gh-pages; it holds only the latest web build)
+  Local folder:   C:\Users\Owner\Documents\claudeai\Legacy of Oto
+  Story bible (the owner's, not in the repo): C:\Users\Owner\Downloads\Oto Story.md and
+                  C:\Users\Owner\Downloads\Oto Design Document.md
+
+----------------------------------------------------------------
+SESSION 2 (2026-10-28) - read this first
+----------------------------------------------------------------
+
+WHAT THE OWNER ASKED, IN ORDER
+  1. Whether the Legacy of Goku II GBA recompilation (github.com/mstan/DragonBallZLegacyofGokuIIRecomp)
+     would help. Answer: no. It contains no game code, only a tool that machine-translates your
+     own ROM into C with no names. It is also ROM-derived, so we don't use it. Mechanics come
+     from public guides and the owner's own play memory.
+  2. "write it for future Claude agents": docs/MECHANICS_REFERENCE.md, LoG II system by system.
+  3. Answered every open decision (see LOCKED DECISIONS).
+  4. "Start building": all 14 backlog items, verified with headless tests and screenshots.
+  5. "Add content": beasts, fishing, senzu beans, more cooks and dishes.
+  6. "once complete create a github for it Legacy-Of-Oto is fine as a repo name and deploy it and
+     update handoff". The repo is public (owner's choice), deployed to GitHub Pages, and the
+     owner OK'd downloading the Godot export templates. This file is the handoff.
+
+WHAT WAS BUILT (details: docs/STATUS.md and the build status in docs/MECHANICS_REFERENCE.md)
+  Combat:
+    - Floating damage numbers.
+    - A held heavy strike: hold Z, release once it is ready.
+    - Ki techniques switched with Q: Charged Orb and Ki Blast.
+  Ki charge:
+    - Five tiers from Basic Charge to Perfect Charge, each with its own delay and rate.
+    - The prologue has Perfect; the throw resets it to Basic.
+    - Goku's spar teaches Steady, and Roshi's optional lesson teaches Focused.
+  Growth:
+    - Level cap 100, and a stat cap of 255 on what points and capsules add.
+    - Capsules worth +1, +3 and +5, some placed in the world.
+  Drops: food (haunch, rice ball), ki motes and capsules.
+  Senzu beans are carried and eaten from the Journal page (Yajirobe gives one at a time).
+  Enemies:
+    - Behaviours: chase, charger, shooter and pack.
+    - Tiers 1-4 that scale stats and tint the model.
+    - They collide with walls, wander until Oto comes within 12 m, and give up past 24 m.
+  Beasts: six procedural animals (wolf, boar, raptor, scorpion, crab, pterodactyl) in
+    scripts/characters/beast.gd. They are in the gallery's "beasts" page.
+    - Mt. Paozu: wolves, boars and raptors.
+    - Korin's Holy Land: tier-2 wolves, boars and raptors.
+    - The Wasteland: scorpions and pterodactyls (the Saibamen now hunt as a pack).
+    - Kame House: crabs.
+  Fixtures (scripts/world/fixture.gd): level gates, memory gates, key doors, floor switches,
+    bridges, breakable rocks, save lanterns, Chi-Chi's leftovers pot and fishing jetties.
+    - Every outdoor location has a save lantern.
+    - The Wasteland has a level-5 gate with capsules behind it.
+    - levels/dev_fixtures.json has one of each fixture.
+  Saving: save at lanterns, Continue on the title, and a fall reloads the last save.
+  Quests: a journal ("A Place to Eat" at Paozu, Roshi's lesson).
+  The Menu: 8 dishes from 7 cooks, with milestones that raise max HP or give stat points.
+  Scan (T): ki sense shows a power band; the Scouter key item adds exact numbers. Nothing in
+    the story gives the Scouter yet.
+  Bosses: scripts/boss_kit.gd adds phases, ki absorption and drain. The prologue boss runs on it.
+  Tests: python tools/run.py test runs 52 headless rule checks, all passing.
+  Fixes made along the way:
+    - The title layout collapsed in screenshots.
+    - HUD text was unreadable on bright ground.
+    - The Test Arena stayed black when entered from the title.
+
+LOCKED DECISIONS (the owner, 2026-10-28)
+  - Transform gauge: none. Shadow forms drain ki per second.
+  - Stat growth: 3 points per level, placed by the player.
+  - Gates: level gates plus memory gates (a Shadow form or memory flag). A memory gate must
+    never open before its rung of the memory ladder.
+  - Scan: ki-sense first; a scouter later adds exact numbers.
+  - Caps: levels at 100; each stat at 255.
+  - Death: reload the last save (the old respawn only applies when there is no save).
+  - Consumables are meals, approved: haunch, rice ball, ki mote, Chi-Chi's leftovers, fresh
+    fish, senzu bean, and the Menu as the big collectible.
+  - Ki charge: stand still to charge.
+    - Tiers and rates: Basic 1.0 s / 8%, Steady 0.7 s / 12%, Focused 0.45 s / 18%,
+      Deep 0.25 s / 25%, Perfect 0.1 s / 35% (delay before ki rises, then share of max ki
+      per second).
+    - Teachers: Goku's first spar teaches Steady; the gravity machine on the ship to Namek
+      teaches Focused, or Roshi's optional side lesson at Kame House teaches it earlier;
+      Kami and Mr. Popo's white room teaches Deep; Whis teaches Perfect.
+  - Buttons: ours to choose. LoG II's layout doesn't matter.
+
+OWNER PREFERENCES AND STANDING RULES
+  - Stay faithful to the story bible.
+    - Comedy is food, never pain.
+    - Never undercut a real beat.
+    - Shadow forms are void, hush and stillness; never gold, fire or lightning.
+    - Never skip a rung of the memory ladder.
+  - Borrow Legacy of Goku II's style, not the game itself: no copied maps, quests, dialogue or
+    exact numbers, and no ROM-derived code.
+  - The owner likes big autonomous passes. Check with tools/run.py screenshots and tests, and
+    list open decisions at the end instead of stopping to ask (they may be away).
+  - New dialogue that Claude writes gets listed for the owner's review (below).
+
+WRITTEN BY CLAUDE, WAITING FOR THE OWNER'S REVIEW (approve, or say what to change)
+  - Master Roshi's lesson (scripts/talks.gd):
+      "You power up like you're angry at the air. Sit down. Breathe." /
+      "Empty yourself out, then fill back up without moving a muscle. Do it here, on my island,
+       and come tell me." / reminder "Empty first. Then fill back up, still as a turtle on a rock." /
+      done: "Ho! You didn't even twitch." - Oto: "I was thinking about lunch." - "...Whatever works."
+  - After Goku's spar (paozu.gd), narration: "By the end of it her breath has gone slow and even,
+    the way it went at the pond, waiting for a bite." (The story says Goku teaches her nothing,
+    so the lesson is told through narration, not a line from him.)
+  - Cooks (tools/make_locations.py):
+      Krillin: "He has grilled too many fish. She helps."
+      Baker: "Melon bread, fresh out. Take one before the lunch rush."
+      Hercule City vendor: "Champion Dogs! The only hot dog the champion himself has never eaten!"
+        - Oto: "Then I will eat his."
+      Bulma (lab): "Oh, and Mom baked again. Take the tray before Dad finds it."
+      Hercule (mansion): "Help yourself to the buffet! A champion feeds his fans!"
+      Yajirobe: "What? I'm on break. There's rice on the fire if you want some. Don't touch my fish."
+        / "Korin says hand these out. One. Don't ask for two." / "You've still got a bean. Eat that one first."
+  - Dish narration: "She eats the <dish>. All of it."
+  - Dish names: West City noodle bowl, Chi-Chi's dumplings, Grilled fish skewers, Bakery melon
+    bread, Capsule Corp cookies, Champion hot dog, The champion's buffet, Yajirobe's rice.
+  - Gates, fishing and defeat:
+      level gate: "A wall of hard light. The number N is cut into both posts." / "Not yet."
+      memory gate: "The air here has a hole in it. Something on the other side is waiting for a
+        part of her she has not found yet."
+      fishing before the lesson: "Quiet water, and fish in it. She does not know yet how you get
+        one out."
+      defeat card: "Oto falls. She wakes by the last lamp she rested at."
+  - Gohan's fishing lesson in the Mt. Paozu location reuses his lines from the story scene.
+
+HOW TO RUN, TEST AND SHIP
+  Godot 4.7.2 (console exe): C:\Users\Owner\Downloads\Godot_v4.7.2-stable_win64.exe\...  (tools/run.py finds it)
+  python tools/run.py import          re-import, report script errors (needed after adding a class_name)
+  python tools/run.py test            headless rule checks; keep them passing, add one per new rule
+  python tools/run.py shot <scene|level:id> [--args="..."]   screenshot to tools/out/
+  python tools/run.py levels          validate levels/*.json
+  python tools/make_locations.py      rebuild the canonical levels. It reproduces the files exactly,
+                                      so add content here, not by hand-editing JSON
+  python tools/publish_web.py         export the "Web" preset and force-push it to gh-pages;
+                                      Pages updates in about a minute
+  Web templates: only the web_*.zip templates are installed, in
+    %APPDATA%\Godot\export_templates\4.7.2.stable. They came from the official
+    Godot_v4.7.2-stable_export_templates.tpz (1.28 GB); a copy of that archive is still in
+    this session's scratchpad, which is temporary.
+  Web build: Compatibility renderer (WebGL 2), single-threaded so GitHub Pages needs no special
+    headers; levels/*.json are bundled through the preset's include filter. Saves go to browser
+    storage. Lighting is a little flatter than on desktop.
+  git: the local repo is set to the GitHub no-reply address
+    (346683029+tokentrevor-gitouttahere@users.noreply.github.com), which keeps the personal
+    email out of the public history. Commits end with the Claude co-author line.
+  Not played by hand yet: a fall that reloads a save inside a real location, Roshi's lesson on
+    Kame House itself, and fishing at a real jetty. Their parts pass the headless tests.
+
+NEXT STEPS / GAPS
+  - Rigging and animation: models are static T/A-poses until the owner's Mixamo rigs arrive
+    (mixamo_upload/ zips).
+  - Story beyond Paozu: Saiyan Saga scripting is next. Later scenes should teach Focused (ship),
+    Deep (white room) and Perfect (Whis), and give the Scouter.
+  - CREDITS.md TODOs, which matter now that the repo is public: the source URL for the Goku model,
+    and the licences of the two base meshes.
+  - No audio yet. No gamepad button for scan. Teleport pads and fusion are not built.
+  - Memory gates, switches, bridges and key doors are only in the dev room so far.
+
+----------------------------------------------------------------
+SESSION 1 (2026-10-27 and earlier) - summary
+----------------------------------------------------------------
+  The project was built in code in Godot 4.7.2:
+    - The prologue: Oto at level 60 with every Shadow form fights the life-energy Saiyan, then
+      Yamoshi's wordless light throws her through time and strips her forms.
+    - The Mt. Paozu story scene: the crater, Goku, Gohan, Chi-Chi, fishing, chopsticks and the
+      first spar.
+    - Ten tile-map locations and a 3 km world map, 69 props and 22 outfit presets.
+  Decisions from then:
+    - Oto's skin is chocolate brown and her hair pale grey.
+    - The prologue gives her every Shadow form; she re-earns them by the memory ladder.
+    - Yamoshi's words are saved for the epilogue.
+    - The owner will rig the models through Mixamo.

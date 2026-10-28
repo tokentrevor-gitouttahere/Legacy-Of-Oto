@@ -39,7 +39,12 @@ python tools/run.py test                           # headless rule checks (PASS/
 python tools/gen_level.py city --id foo ...        # generate a new tile map (city/town/wild/island/interior)
 python tools/make_locations.py [id]                # regenerate the canonical locations
 python tools/model_sheet.py male_base              # front/side silhouette with grid, for landmarks
+python tools/publish_web.py                        # export the Web preset and deploy it to GitHub Pages
 ```
+
+Repo: github.com/tokentrevor-gitouttahere/Legacy-Of-Oto (public). Live build:
+tokentrevor-gitouttahere.github.io/Legacy-Of-Oto (gh-pages). `HANDOFF.txt` has the session history,
+the owner's decisions and the lines waiting for review.
 
 Always look at the screenshot after a visual change (Read the PNG). `run.py` exits 1 on any
 SCRIPT ERROR. Developer flags (after `--`, or via `--args=`): `--scene`, `--level`, `--shot`,

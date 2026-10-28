@@ -83,7 +83,9 @@ Test Arena, Prop and Outfit Gallery.
 
 ## For agents
 
-Read `CLAUDE.md` first. `docs/LEVEL_FORMAT.md` documents the level files.
+Read `HANDOFF.txt` and `CLAUDE.md` first. `docs/LEVEL_FORMAT.md` documents the level files.
+The game is on GitHub (tokentrevor-gitouttahere/Legacy-Of-Oto) and plays in a browser at
+https://tokentrevor-gitouttahere.github.io/Legacy-Of-Oto/ (deploy with `python tools/publish_web.py`).
 `docs/MECHANICS_REFERENCE.md` compares our systems with Legacy of Goku II and holds the
 ordered gameplay backlog. `python tools/run.py test` runs the headless rule checks
 (`scripts/tools/dev_tests.gd`); keep them passing and add one for each new rule.
