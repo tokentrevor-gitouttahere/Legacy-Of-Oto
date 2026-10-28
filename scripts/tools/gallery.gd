@@ -105,6 +105,10 @@ func _turnaround(preset: String, cam: Camera3D) -> void:
 		cam.position = Vector3(-0.85, 1.32, 0.75)
 		cam.look_at(Vector3(-0.85, 1.05, 0.0))
 		cam.fov = 40
+	if "--head" in OS.get_cmdline_user_args():  # the front figure's head
+		cam.position = Vector3(-1.15, 1.54, 0.95)
+		cam.look_at(Vector3(-1.15, 1.52, 0.0))
+		cam.fov = 30
 
 func _beasts(cam: Camera3D) -> void:
 	for k in Beast.KINDS.size():

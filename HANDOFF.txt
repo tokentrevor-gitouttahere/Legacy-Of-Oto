@@ -1,6 +1,6 @@
 LEGACY OF OTO - HANDOFF
-Last updated: 2026-10-28, session 3: Oto's queen's attire with cloth physics. Read SESSION 3,
-then SESSION 2 (the big build and the deploy).
+Last updated: 2026-10-28, session 4: Oto's FACE, started and unfinished (usage limit hit). Read
+SESSION 4 first, then SESSION 3 (queen's attire), then SESSION 2 (the big build and the deploy).
 
 HOW TO USE THIS FILE
 Paste this whole file (or attach it) at the start of your next prompt. It records what was asked
@@ -20,7 +20,147 @@ LINKS
                   C:\Users\Owner\Downloads\Oto Design Document.md
 
 ----------------------------------------------------------------
-SESSION 3 (2026-10-28) - read this first
+SESSION 4 (2026-10-28) - Oto's face: IN PROGRESS, read this first
+----------------------------------------------------------------
+
+WHAT THE OWNER ASKED
+  "using these references can you design me a face for the female protagonist Oto? We also need
+  faces for NPCs and other Canon Characters but for now we will focus on perfecting Oto."
+  References: three sheets (attach again if you have them): (1) DBZ female eye shapes, traced
+  (Pan, Marron, baby Bulma, Chi-Chi in many moods, Android 18, Mai, Videl); (2) a pencil sheet of
+  anime mouths; (3) a sheet of hard-edged angry male eyes and brows.
+  Two clarifications mid-session (BINDING, they change the design):
+   a) There are NO faces in the game today. This is the first, and "the dry run for those later":
+      it must build everything a face needs: eyes that open and close (blink), mouths that move
+      while a character speaks and stay CLOSED otherwise, noses, chins. The point is to solidify
+      Oto's identity; she is the test case for a reusable system.
+   b) "Draw in code" must NOT look like ASCII or crude blocks. The parts must match the
+      references (smooth cel-style art) and be MIX-AND-MATCH: different eyes, noses, face shapes
+      and skin colours combine into different faces.
+
+WHAT EXISTS NOW (nothing committed; git status: 1 modified, 4 new files)
+  scripts/characters/face_canvas.gd   NEW, compiles (python tools/run.py import: no errors), NOT RUN.
+      FaceCanvas: supersampled painter (4x, then Image.resize TRILINEAR). fill_poly (scanline,
+      even-odd, Image.fill_rect spans), ribbon (tapered stroke with round caps), line, ellipse,
+      spline (Catmull-Rom), shifted, taper. Face space = millimetres, +X toward the character's
+      LEFT (viewer's right), +Y up, origin on the centre line at the eye line. Texture is 1024x768
+      = 341x256 mm of UNWRAPPED head surface (3 px/mm; eye line at pixel row 360). Painting
+      replaces pixels; translucent marks go on their own canvas with alpha in the colour.
+  scripts/characters/face_parts.gd    NEW, compiles, NOT RUN. FaceParts: the part kit as data and
+      drawing code. SKINS palette; EYES (tall_oval, triangle, almond, wide_round, sharp, dot, from
+      the reference sheets); EYE_STATES (open, half, narrow, wide, closed, happy, left, right);
+      BROWS (calm, arc, thin, slash) + BROW_STATES; MOUTHS (still, flat, soft, pout, frown, cat) +
+      MOUTH_SHAPES (closed, smile, frown, ah, oh, ee, wide, grin); NOSES and CHINS (3D ellipsoid
+      parameters) ; palette(look, skin, variant) incl. a "void" variant for Shadow-form eyes;
+      eye()/brow()/mouth()/nose_marks() return a FaceCanvas for the LEFT side (mirror for right).
+  scripts/tools/gallery.gd            added `--head` camera to the turnaround (frames the front
+      figure's head): python tools/run.py shot gallery --args="--gallery turnaround --preset oto --head"
+
+FINDINGS ABOUT THE MODEL (assets/models/base_female/model_0.obj, used by Oto, Chi-Chi, Bulma, civilians)
+  - The head is a blank smooth egg: no eyes, nose, mouth or relief at all. About 0.137 H wide and
+    0.196 H tall (head spans y 0.80..1.00 of body height; chin ~0.80, widest ~0.89). Eye line chosen
+    at 0.881 H (1.50 m on the 1.7 m model); head radius at eye line ~0.14 m.
+  - The landmarks.json head ellipsoid (head_c/head_r/ry/rz) is only roughly right: the real mesh is
+    fuller at the top. The hair "long" style (cap ball set BEHIND the head plus blocky side slabs and
+    ONE white bang slab on the +X side) leaves a bare forehead and no hairline, and the bang covers
+    part of her left eye region. Hair "long" is used ONLY by oto and oto_stage, so it is safe to
+    rebuild: a hair shell that conforms to the real head (ray-cast, like the face) with a fringe and
+    the loose strand of bangs the design doc asks for, kept off the eyes.
+  - Skin is chocolate brown (0.29,0.16,0.09) (ModelLoader "oto"). Black ink barely reads on it, so
+    the eyes need visible sclera, pale brows (hair is pale grey) and plum lips. In Shadow forms Player
+    tints the skin 55-75% toward black (FORM_TINT) and the face must follow.
+
+DESIGN DECISIONS (from the design doc and the owner's references)
+  - Eyes: "very dark, so dark they seem to be looking at something just behind you": near-black
+    violet iris, tiny dim catch-light placed outer-upper, gaze PARALLEL or slightly outward (iris_dx
+    ~ +1 mm) so she looks past the viewer. Style: start from "almond" (Android 18 / Mai family:
+    calm, cool) softened toward tall_oval warmth ("warm on top, cold underneath"). Heavy upper lid
+    line with a wing and two lash flicks, faint crease, thin lower line.
+  - Brows: "calm", pale grey-lilac (0.6,0.58,0.64) to read on dark skin; BLACK in Shadow forms.
+  - Mouth: "still" (deadpan dash, tiny lower lip). She does not fidget: slow rare blinks, every 5.5-9 s.
+  - Shadow forms: "void" variant (black irises, no catch-light, black brows); deeper forms (2-3)
+    use the "cold" look (narrow eyes, flatter brows). Never gold, never glowing.
+  - Nose: small "button" 3D bump (skin material) + a soft under-nose mark; chin "soft" (none).
+
+THE ARCHITECTURE TO FINISH (agreed; none of this is written yet)
+  1. scripts/characters/face.gd  (class_name Face)
+     - LOOKS: character recipes {eyes: style+tune, brows, mouth, nose, chin, palette overrides,
+       blink interval}; "oto" first. EXPRESSIONS: named combos of eye/brow/mouth states
+       (neutral, cold, smile, surprise, sad, eat, sleep).
+     - Texture builders with a static cache keyed look|layer|state|variant|skin: eyes_texture
+       (draw LEFT eye, flip_x for the right, blend_rect into a layer image; if gaze != 0 draw the
+       right eye separately with -look), brows_texture, mouth_texture, nose_texture. Layer image =
+       Image(px rect of the layer region) filled Color(skin, 0); canvases blend in at
+       canvas.rect.position - layer.rect.position (mirrored x = TEX_W - (x + w)).
+       Add a static FaceCanvas.px_rect(region) helper (same rounding as _init).
+     - Separate LAYERS (eyes, brows, mouth, nose marks), each its own transparent plate mesh and
+       texture, so blinking or a mouth change swaps ONE small texture. Regions (mm): eyes
+       (-120,-52,240,122); brows (-120,6,240,96); mouth (-52,-116,104,66); nose (-22,-66,44,40)
+       (Rect2 x,y,w,h). They cover the left-side canvases FaceParts draws and their mirrors.
+     - Plate mesh = ray-cast heightfield wrapped on the real head: TriangleMesh from
+       head_mi.mesh.generate_triangle_mesh() (cache per model); rays from the head axis outward at
+       angle theta and height y; u linear in theta (x_mm = theta * R_REF, R_REF = 140), v linear in
+       y; vertex = hit + normal * ~1.2 mm; normals from grid finite differences (dTheta x dY);
+       triangles [TL,TR,BR, TL,BR,BL] (Godot front faces are clockwise); head axis z = midpoint of
+       front and back hits at the eye line. Wrapper space = rig.transform * head_mi.transform
+       (rig = visual.get_child(0); head part is the child named "head" if present, else child 0).
+     - Material: StandardMaterial3D, albedo_texture, TRANSPARENCY_ALPHA, roughness 0.8, mipmapped
+       anisotropic filter, MeshInstance cast_shadow OFF; small emission on the eyes layer.
+     - 3D nose/chin = ellipsoid MeshInstances using the HEAD'S OWN skin material object
+       (head_mi.material_override), so skin tint, Shadow-form darkening and the Void flicker follow.
+  2. scripts/characters/face_rig.gd  (class_name FaceRig extends Node3D), added under the Outfit
+     root as "Face": holds layers, current states, look and skin. API: express(name), set_part(slot,
+     state), start_talking()/stop_talking() (mouth cycles ah/oh/ee/wide/closed about every 0.09-0.14 s,
+     never the same viseme twice; CLOSED otherwise), blink() (open>half>closed>half>open, about
+     0.05/0.08/0.05 s, skipped when eyes are already closed/happy), set_form(form, tint) (void
+     variant, albedo tint like the skin, keep TRANSPARENCY_ALPHA always), _process for timers.
+  3. Outfits: preset key "face": "oto" on oto and oto_stage; Outfits.apply attaches after b.build,
+     skin colour = head material's base_color meta; set visual meta "face" = the rig.
+  4. Player._apply_form_visual: call the rig's set_form(form, FORM_TINT[form]); the form-2 flicker
+     loop (player.gd ~line 431) must also fade the face layer materials. Do NOT put the face
+     materials in the "mats" meta: that loop turns transparency off in forms != 2.
+  5. Overlay (scripts/overlay.gd, say() types at 45 chars/s): add `signal talking(speaker: String,
+     on: bool)`; emit true when a line starts typing, false when it is fully shown (or skipped) and
+     at the end of say(). A FaceRig with a speaker name ("Oto") connects and moves the mouth only
+     while talking. NPC speaker names come from the "Name|line" format.
+  6. Gallery: add `--gallery faces` (flat parts sheet over a skin-coloured background: every eye
+     style, brow style, mouth shape, nose, chin, skins; plus 3D heads front / three-quarter / side in
+     several expressions). Show the owner the flat sheet; they will judge it against their references.
+  7. Hair: rebuild "long" to sit on the real head with a hairline and fringe (see findings).
+  8. Tests (scripts/tools/dev_tests.gd): every eye/brow/mouth style and state draws with no error
+     and has painted alpha; plate vertices all lie 0.5-3 mm outside the head surface; blink swaps
+     and restores the eyes texture; talking opens the mouth and stop closes it; Shadow form turns
+     the void variant on and base form turns it off; face survives Outfits.apply twice.
+  9. Docs: docs/OTO_FACE.md (design + kit + how to make a new face), CLAUDE.md layout row for
+     characters/face*.gd and the new gallery flags, STATUS.md "Characters", this file, README if it
+     lists features. Add a CREDITS note only if reference art is shipped (it is not; the references are
+     the owner's design guide and nothing was copied).
+
+SUGGESTED ORDER FOR THE NEXT SESSION
+  a) Write face.gd + face_rig.gd + Outfits hook; run `python tools/run.py shot gallery --args="--gallery
+     turnaround --preset oto --head"` and LOOK at tools/out/*.png (Read the PNG). Expect the first
+     renders to need work: check winding (a plate that is invisible means flipped triangles), z-fight,
+     eye size/placement on the egg, and that the hair does not hide the face.
+  b) Tune Oto's look by eye against the references. First guesses (mm): almond eye w 58, inner corner
+     26 from the centre line, lid_h 24, iris 13.5 x 18, brow at ~y 40-47, mouth baseline -80. Eyes are
+     probably too far apart or too large on the egg: adjust LOOKS["oto"] "tune" values, not the code.
+  c) Build the faces gallery sheet and show it to the owner for sign-off before doing NPC faces.
+  d) Then speech hook, forms, tests, docs. Run `python tools/run.py test` (it was 58+ passing; keep it so).
+
+KNOWN RISKS
+  - face_canvas.gd / face_parts.gd have only been compiled, never run: expect small bugs
+    (Geometry2D clip/intersect results, ribbon caps, Image.resize TRILINEAR behaviour on RGBA).
+    If TRILINEAR looks soft or fringed, try INTERPOLATE_LANCZOS; the canvas background carries the skin
+    colour at alpha 0 specifically to avoid dark fringes.
+  - Texture generation is GDScript pixel work: measure it. Cache statically; if a frame costs more than
+    ~60 ms, generate blink/viseme frames when the face attaches, not mid-game.
+  - A 3D chin lump can look wrong on the egg head; Oto's is "soft" (none). Judge pointed/square by eye.
+  - Base meshes: only the female base is analysed. male_base has a separate "head" part and goku has
+    its own head; the plate code is meant to be generic but is untested on them.
+  - Nothing is committed. The owner asked only for the face; do not touch the deploy until they approve.
+
+----------------------------------------------------------------
+SESSION 3 (2026-10-28)
 ----------------------------------------------------------------
 
 WHAT THE OWNER ASKED
