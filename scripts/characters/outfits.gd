@@ -14,13 +14,27 @@ extends RefCounted
 const LANDMARKS_PATH := "res://assets/models/landmarks.json"
 
 const HAIR_STYLES := ["long", "saiyan_spiky", "flame", "very_long_spiky", "bun", "bob", "ponytail", "afro", "short", "bald", "turban", "keep"]
-const TOP_STYLES := ["gi", "tunic", "tank", "bodysuit", "armor", "dress", "jacket", "lab_coat", "vest", "none"]
-const BOTTOM_STYLES := ["pants", "baggy", "tights", "shorts", "skirt", "skirt_panel", "none"]
+const TOP_STYLES := ["gi", "tunic", "tank", "bodysuit", "armor", "dress", "jacket", "lab_coat", "vest", "wrap_bodice", "none"]
+const BOTTOM_STYLES := ["pants", "baggy", "tights", "shorts", "skirt", "skirt_panel", "wrapped", "none"]
 const FEET_STYLES := ["boots", "shoes", "sandals", "none"]
-const ACCESSORIES := ["sash", "belt", "wristbands", "gloves", "scouter", "headband", "cape", "mustache", "glasses", "hat_ball", "earrings", "trim", "apron", "antennae", "third_eye", "tail"]
+const ACCESSORIES := ["sash", "belt", "wristbands", "gloves", "scouter", "headband", "cape", "mustache", "glasses", "hat_ball", "earrings", "trim", "apron", "antennae", "third_eye", "tail",
+	"scapular", "wide_sash", "royal_cord", "gauntlets", "arm_wraps"]  # the last five are Oto's queen's attire (cloth physics)
 
 const PRESETS := {
-	"oto": {
+	"oto": {  # her queen's attire: docs/OTO_OUTFIT.md
+		"model": "oto",
+		"hair": {"style": "long", "color": [0.8, 0.8, 0.83], "form3": true},
+		"top": {"style": "wrap_bodice", "color": [0.09, 0.27, 0.16], "under": [0.05, 0.17, 0.1]},
+		"bottom": {"style": "wrapped", "color": [0.2, 0.24, 0.2], "wrap": [0.84, 0.8, 0.7]},
+		"acc": [
+			{"style": "scapular", "color": [0.14, 0.4, 0.24], "trim": [0.9, 0.72, 0.3], "emblem": [0.03, 0.02, 0.05]},
+			{"style": "wide_sash", "color": [0.82, 0.78, 0.66]},
+			{"style": "royal_cord", "color": [0.93, 0.73, 0.3]},
+			{"style": "gauntlets", "color": [0.93, 0.73, 0.3]},
+			{"style": "arm_wraps", "color": [0.86, 0.83, 0.74]},
+		],
+	},
+	"oto_stage": {  # the earlier green bodysuit with gold trim (stage-art look)
 		"model": "oto",
 		"hair": {"style": "long", "color": [0.8, 0.8, 0.83], "form3": true},
 		"top": {"style": "bodysuit", "color": [0.13, 0.42, 0.24], "sleeves": "short"},

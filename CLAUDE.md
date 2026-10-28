@@ -18,7 +18,7 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 | `scripts/pickup.gd`, `damage_number.gd`, `hud.gd` | Capsules, food and ki motes; floating numbers; HUD and the scan panel |
 | `scripts/quests.gd`, `dishes.gd`, `talks.gd`, `items.gd` | Quest registry, the Menu, NPC conversations with effects, gear and key items |
 | `scripts/models.gd` | `ModelLoader`: base meshes (oto, male_base, goku) |
-| `scripts/characters/` | `Outfits` presets and `OutfitBuilder` (clothes, hair, accessories); `Beast` procedural animals |
+| `scripts/characters/` | `Outfits` presets and `OutfitBuilder` (clothes, hair, accessories); `ClothPanel` cloth physics; `Beast` procedural animals |
 | `scripts/world/` | `Props` library, `Mats` textures, `Skies`, `Level` tile maps, `Fixture` (gates, doors, lanterns...), `location.gd`, `world_map.gd` |
 | `scripts/tools/dev_tests.gd` | Headless rule checks, run by `python tools/run.py test` |
 | `scenes/` | title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests |
@@ -49,7 +49,8 @@ the owner's decisions and the lines waiting for review.
 Always look at the screenshot after a visual change (Read the PNG). `run.py` exits 1 on any
 SCRIPT ERROR. Developer flags (after `--`, or via `--args=`): `--scene`, `--level`, `--shot`,
 `--frames`, `--sim fight|menu|walk|map`, `--timescale`, `--auto-dialogue`, `--zoom`, `--far`,
-`--skipfight` (prologue), `--spar` (paozu), `--gallery outfits|props|models|beasts --page N`.
+`--skipfight` (prologue), `--spar` (paozu), `--gallery outfits|props|models|beasts --page N`,
+`--gallery turnaround --preset <id>` (one outfit up close: front, side, back).
 Run state: `--setlevel N`, `--setform N`, `--givekey id`, and `--spawn name` in locations.
 More sims: `--sim charge|north|interact`. Test arena only: `--pickups`, `--behaviors`,
 `--charge <tier>` (with `--sim charge`), `--menutab N`, `--sense [--scouter]`. Run
@@ -70,7 +71,9 @@ More sims: `--sim charge|north|interact`. Test arena only: `--pickups`, `--behav
   scripts, `Talks` or a level NPC's `flag` key. New dish: add it to `Dishes.DB` and give
   a cook NPC `"dish": "<id>"`.
 - New outfit: add a preset to `Outfits.PRESETS` (styles listed at the top of `outfits.gd`),
-  check it in the gallery. New location: see `docs/LEVEL_FORMAT.md`.
+  check it in the gallery turnaround. Hanging cloth (panels, tails) is a `ClothPanel` added with
+  `OutfitBuilder.cloth_panel()`; Oto's queen's attire (`docs/OTO_OUTFIT.md`) is the example.
+  New location: see `docs/LEVEL_FORMAT.md`.
 - Place things in the canonical locations through `tools/make_locations.py`, then
   regenerate. It reproduces the level files exactly.
 - The meshes are unrigged T/A-poses; animation is procedural for now. Clothing follows the bind

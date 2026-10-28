@@ -15,6 +15,7 @@ func _ready() -> void:
 	await _test_quests()
 	await _test_boss_kit()
 	await _test_content()
+	await _test_cloth()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -248,6 +249,53 @@ func _test_content() -> void:
 	Overlay.auto = false
 	far.queue_free()
 	p.queue_free()
+	await get_tree().process_frame
+
+## Oto's scapular: trails when she runs, settles when she stops, stays in front of her legs
+## and above the ground, and survives a fling without blowing up.
+func _test_cloth() -> void:
+	GameState.new_run()
+	var ch := Outfits.make_character("oto")
+	add_child(ch)
+	var front: ClothPanel = ch.find_child("ScapularFront", true, false)
+	_check(front != null and ch.find_children("*", "ClothPanel", true, false).size() >= 6, "Oto's outfit has its cloth panels")
+	for i in 20:
+		await get_tree().physics_frame
+	var outfit := front.get_parent() as Node3D
+	var bottom := func() -> Vector3:
+		var p := front.particles()
+		return outfit.global_transform.affine_inverse() * p[p.size() - front.cols / 2 - 1]
+	var rest: Vector3 = bottom.call()
+	for i in 30:  # run along +X at 8 m/s
+		ch.position.x += 8.0 / 60.0
+		await get_tree().physics_frame
+	var running: Vector3 = bottom.call()
+	_check(running.x < rest.x - 0.05, "the scapular trails behind when she runs (%.2f m)" % (rest.x - running.x))
+	for i in 150:
+		await get_tree().physics_frame
+	var settled: Vector3 = bottom.call()
+	_check(absf(settled.x - rest.x) < 0.04, "it settles again when she stops")
+	var behind := false
+	var finite := true
+	for p in front.particles():
+		var lp := outfit.global_transform.affine_inverse() * p
+		behind = behind or lp.z < 0.0
+		finite = finite and p.is_finite()
+	_check(not behind, "the front panel never passes behind her legs")
+	_check(finite and front.lowest_y() >= front.floor_y - 0.001, "the cloth stays finite and above the ground")
+	var tw := create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(ch, "position", ch.position + Vector3(-14, 22, 8), 1.5)
+	tw.tween_property(ch, "rotation:x", TAU * 2.0, 1.5)
+	await tw.finished
+	finite = true
+	var pin := outfit.global_transform * front.pin_center
+	var far := 0.0
+	for p in front.particles():
+		finite = finite and p.is_finite()
+		far = maxf(far, p.distance_to(pin))
+	_check(finite and far < front.length * 1.6, "a fling through the air does not tear the cloth apart")
+	ch.queue_free()
 	await get_tree().process_frame
 
 func _enemy(kind: String, pos: Vector3, arena: Rect2, target: Player) -> Enemy:

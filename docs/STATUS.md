@@ -27,7 +27,10 @@ Test Arena, Prop and Outfit Gallery.
 
 - **Props:** 69 procedural props (nature, village, city, landmarks, interiors) with generated
   textures (windows, bricks, planks, tiles, roof tiles, rock strata). See the gallery.
-- **Characters:** 22 outfit presets with hair, clothes and accessories fitted to measured body
+- **Oto's queen's attire** (`docs/OTO_OUTFIT.md`): wrap bodice, a scapular with real cloth
+  physics, a linen sash, a gold royal cord, golden gauntlets, arm and shin wraps, and bare feet.
+  The old bodysuit is kept as `oto_stage`.
+- **Characters:** 24 outfit presets with hair, clothes and accessories fitted to measured body
   landmarks: Oto, Chi-Chi, Gohan, Bulma, Krillin, Yamcha, Tien, Piccolo, Kami, Vegeta, Raditz,
   Nappa, Hercule, Master Roshi, the life-energy Saiyan, Saiyan soldier, scientist,
   shopkeeper and four civilians. Oto's hair turns black in Shadow forms and grows past her

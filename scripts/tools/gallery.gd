@@ -3,6 +3,7 @@ extends Node3D
 ##   --gallery outfits [--page N]   dressed characters, 6 per page
 ##   --gallery props   [--page N]   prop library, 8 per page
 ##   --gallery beasts                 every Beast kind, walking in place
+##   --gallery turnaround [--preset oto]  one outfit up close: front, side and back
 ## Use with tools/run.py shot to get screenshots.
 
 const PER_PAGE := {"outfits": 6, "props": 8}
@@ -35,6 +36,9 @@ func _ready() -> void:
 		_models(cam)
 	elif mode == "beasts":
 		_beasts(cam)
+	elif mode == "turnaround":
+		var pi := args.find("--preset")
+		_turnaround(args[pi + 1] if pi >= 0 and pi + 1 < args.size() else "oto", cam)
 	else:
 		_outfits(page, cam)
 
@@ -81,6 +85,17 @@ func _models(cam: Camera3D) -> void:
 	cam.position = Vector3(0, 1.75, 2.6)
 	cam.look_at(Vector3(0, 1.5, 0))
 	cam.fov = 45
+
+func _turnaround(preset: String, cam: Camera3D) -> void:
+	for k in 3:
+		var ch := Outfits.make_character(preset)
+		ch.position = Vector3((k - 1) * 1.15, 0, 0)
+		ch.rotation.y = [0.0, PI / 2.0, PI][k]
+		add_child(ch)
+		_label(["front", "side", "back"][k], ch.position + Vector3(0, 1.95, 0))
+	cam.position = Vector3(0, 1.0, 4.2)
+	cam.look_at(Vector3(0, 0.9, 0))
+	cam.fov = 42
 
 func _beasts(cam: Camera3D) -> void:
 	for k in Beast.KINDS.size():

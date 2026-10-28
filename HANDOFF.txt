@@ -1,6 +1,6 @@
 LEGACY OF OTO - HANDOFF
-Last updated: 2026-10-28, end of session 2. The whole gameplay backlog was built, the wild areas
-got content, and the game was put on GitHub and deployed to the web. Read SESSION 2 first.
+Last updated: 2026-10-28, session 3: Oto's queen's attire with cloth physics. Read SESSION 3,
+then SESSION 2 (the big build and the deploy).
 
 HOW TO USE THIS FILE
 Paste this whole file (or attach it) at the start of your next prompt. It records what was asked
@@ -20,7 +20,38 @@ LINKS
                   C:\Users\Owner\Downloads\Oto Design Document.md
 
 ----------------------------------------------------------------
-SESSION 2 (2026-10-28) - read this first
+SESSION 3 (2026-10-28) - read this first
+----------------------------------------------------------------
+
+WHAT THE OWNER ASKED
+  "can you design an outfit for Oto, clothing realistic physics and that feel like Ancient with a
+  scapular (images included for context). Oto also has golden gauntlets that sit on her behind her
+  wrist and stop halfway to her elbows as that was part of her attire as Queen of her race."
+  The references were monk and warrior concept art (a hanging front panel, a wrapped sash,
+  bound forearms and shins) and were used for mood only.
+
+WHAT WAS BUILT (full design: docs/OTO_OUTFIT.md)
+  - The "oto" preset is now her queen's attire. The previous green bodysuit is kept as
+    "oto_stage".
+  - Pieces:
+      wrap bodice (deep green, crossed over, low standing collar, bare arms)
+      scapular over both shoulders to mid-shin (gold edges and hem, black emblem on the front)
+      wide linen sash knotted at her left hip with two tails
+      gold royal cord with a disc clasp, a black stone and a tassel
+      golden gauntlets, just behind the wrist to halfway to the elbow (ridges, spine, black stone)
+      hand and forearm wraps with loose ends
+      loose trousers in cross-bound shin wraps, bare feet (per the design doc)
+  - Cloth physics: scripts/characters/cloth_panel.gd (verlet, pinned to the body, gravity, wind,
+    leg and hip colliders, floor). It runs the scapular, sash tails, tassel and wrap ends.
+    6 new headless checks (_test_cloth).
+  - The gallery has a new view: python tools/run.py shot gallery
+    --args="--gallery turnaround --preset oto" shows front, side and back.
+  - Palette follows the design doc: green with gold trim, a panel that swings.
+  - Open for the owner: whether the emblem should be a specific sigil (it is a plain black
+    block for now), the exact greens, and whether to add gold armlets like the references.
+
+----------------------------------------------------------------
+SESSION 2 (2026-10-28)
 ----------------------------------------------------------------
 
 WHAT THE OWNER ASKED, IN ORDER
