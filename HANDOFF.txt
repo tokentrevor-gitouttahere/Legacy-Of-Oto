@@ -166,8 +166,10 @@ NEXT STEPS / GAPS
     (mixamo_upload/ zips).
   - Story beyond Paozu: Saiyan Saga scripting is next. Later scenes should teach Focused (ship),
     Deep (white room) and Perfect (Whis), and give the Scouter.
-  - CREDITS.md TODOs, which matter now that the repo is public: the source URL for the Goku model,
-    and the licences of the two base meshes.
+  - CREDITS.md is complete (2026-10-28). Goku is CC BY 4.0 by DrewsDigitalDesigns, not Retrosleep.
+    The male base (Retrosleep) and female base (madkons, Oto's mesh) list no licence on Sketchfab;
+    the owner says they have the authors' permission. If the owner shares where that permission
+    came from, add it to CREDITS.md.
   - No audio yet. No gamepad button for scan. Teleport pads and fusion are not built.
   - Memory gates, switches, bridges and key doors are only in the dev room so far.
 
