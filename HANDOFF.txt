@@ -1,6 +1,7 @@
 LEGACY OF OTO - HANDOFF
-Last updated: 2026-10-28, session 4: Oto's FACE built; ears, 40 noses and fitted clothing done. Read
-SESSION 4 first, then SESSION 3 (queen's attire), then SESSION 2 (the big build and the deploy).
+Last updated: 2026-10-28, end of session 4 (Oto's face, fitted outfit, Mixamo rig: done, committed,
+pushed and deployed). Read SESSION 5 first (the brief for the next task), then SESSION 4, then
+SESSION 3 (queen's attire), then SESSION 2 (the big build, locked decisions, how to ship).
 
 HOW TO USE THIS FILE
 Paste this whole file (or attach it) at the start of your next prompt. It records what was asked
@@ -20,7 +21,131 @@ LINKS
                   C:\Users\Owner\Downloads\Oto Design Document.md
 
 ----------------------------------------------------------------
-SESSION 4 (2026-10-28) - Oto's face: BUILT, waiting for sign-off. Read this first
+SESSION 5 (next) - WAITING FOR THE OWNER'S TASK. Read this first
+----------------------------------------------------------------
+
+STATE AT THE START
+  main = 79d6eda "Oto's face, fitted outfit and Mixamo rig" (pushed). gh-pages = e2c0f84, the web
+  build of 79d6eda (deployed by the owner with python tools/publish_web.py, live and checked).
+  Working tree clean. python tools/run.py test: 86 PASS, 0 FAIL.
+
+THE LIKELY TASK (the owner's words, end of session 4)
+  "likely GUI options, dialogue boxes, talking animations, a cutscene editor or director and
+  several cutscenes to test proof of concepts." Wait for the owner to say which; then use the
+  matching brief below. They like big autonomous passes: build, check by screenshots/videos and
+  tests, and list open decisions at the end rather than stopping (see SESSION 2, owner prefs).
+
+WHAT EXISTS TODAY (so nothing is rebuilt by accident)
+  - Dialogue: Overlay.say(["Name|line", "|narration"]) in scripts/overlay.gd. One Panel at the
+    bottom (5%-95% wide, 72%-96% tall), a gold speaker Label and a text Label typed at 45 chars/s;
+    attack or interact shows the whole line, then advances; --auto-dialogue skips. It emits
+    talking(speaker, on) while a line types: Oto's FaceRig moves its mouth on it. Also: toast,
+    card (title cards), fade_to/fade_from, flash, hint, prompt. No portraits, choices, styles,
+    pauses, emphasis, history or per-speaker colours.
+  - Menus/GUI: PauseMenu autoload (scripts/pause_menu.gd), tabs STATS / EQUIPMENT / JOURNAL /
+    MENU, drawn by hand in a Control's _draw. HUD (scripts/hud.gd). Title screen (scripts/title.gd).
+    There is NO options/settings screen: no text speed, volume (no audio exists yet), fullscreen,
+    camera, UI scale or key remapping. Controls (scripts/controls.gd) registers the input map in
+    code and parses the developer flags.
+  - Story scenes are imperative GDScript: scripts/paozu.gd and scripts/prologue_fight.gd. They set
+    player.cinematic = true, move actors with tweens, call Overlay.say/card/fade, and use
+    FollowCam (scripts/follow_cam.gd: target, offset, focus_override/focus_pos, shake). There is no
+    cutscene data format, director, timeline or editor.
+  - Faces: only Oto has one (FaceRig: express(), blink, talking mouth, Shadow variants). Face.card()
+    renders a flat face image (a ready-made portrait source). NPC/canon faces are not made
+    (Face.HEADS has only "oto").
+  - Rig (docs/RIGGING.md): only Oto is rigged. Animations: idle (a held walk frame), walk, hot_walk,
+    l_punch, r_punch, cross_punch, quad_punch. Add one by putting the FBX in
+    assets/models/oto/rig/ and a line in Rig.RIGS["oto"]["anims"]; strike timing via
+    scripts/tools/probe_anims.gd. male_base and goku are NOT rigged; their cleaned Mixamo uploads
+    are mixamo_upload/male_base_clean.zip and goku.zip.
+  - Video: Godot Movie Maker (no ffmpeg here). tools/orbit_video.py --mode <gallery mode> --no-gif
+    writes tools/out/<mode>.avi; a gallery mode that scripts a camera and quits is all a new reel
+    needs (see _reel_step in scripts/tools/gallery.gd). The owner wants AVI, not GIF.
+
+BRIEF A - GUI OPTIONS
+  - Add OPTIONS to the title screen and as a pause-menu tab. Store settings in user://settings.cfg
+    (ConfigFile), separate from the save game; load them in an autoload at start.
+  - First set: text speed (slow/normal/fast/instant, replacing the 45 chars/s constant), auto-advance,
+    dialogue box opacity, screen shake on/off, camera distance, fullscreen/window, UI scale,
+    master/music/effects volume (wired to audio buses now, ready for when audio arrives), key
+    rebinding (Controls already owns the map). Each change applies live.
+  - Check the web build too: fullscreen goes through DisplayServer and needs a user gesture in a
+    browser; the settings file lands in browser storage.
+  - Tests: settings round-trip through the file; text speed changes typing time; rebinding a key
+    survives a restart.
+
+BRIEF B - DIALOGUE BOXES
+  - Keep say(["Name|line"]) working (all existing scenes use it). Let a line also be a Dictionary:
+    {speaker, text, portrait (look id), expression, style: speech|narration|thought|shout,
+    side: left|right, choices: [...], pause/emphasis tags inline}.
+  - Portraits from Face.card() for faced characters, a coloured name plate per speaker, the box
+    styles above, a choice list that returns the pick (await say(...) -> int), inline pauses
+    ([p=0.4]) and emphasis, a back-log (scroll the last N lines), and the talking signal kept
+    (it already drives the mouth).
+  - The boxes must suit the tone: Shadow-form or memory scenes use a hushed, darker style, never
+    gold or fire (story rules, SESSION 2).
+
+BRIEF C - TALKING ANIMATIONS
+  - Faces: the mouth already moves only while that speaker's line types. Add expression changes
+    from the line (Dictionary "expression", or a tag), blinks timed to line breaks, and eyes that
+    look at the person being spoken to (FaceRig gaze states left/right exist).
+  - Bodies: procedural first (no files needed): head and neck turn toward the listener with a
+    Skeleton3D bone override on mixamorig_Head/Neck, plus small nods on stressed words. Then
+    Mixamo gestures. Ask the owner to download (FBX Binary, 30 fps, no keyframe reduction;
+    "Without Skin" is fine): Idle (a female idle), Talking (2-3 variants), Thinking, Nodding
+    (yes), Head shake (no), Waving, Surprised, Angry gesture, Arms crossed, plus Run, Hit reaction,
+    Knocked down, Getting up and a power-up/transform pose for gameplay and cutscenes. The same
+    upload process applies (mixamo_upload/oto_clean.zip, see docs/RIGGING.md).
+  - NPCs: talking NPCs need faces and rigs first: rig male_base (male_base_clean.zip) and Goku,
+    add Face.HEADS entries for them (eye line, ears), then looks per character.
+
+BRIEF D - CUTSCENE DIRECTOR / EDITOR
+  - Proposed: a data format plus a Director that runs it, then tools to make it easy to author.
+      cutscenes/<id>.json (or a GDScript resource): a list of steps, each run in order, with
+      "parallel" blocks. Step kinds:
+        actor:  spawn <preset> at <mark>, walk_to <mark> (with walk/hot_walk/run), face <target>,
+                anim <name> (blend, speed, loop), express <expression>, look_at <target>, hide/show
+        camera: shot {pos, target, fov} cut or blend over N s, follow <actor>, orbit, dolly,
+                shake, letterbox on/off
+        dialogue: say (the new Dictionary lines), choice -> branch to a label
+        screen: fade, flash, card, wait <s>, music/sfx (stubs until audio exists)
+        game:   set flag, start/advance quest, give item, play a battle, then resume
+      Marks are named points in the location (levels/*.json can carry them, or the cutscene file).
+  - Director (scripts/director.gd): awaits each step; skippable (hold a button: jump to the end
+    state, set every flag the scene sets); sets player.cinematic; works in any location.
+  - "Editor": two options for the owner to choose. (1) Text-first: edit JSON, a dev flag
+    --cutscene <id> plays it at once, --from <step> starts mid-way, and a reel records it to AVI.
+    (2) An in-game dev editor scene: a step list, a scrubber, "place camera here" and "place mark
+    here" from a free camera, saving back to the JSON. Recommend building (1) first, then (2) on
+    top of the same format.
+  - Validation: python tools/run.py cutscenes (like levels): every step known, every mark and
+    actor exists; a headless test runs every cutscene to the end with --auto-dialogue.
+  - Port scripts/paozu.gd's arrival scene to the format first, to prove it can do what the
+    hand-written scenes do (same shots, same lines, same flags).
+
+BRIEF E - PROOF-OF-CONCEPT CUTSCENES (after D)
+  - Candidates, each testing different features:
+      1. The Paozu arrival, ported (parity with the hand-written scene).
+      2. A two-person conversation: shot/reverse-shot, portraits, expressions, gestures, a choice.
+      3. An action beat: Oto's combo and flurry on an opponent, camera shake, a short slow-motion,
+         a ki flash.
+      4. A Shadow-form beat: void, hush, stillness (never gold, fire or lightning), dark box style.
+      5. A food-comedy beat (comedy is food, never pain).
+  - Keep canon outcomes and the memory ladder (story bible: C:\Users\Owner\Downloads\Oto Story.md
+    and Oto Design Document.md). Every new line Claude writes goes in "WRITTEN BY CLAUDE, WAITING
+    FOR THE OWNER'S REVIEW" (SESSION 2). Record each scene to AVI and send it.
+
+OPEN ITEMS CARRIED FROM SESSION 4 (the owner has not answered these)
+  - Verdict on the V neckline, the draped scapular, the gauntlets, the wraps and the back hair.
+  - Face sheet vs the references: eye size/spacing, mouth size, the fringe's scallops.
+  - Mixamo files in a public repo: Adobe allows Mixamo animations in games, not redistribution
+    of the raw files on their own. The FBX files in assets/models/oto/rig/ are public now. Owner
+    to decide: keep, or make the repo private.
+
+----------------------------------------------------------------
+SESSION 4 (2026-10-28) - Oto's face, fitted outfit and Mixamo rig: DONE (committed 79d6eda, pushed,
+deployed)
 ----------------------------------------------------------------
 
 WHAT THE OWNER ASKED
@@ -72,7 +197,7 @@ THE OWNER'S NOTES ON THE FIRST FACE, AND WHAT WAS DONE (session 4, second round)
     recreate all of the noses and run them by me, I'll tell you which to toss out". Done: all 40
     noses on the sheet as ink strokes (scripts/characters/nose_inks.gd, numbered in sheet order),
     shown on --gallery faces --page 4 and 5. Oto's 3D nose is now a "wedge" (30 mm, 8 mm out,
-    ink l_foot), about twice the old ball. WAITING: the owner's list of noses to toss.
+    ink l_foot), about twice the old ball. (Resolved: all 40 kept; the nose became "long" size C.)
   - "Her chest is poking through her clothing ... the clothing looks very rigid, it should sit
     like clothing does in real life. Don't adjust the model, adjust the clothing." Done:
     scripts/characters/garment.gd casts the bodice, sash and trousers onto her real body (preset
@@ -93,8 +218,8 @@ THIRD ROUND (owner's notes, BINDING)
   - "A longer, wider nose closer to 28, maybe looking like 33 head on, at least several times the
     current size; try a variety of sizes and I'll confirm." Done: nose "long" (a wedge with a
     triangular underside, ink tick_tri); sizes A-D = 40/50/60/70 mm long on --gallery nosesizes
-    --page 0 (front), 1 (profile), 2 (three-quarter). Oto uses B until the owner picks:
-    set LOOKS["oto"]["nose_tune"] to the chosen row of NOSE_SIZES in gallery.gd.
+    --page 0 (front), 1 (profile), 2 (three-quarter). The owner picked C (set in
+    LOOKS["oto"]["nose_tune"]).
   Tests: 81 PASS, 0 FAIL.
 
 FOURTH ROUND (owner's decisions, BINDING)
@@ -138,87 +263,38 @@ ANIMATION (owner's request, BINDING)
       combo hit 1/2/3 = l_punch / r_punch / cross_punch (sped up 1.6x, fist lands 0.12 s after the press)
       the held melee is now a four-punch flurry (quad_punch), its last hit launching
       walk near enemies or after a fight; hot walk when calm for 3 s with no enemy within 12 m
-        (the owner did not say when to use which: confirm)
+        (the owner kept this rule)
       no idle animation yet: she holds the walk's passing frame
   - Everything on her is skinned to the skeleton by weight transfer (Rig.attach); hanging cloth
     follows bones. Dressing takes ~1.6 s.
   - Video: python tools/orbit_video.py --mode anims --no-gif -> tools/out/anims.avi (no GIF, as asked).
   Tests: all pass (new: rig, skinned pieces, cloth pins, the four-blow flurry).
 
-WAITING FOR THE OWNER (sign-off before NPC faces)
-  - Their verdict on the V neckline, the draped scapular, the gauntlets, wraps and back hair.
-  - Judge the flat sheet against the references: tools/out/faces_0..3.png (regenerate with
-    python tools/run.py shot gallery --args="--gallery faces --page N"), and the heads:
-    --gallery expressions, turnaround --preset oto --head (--turn 0.7).
-  - Open questions: eye size and spacing on the head; whether the mouth should be larger (it is
-    small on the big head); the fringe's scallop shape; the new wedge nose.
-  - Nothing is deployed. Committed only if the owner asked in that session.
+HOW SESSION 4 ENDED
+  - Committed to main as 79d6eda "Oto's face, fitted outfit and Mixamo rig" (49 files; the
+    earlier WIP commit fe0021e went up with it), pushed to GitHub, and deployed to GitHub Pages
+    by the owner (gh-pages e2c0f84; the live build contains the rig, animations, outfit and
+    noses, checked in the exported index.pck).
+  - Owner decisions this session, all BINDING: listed in the rounds above. In short: hair never
+    touches the ears; nose size C, all 40 sheet noses kept; clothing is fixed by changing the
+    clothing, never the model; a deep V neckline; check every part from level, high and low; the
+    combo is L punch / R punch / cross; the quad punch is the flurry (the held melee); the
+    hot-walk rule (calm 3 s, no enemy within 12 m) is kept.
+  - Tests: 86 PASS, 0 FAIL.
+  - CREDITS.md: Mixamo credited (Animations section); the mesh repair noted under the female base.
 
-KNOWN LIMITS
-  - At the normal top-down game camera the face is only a few pixels. It matters for close-ups
-    and future dialogue portraits (Face.card can make those).
-  - Only the female base is set up (Face.HEADS has "oto"). male_base/goku plates are untested.
-  - The hair's back length is still the old boxes; a shell-matched back panel would look better.
-
-THE ORIGINAL PLAN (kept for reference; steps 1-8 are done, 9 docs done)
-  1. scripts/characters/face.gd  (class_name Face)
-     - LOOKS: character recipes {eyes: style+tune, brows, mouth, nose, chin, palette overrides,
-       blink interval}; "oto" first. EXPRESSIONS: named combos of eye/brow/mouth states
-       (neutral, cold, smile, surprise, sad, eat, sleep).
-     - Texture builders with a static cache keyed look|layer|state|variant|skin: eyes_texture
-       (draw LEFT eye, flip_x for the right, blend_rect into a layer image; if gaze != 0 draw the
-       right eye separately with -look), brows_texture, mouth_texture, nose_texture. Layer image =
-       Image(px rect of the layer region) filled Color(skin, 0); canvases blend in at
-       canvas.rect.position - layer.rect.position (mirrored x = TEX_W - (x + w)).
-       Add a static FaceCanvas.px_rect(region) helper (same rounding as _init).
-     - Separate LAYERS (eyes, brows, mouth, nose marks), each its own transparent plate mesh and
-       texture, so blinking or a mouth change swaps ONE small texture. Regions (mm): eyes
-       (-120,-52,240,122); brows (-120,6,240,96); mouth (-52,-116,104,66); nose (-22,-66,44,40)
-       (Rect2 x,y,w,h). They cover the left-side canvases FaceParts draws and their mirrors.
-     - Plate mesh = ray-cast heightfield wrapped on the real head: TriangleMesh from
-       head_mi.mesh.generate_triangle_mesh() (cache per model); rays from the head axis outward at
-       angle theta and height y; u linear in theta (x_mm = theta * R_REF, R_REF = 140), v linear in
-       y; vertex = hit + normal * ~1.2 mm; normals from grid finite differences (dTheta x dY);
-       triangles [TL,TR,BR, TL,BR,BL] (Godot front faces are clockwise); head axis z = midpoint of
-       front and back hits at the eye line. Wrapper space = rig.transform * head_mi.transform
-       (rig = visual.get_child(0); head part is the child named "head" if present, else child 0).
-     - Material: StandardMaterial3D, albedo_texture, TRANSPARENCY_ALPHA, roughness 0.8, mipmapped
-       anisotropic filter, MeshInstance cast_shadow OFF; small emission on the eyes layer.
-     - 3D nose/chin = ellipsoid MeshInstances using the HEAD'S OWN skin material object
-       (head_mi.material_override), so skin tint, Shadow-form darkening and the Void flicker follow.
-  2. scripts/characters/face_rig.gd  (class_name FaceRig extends Node3D), added under the Outfit
-     root as "Face": holds layers, current states, look and skin. API: express(name), set_part(slot,
-     state), start_talking()/stop_talking() (mouth cycles ah/oh/ee/wide/closed about every 0.09-0.14 s,
-     never the same viseme twice; CLOSED otherwise), blink() (open>half>closed>half>open, about
-     0.05/0.08/0.05 s, skipped when eyes are already closed/happy), set_form(form, tint) (void
-     variant, albedo tint like the skin, keep TRANSPARENCY_ALPHA always), _process for timers.
-  3. Outfits: preset key "face": "oto" on oto and oto_stage; Outfits.apply attaches after b.build,
-     skin colour = head material's base_color meta; set visual meta "face" = the rig.
-  4. Player._apply_form_visual: call the rig's set_form(form, FORM_TINT[form]); the form-2 flicker
-     loop (player.gd ~line 431) must also fade the face layer materials. Do NOT put the face
-     materials in the "mats" meta: that loop turns transparency off in forms != 2.
-  5. Overlay (scripts/overlay.gd, say() types at 45 chars/s): add `signal talking(speaker: String,
-     on: bool)`; emit true when a line starts typing, false when it is fully shown (or skipped) and
-     at the end of say(). A FaceRig with a speaker name ("Oto") connects and moves the mouth only
-     while talking. NPC speaker names come from the "Name|line" format.
-  6. Gallery: add `--gallery faces` (flat parts sheet over a skin-coloured background: every eye
-     style, brow style, mouth shape, nose, chin, skins; plus 3D heads front / three-quarter / side in
-     several expressions). Show the owner the flat sheet; they will judge it against their references.
-  7. Hair: rebuild "long" to sit on the real head with a hairline and fringe (see findings).
-  8. Tests (scripts/tools/dev_tests.gd): every eye/brow/mouth style and state draws with no error
-     and has painted alpha; plate vertices all lie 0.5-3 mm outside the head surface; blink swaps
-     and restores the eyes texture; talking opens the mouth and stop closes it; Shadow form turns
-     the void variant on and base form turns it off; face survives Outfits.apply twice.
-  9. Docs: docs/OTO_FACE.md (design + kit + how to make a new face), CLAUDE.md layout row for
-     characters/face*.gd and the new gallery flags, STATUS.md "Characters", this file, README if it
-     lists features. Add a CREDITS note only if reference art is shipped (it is not; the references are
-     the owner's design guide and nothing was copied).
-
-NEXT (after the owner signs off on Oto)
-  a) Apply the owner's notes to LOOKS["oto"] (tune values, not code) and re-shoot the sheets.
-  b) NPC and canon faces: add Face.HEADS entries for male_base and goku, check the plates there,
-     then a look per character (Chi-Chi: tall_oval; Vegeta: sharp + slash; and so on).
-  c) Dialogue portraits from Face.card, so faces read at the top-down camera.
+KNOWN LIMITS (after session 4)
+  - At the top-down game camera the face is a few pixels: it matters for close-ups, cutscenes
+    and portraits (Face.card).
+  - Only Oto has a face and a rig. Face.HEADS has only "oto"; male_base and goku are unrigged.
+  - No idle animation (she holds the walk's passing frame), no run (sprinting plays the walk
+    faster), no hit reactions (still the old procedural lean).
+  - Dressing Oto takes about 1.6 s (weight transfer for ~60 pieces). Cache per preset if more
+    rigged characters share a scene.
+  - The static T-pose mesh stays in each rigged wrapper, hidden: outfit, face and fit checks are
+    built and measured on it (Rig.fit_arrays). Do not delete it.
+  - Design and how-tos: docs/OTO_FACE.md (face kit, noses, ears), docs/OTO_OUTFIT.md (fitted
+    clothing), docs/RIGGING.md (rig, animations, timing).
 
 ----------------------------------------------------------------
 SESSION 3 (2026-10-28)
@@ -400,8 +476,8 @@ HOW TO RUN, TEST AND SHIP
     Kame House itself, and fishing at a real jetty. Their parts pass the headless tests.
 
 NEXT STEPS / GAPS
-  - Rigging and animation: models are static T/A-poses until the owner's Mixamo rigs arrive
-    (mixamo_upload/ zips).
+  - Rigging and animation: DONE for Oto in session 4 (docs/RIGGING.md); male_base and goku still
+    to rig (mixamo_upload/male_base_clean.zip, goku.zip).
   - Story beyond Paozu: Saiyan Saga scripting is next. Later scenes should teach Focused (ship),
     Deep (white room) and Perfect (Whis), and give the Scouter.
   - CREDITS.md is complete (2026-10-28). Goku is CC BY 4.0 by DrewsDigitalDesigns, not Retrosleep.
