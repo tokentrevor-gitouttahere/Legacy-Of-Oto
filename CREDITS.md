@@ -19,4 +19,12 @@
   Source: https://sketchfab.com/3d-models/base-female-body-stylized-fc0f3d43cf654cd698c452e4d5d0ba86
   Licence: none listed on Sketchfab (downloads are off, checked 2026-10-28). Used with the
   author's permission, which the project owner reports having (2026-10-28).
-  Changes made: scaled and re-centred at load time; skin colour applied in code.
+  Changes made: scaled and re-centred at load time; skin colour applied in code. Zero-area
+  triangles and duplicate points removed for rigging (`tools/clean_mesh.py`,
+  `mixamo_upload/oto_clean.zip`); rigged with Mixamo (`assets/models/oto/rig/`).
+
+## Animations
+
+- **Mixamo** by Adobe (https://www.mixamo.com): the auto-rig and the animations in
+  `assets/models/oto/rig/` (Walking, Hot Walking, Left Punching, Right Punching, Cross Punch,
+  Quad Punch). Used under Adobe's Mixamo terms, which allow them in games royalty-free.

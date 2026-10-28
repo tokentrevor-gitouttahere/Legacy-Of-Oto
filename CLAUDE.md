@@ -18,7 +18,8 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 | `scripts/pickup.gd`, `damage_number.gd`, `hud.gd` | Capsules, food and ki motes; floating numbers; HUD and the scan panel |
 | `scripts/quests.gd`, `dishes.gd`, `talks.gd`, `items.gd` | Quest registry, the Menu, NPC conversations with effects, gear and key items |
 | `scripts/models.gd` | `ModelLoader`: base meshes (oto, male_base, goku) |
-| `scripts/characters/` | `Outfits` presets and `OutfitBuilder` (clothes, hair, accessories); `ClothPanel` cloth physics; `Beast` procedural animals |
+| `scripts/characters/rig.gd` | `Rig`: Mixamo skeleton and animations, skinning the outfit to it (`docs/RIGGING.md`); FBX files in `assets/models/oto/rig/` |
+| `scripts/characters/` | `Outfits` presets and `OutfitBuilder` (clothes, hair, accessories); `ClothPanel` cloth physics; `Beast` procedural animals; faces: `FaceCanvas` painter, `FaceParts` kit, `Face` looks and head plates, `FaceRig` live face, `NoseInks` the 40 DBZ noses (`docs/OTO_FACE.md`); `Garment` clothing cast onto the real body |
 | `scripts/world/` | `Props` library, `Mats` textures, `Skies`, `Level` tile maps, `Fixture` (gates, doors, lanterns...), `location.gd`, `world_map.gd` |
 | `scripts/tools/dev_tests.gd` | Headless rule checks, run by `python tools/run.py test` |
 | `scenes/` | title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests |
@@ -40,6 +41,9 @@ python tools/gen_level.py city --id foo ...        # generate a new tile map (ci
 python tools/make_locations.py [id]                # regenerate the canonical locations
 python tools/model_sheet.py male_base              # front/side silhouette with grid, for landmarks
 python tools/publish_web.py                        # export the Web preset and deploy it to GitHub Pages
+python tools/orbit_video.py [--shadow]             # 360 orbit + over/under -> tools/out/orbit.avi/.gif
+python tools/orbit_video.py --mode anims --no-gif  # the animation reel -> tools/out/anims.avi
+python tools/angle_check.py [--shadow] [--only a,b] # every outfit part level/high/low -> tools/out/angles_*.png
 ```
 
 Repo: github.com/tokentrevor-gitouttahere/Legacy-Of-Oto (public). Live build:
@@ -50,7 +54,11 @@ Always look at the screenshot after a visual change (Read the PNG). `run.py` exi
 SCRIPT ERROR. Developer flags (after `--`, or via `--args=`): `--scene`, `--level`, `--shot`,
 `--frames`, `--sim fight|menu|walk|map`, `--timescale`, `--auto-dialogue`, `--zoom`, `--far`,
 `--skipfight` (prologue), `--spar` (paozu), `--gallery outfits|props|models|beasts --page N`,
-`--gallery turnaround --preset <id>` (one outfit up close: front, side, back).
+`--gallery turnaround --preset <id>` (one outfit up close: front, side, back; `--head` frames the
+face, `--torso` the body, `--turn R` turns it, `--hide a,b` hides outfit pieces by name),
+`--gallery faces --page 0-5` (the flat face kit; pages 4-5 are the noses), `--gallery nosesizes
+--page 0-2`, turnaround `--ear` (the left ear face-on, with `--turn -1.95`), `--hand` (the left gauntlet), `--gallery expressions
+--page N [--shadow]`.
 Run state: `--setlevel N`, `--setform N`, `--givekey id`, and `--spawn name` in locations.
 More sims: `--sim charge|north|interact`. Test arena only: `--pickups`, `--behaviors`,
 `--charge <tier>` (with `--sim charge`), `--menutab N`, `--sense [--scouter]`. Run
@@ -72,10 +80,17 @@ More sims: `--sim charge|north|interact`. Test arena only: `--pickups`, `--behav
   a cook NPC `"dish": "<id>"`.
 - New outfit: add a preset to `Outfits.PRESETS` (styles listed at the top of `outfits.gd`),
   check it in the gallery turnaround. Hanging cloth (panels, tails) is a `ClothPanel` added with
-  `OutfitBuilder.cloth_panel()`; Oto's queen's attire (`docs/OTO_OUTFIT.md`) is the example.
-  New location: see `docs/LEVEL_FORMAT.md`.
+  `OutfitBuilder.cloth_panel()`. After any outfit change run `tools/angle_check.py` (the owner
+checks every part from level, high and low) and look at the sheets. Oto's queen's attire (`docs/OTO_OUTFIT.md`) is the example.
+  Clothing that must not let the body through goes in `Garment.tube` (preset `"fitted": true`
+  gives the builder the body mesh); never reshape the base mesh to fit clothes.
+  New face: add a look to `Face.LOOKS` and `"face": "<look>"` (plus `"speaker"`) to the preset;
+  check it in `--gallery faces --page 3` and the turnaround `--head`. New location: see
+  `docs/LEVEL_FORMAT.md`.
 - Place things in the canonical locations through `tools/make_locations.py`, then
   regenerate. It reproduces the level files exactly.
-- The meshes are unrigged T/A-poses; animation is procedural for now. Clothing follows the bind
-  pose; when Mixamo rigs arrive, parent outfit pieces to bone attachments (see `outfits.gd`).
+- Oto is rigged (`docs/RIGGING.md`): build clothing on the static T-pose mesh as before;
+  `Rig.attach` skins every outfit piece to the skeleton afterwards (fit checks read
+  `Rig.fit_arrays`). male_base and goku are still unrigged with procedural motion.
+  Re-time strikes with `scripts/tools/probe_anims.gd` when an animation changes.
 - Credit asset creators in `CREDITS.md` (CC BY 4.0 requires it).

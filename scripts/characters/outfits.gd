@@ -23,7 +23,11 @@ const ACCESSORIES := ["sash", "belt", "wristbands", "gloves", "scouter", "headba
 const PRESETS := {
 	"oto": {  # her queen's attire: docs/OTO_OUTFIT.md
 		"model": "oto",
-		"hair": {"style": "long", "color": [0.8, 0.8, 0.83], "form3": true},
+		"fitted": true,
+		"face": "oto",
+		"speaker": "Oto",
+		"hair": {"style": "long", "color": [0.8, 0.8, 0.83], "form3": true, "shell": true,
+			"strand": [[-62, 60], [-84, 30], [-96, 0], [-100, -40], [-96, -76]]},
 		"top": {"style": "wrap_bodice", "color": [0.09, 0.27, 0.16], "under": [0.05, 0.17, 0.1]},
 		"bottom": {"style": "wrapped", "color": [0.2, 0.24, 0.2], "wrap": [0.84, 0.8, 0.7]},
 		"acc": [
@@ -36,7 +40,11 @@ const PRESETS := {
 	},
 	"oto_stage": {  # the earlier green bodysuit with gold trim (stage-art look)
 		"model": "oto",
-		"hair": {"style": "long", "color": [0.8, 0.8, 0.83], "form3": true},
+		"fitted": true,
+		"face": "oto",
+		"speaker": "Oto",
+		"hair": {"style": "long", "color": [0.8, 0.8, 0.83], "form3": true, "shell": true,
+			"strand": [[-62, 60], [-84, 30], [-96, 0], [-100, -40], [-96, -76]]},
 		"top": {"style": "bodysuit", "color": [0.13, 0.42, 0.24], "sleeves": "short"},
 		"bottom": {"style": "skirt_panel", "color": [0.13, 0.42, 0.24], "under": [0.09, 0.25, 0.15]},
 		"feet": {"style": "none"},
@@ -254,6 +262,8 @@ static func apply(visual: Node3D, preset: String) -> void:
 	var key: String = visual.get_meta("model_key", "oto")
 	var b := OutfitBuilder.new(landmarks(key), float(visual.get_meta("height", 1.8)))
 	var spec: Dictionary = PRESETS[preset]
+	if spec.get("fitted", false):  # clothing cast onto the real body (Garment)
+		b.body = Garment.body_frame(visual)
 	# "skin" replaces the body colour (it multiplies the male base's texture).
 	if spec.has("skin"):
 		for m: StandardMaterial3D in visual.get_meta("mats", []):
@@ -268,6 +278,72 @@ static func apply(visual: Node3D, preset: String) -> void:
 	visual.set_meta("metal_swap", b.metal_swap)
 	if b.form3_hair:
 		visual.set_meta("form3_hair", b.form3_hair)
+	visual.remove_meta("face")
+	if spec.has("face"):
+		var face := FaceRig.new()
+		var head := Face.head_part(visual)
+		var hm := head.material_override as StandardMaterial3D
+		face.speaker = spec.get("speaker", "")
+		face.setup(visual, spec["face"], hm.get_meta("base_color", hm.albedo_color) if hm else Color(0.8, 0.6, 0.5))
+		b.root.add_child(face)
+		visual.set_meta("face", face)
+	var hs: Dictionary = spec.get("hair", {})
+	if hs.get("shell", false) and not b.hair_mats.is_empty():
+		_hair_shell(visual, b, hs)
+	if spec.get("rigged", true) and Rig.has_rig(key):  # the skeleton and animations (rig.gd)
+		Rig.attach(visual)
+
+## Hair cast onto the real head: the cap with its fringe, and the loose strand of bangs
+## ("strand": face-space points in mm, kept outside the eye).
+static func _hair_shell(visual: Node3D, b: OutfitBuilder, hs: Dictionary) -> void:
+	var frame := Face.head_frame(visual)
+	var m: StandardMaterial3D = b.hair_mats[0]
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var cap := MeshInstance3D.new()
+	cap.name = "hair_shell"
+	cap.mesh = Face.hair_shell(frame, hs)
+	cap.material_override = m
+	b.root.add_child(cap)
+	if hs.has("strand"):
+		var path := PackedVector2Array()
+		for p: Array in hs["strand"]:
+			path.append(Vector2(p[0], p[1]))
+		var s := MeshInstance3D.new()
+		s.name = "hair_strand"
+		s.mesh = Face.strand(frame, FaceCanvas.spline(path, 6), float(hs.get("strand_w", 16.0)), float(hs.get("thick", 11.0)) + 1.0)
+		s.material_override = m
+		b.root.add_child(s)
+	_hair_back(visual, b, frame, cap, m, float(hs.get("length", 1.24)), b.root, "hair_back")
+	if b.form3_hair:  # Cohesion: hair past her knees, black and perfectly still
+		_hair_back(visual, b, frame, cap, b.form3_hair.get_meta("mat"), b.f("knee_y") + 0.02, b.form3_hair, "hair_back_long")
+
+## The length of her hair down her back: a sheet hung from the back of the head that falls
+## straight over her shoulders and clothes (Garment.panel), with strand ridges and pointed ends.
+static func _hair_back(visual: Node3D, b: OutfitBuilder, frame: Dictionary, cap: MeshInstance3D, m: Material, end_y: float, parent: Node3D, node_name: String) -> void:
+	var body := Garment.body_frame(visual)
+	var under := [
+		{"tm": body["tm"], "xf": body["xf"], "lift": 18.0},  # clear of the bodice and scapular
+		{"tm": Face._tri_mesh(cap.mesh), "xf": Transform3D.IDENTITY, "lift": 0.5},
+	]
+	for n: String in ["bodice", "scapular_top_back"]:
+		var mi: MeshInstance3D = b.root.get_node_or_null(n)
+		if mi:
+			under.append({"tm": Face._tri_mesh(mi.mesh), "xf": Transform3D.IDENTITY, "lift": 4.0})
+	var top: float = frame["eye_y"] + 0.04  # starts high on the back of the head, under the cap
+	var w := 0.2
+	var strands := 9.0
+	var g := Garment.panel(under, -1.0, w, end_y, top, {
+		"hang": 0.0, "folds": 1.5, "amp": 4.0, "ridges": strands, "bridge": 14, "span": 3, "cols": 45, "rows": 70,
+		"bottom": func(x: float) -> float:
+			var u := (x / w + 0.5) * strands
+			var tip := 1.0 - absf(fposmod(u, 1.0) * 2.0 - 1.0)  # each strand ends in a point
+			return end_y - 0.035 * tip * tip + 0.02 * (x / w) * (x / w),
+	})
+	var mi := MeshInstance3D.new()
+	mi.name = node_name
+	mi.mesh = g["mesh"]
+	mi.material_override = m
+	parent.add_child(mi)
 
 ## Shadow forms: the outfit's gold turns silver (and back). Hair is handled by the Player.
 static func set_silver(visual: Node3D, on: bool) -> void:

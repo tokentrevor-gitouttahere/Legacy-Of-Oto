@@ -105,14 +105,19 @@ const MOUTHS := {
 const MOUTH_SHAPES := ["closed", "smile", "frown", "ah", "oh", "ee", "wide", "grin"]
 
 # --- 3D nose and chin -------------------------------------------------------------------
-# Small ellipsoids of the skin's own material, set into the head: w and h across and tall, out
-# how far they stand off the face, y their height from the eye line, tilt a lift of the tip.
+# Small shapes of the skin's own material, set into the head. "ball": an ellipsoid w x h, `out`
+# off the face. "wedge": the DBZ nose, a ridge from the bridge down to a tip `out` off the face,
+# `len` long and `w` wide at the nostrils. y is the height of the nose's bottom from the eye
+# line; "ink" is the default mark drawn on it (NoseInks), "size" that mark's height in mm.
 
 const NOSES := {
 	"none": {},
-	"button": {"w": 16.0, "h": 13.0, "out": 5.0, "y": -34.0, "mark": "dot"},
-	"pointed": {"w": 12.0, "h": 19.0, "out": 8.5, "y": -37.0, "tilt": 0.3, "mark": "tick"},
-	"broad": {"w": 24.0, "h": 14.0, "out": 6.5, "y": -37.0, "wings": true, "mark": "nostrils"},
+	"button": {"shape": "ball", "w": 16.0, "h": 13.0, "out": 5.0, "y": -40.0, "ink": "round_small", "size": 16.0},
+	"wedge": {"shape": "wedge", "w": 15.0, "len": 30.0, "out": 8.0, "y": -46.0, "ink": "l_foot", "size": 28.0},
+	# sheet #28 in profile (a stem down to a triangle base), #33 head on
+	"long": {"shape": "wedge", "w": 22.0, "len": 50.0, "out": 15.0, "y": -50.0, "tip_k": 0.1, "mid_k": 0.42, "ink": "tick_tri", "size": 44.0},
+	"pointed": {"shape": "wedge", "w": 11.0, "len": 34.0, "out": 11.0, "y": -48.0, "ink": "angle_open", "size": 32.0},
+	"broad": {"shape": "ball", "w": 26.0, "h": 15.0, "out": 6.5, "y": -46.0, "ink": "nostrils_front", "size": 22.0},
 }
 
 const CHINS := {
@@ -121,6 +126,64 @@ const CHINS := {
 	"pointed": {"w": 28.0, "h": 30.0, "out": 7.0, "y": -128.0},
 	"square": {"w": 62.0, "h": 20.0, "out": 4.0, "y": -124.0},
 }
+
+# --- ears -------------------------------------------------------------------------------
+# DBZ ears from the owner's ear sheet (2026-10-28), inked onto the ear the head mesh already
+# has. Strokes are [width, [u, v], ...] across the ear's rect: u from its front edge (toward
+# the face) to the back, v from the lobe up. "fill" strokes are closed and shaded.
+
+const EARS := {
+	"none": {},
+	"dbz": {"fill": [4, 5], "shade": [6], "s": [
+		# the rim: up the front, over the top, down the back, round the lobe
+		[1.0, [0.22, 0.86], [0.38, 0.98], [0.62, 0.99], [0.82, 0.86], [0.93, 0.6], [0.88, 0.32], [0.7, 0.1], [0.46, 0.0], [0.24, 0.04], [0.14, 0.14]],
+		# the fold inside the rim: the big C, from the front of the top round to above the lobe
+		[0.8, [0.3, 0.8], [0.48, 0.9], [0.68, 0.84], [0.78, 0.6], [0.72, 0.34], [0.56, 0.2]],
+		# the ridge inside it, forked at the top
+		[0.7, [0.42, 0.72], [0.58, 0.68], [0.62, 0.48], [0.52, 0.3]],
+		[0.6, [0.42, 0.72], [0.3, 0.62]],
+		# the tragus, a small shaded block in front of the hole
+		[0.8, [0.12, 0.54], [0.26, 0.56], [0.3, 0.45], [0.18, 0.42], [0.12, 0.54]],
+		# the stair-step notch near the lobe
+		[0.9, [0.1, 0.16], [0.16, 0.27], [0.27, 0.27], [0.3, 0.33], [0.42, 0.31], [0.44, 0.22], [0.3, 0.16], [0.1, 0.16]],
+		# the bowl's shadow, from under the ridge down behind the tragus
+		[0.0, [0.3, 0.62], [0.5, 0.62], [0.56, 0.45], [0.46, 0.3], [0.34, 0.36], [0.32, 0.5], [0.3, 0.62]],
+		[0.6, [0.36, 0.6], [0.5, 0.6], [0.54, 0.5]],
+		[0.6, [0.32, 0.56], [0.44, 0.44], [0.46, 0.3]],
+	]},
+}
+
+## An ear's lines in ear space (Face.EAR_REGION: mm, +X toward the back of the head), the ear
+## `size` mm across and tall round the origin. Null when the style draws nothing.
+static func ear(style: Dictionary, size: Vector2, pal: Dictionary) -> FaceCanvas:
+	if style.is_empty():
+		return null
+	var skin: Color = pal["skin"]
+	var cv := FaceCanvas.new(Face.EAR_REGION, Color(skin.r, skin.g, skin.b, 0.0))
+	var rect := Rect2(-size * 0.5, size)
+	var ink := skin.lerp(Color(0.02, 0.01, 0.02), 0.8)
+	ink.a = 0.95
+	var strokes: Array = style["s"]
+	var fills: Array = style.get("fill", [])
+	var shades: Array = style.get("shade", [])
+	for k in strokes.size():
+		var st: Array = strokes[k]
+		var pts := PackedVector2Array()
+		for i in range(1, st.size()):
+			pts.append(rect.position + Vector2(float(st[i][0]) * rect.size.x, float(st[i][1]) * rect.size.y))
+		if k in shades:
+			var c := ink
+			c.a = 0.4
+			cv.fill_poly(FaceCanvas.spline(pts, 6), c)
+			continue
+		if k in fills:
+			var c := ink
+			c.a = 0.45
+			cv.fill_poly(pts, c)
+		var path := pts if k in fills else FaceCanvas.spline(pts, 8)
+		var w := float(st[0]) * 2.5
+		cv.ribbon(path, FaceCanvas.taper(path.size(), w * 0.45, w, w * 0.4, 0.5), ink)
+	return cv
 
 # --- colours ----------------------------------------------------------------------------
 
@@ -131,12 +194,12 @@ static func palette(look: Dictionary, skin: Color, variant := "") -> Dictionary:
 		"skin": skin,
 		"sclera": look.get("sclera", Color(0.93, 0.91, 0.9)),
 		"shadow": look.get("shadow", Color(0.71, 0.67, 0.72)),
-		"iris": look.get("iris", Color(0.07, 0.05, 0.1)),
-		"iris_lo": look.get("iris_lo", Color(0.19, 0.13, 0.26)),
+		"iris": look.get("iris", Color(0.12, 0.08, 0.06)),
+		"iris_lo": look.get("iris_lo", Color(0.3, 0.2, 0.14)),
 		"pupil": Color(0.01, 0.0, 0.02),
-		"glint": look.get("glint", Color(0.74, 0.76, 0.88)),
+		"glint": look.get("glint", Color(0.92, 0.92, 0.95)),
 		"ink": look.get("ink", Color(0.04, 0.03, 0.05)),
-		"brow": look.get("brow", Color(0.6, 0.58, 0.64)),
+		"brow": look.get("brow", Color(0.1, 0.07, 0.06)),
 		"mouth_in": Color(0.13, 0.03, 0.05),
 		"tooth": Color(0.93, 0.9, 0.86),
 		"tongue": Color(0.62, 0.22, 0.3),
@@ -385,22 +448,15 @@ static func mouth(style: Dictionary, shape: String, pal: Dictionary) -> FaceCanv
 
 # --- nose marks (2D) ----------------------------------------------------------------------
 
-## Soft marks under the nose, translucent so that they work on any skin; null for none.
-static func nose_marks(nose: Dictionary, pal: Dictionary) -> FaceCanvas:
-	var kind: String = nose.get("mark", "")
-	if kind == "":
+## The nose's ink (NoseInks), translucent so that it works on any skin; null for none. `ink`
+## replaces the nose's own mark.
+static func nose_marks(nose: Dictionary, pal: Dictionary, ink := "") -> FaceCanvas:
+	var kind: String = ink if ink != "" else nose.get("ink", "")
+	if kind == "" or not NoseInks.DB.has(kind):
 		return null
 	var skin: Color = pal["skin"]
-	var cv := FaceCanvas.new(Rect2(-22, -66, 44, 40), Color(skin.r, skin.g, skin.b, 0.0))
-	var y: float = float(nose.get("y", -36.0)) - float(nose.get("h", 13.0)) * 0.5
-	var shade := skin.lerp(Color(0.02, 0.01, 0.02), 0.55)
-	shade.a = 0.7
-	match kind:
-		"dot":
-			cv.line(FaceCanvas.spline(PackedVector2Array([Vector2(-4, y + 1.2), Vector2(0, y - 0.9), Vector2(4, y + 1.2)]), 6), 1.1, shade)
-		"tick":
-			cv.line(FaceCanvas.spline(PackedVector2Array([Vector2(-1, y + 3.0), Vector2(1.5, y - 0.5), Vector2(5.0, y + 0.8)]), 6), 1.2, shade)
-		"nostrils":
-			for sx: float in [1.0, -1.0]:
-				cv.fill_poly(FaceCanvas.ellipse(Vector2(6.5 * sx, y + 0.5), 2.8, 1.7, 0.4 * sx), shade)
+	var cv := FaceCanvas.new(Rect2(-44, -80, 88, 90), Color(skin.r, skin.g, skin.b, 0.0))
+	var shade := skin.lerp(Color(0.02, 0.01, 0.02), 0.62)
+	shade.a = 0.9
+	NoseInks.draw(cv, kind, Vector2(0, float(nose.get("y", -44.0))), float(nose.get("size", 26.0)), shade)
 	return cv

@@ -31,6 +31,11 @@ Test Arena, Prop and Outfit Gallery.
   physics, a linen sash, a gold royal cord, golden gauntlets, arm and shin wraps, and bare feet.
   Her tribe's sigil, The Wall, is on the front panel and engraved on the gauntlets. In Shadow
   forms all her gold turns silver. The old bodysuit is kept as `oto_stage`.
+- **Faces** (`docs/OTO_FACE.md`): Oto is the first, and the test case for a reusable kit of
+  mix-and-match cel parts (6 eye styles, 4 brows, 6 mouths, 3 noses, chins, skins) wrapped onto
+  the real head. She blinks every 5.5-9 s, her mouth moves only while her line types, and Shadow
+  forms give her void eyes and black brows. Her hair is now cast onto the head with a fringe and
+  a loose strand kept off her eyes. NPC and canon faces are not made yet.
 - **Characters:** 24 outfit presets with hair, clothes and accessories fitted to measured body
   landmarks: Oto, Chi-Chi, Gohan, Bulma, Krillin, Yamcha, Tien, Piccolo, Kami, Vegeta, Raditz,
   Nappa, Hercule, Master Roshi, the life-energy Saiyan, Saiyan soldier, scientist,
@@ -70,8 +75,10 @@ Test Arena, Prop and Outfit Gallery.
 
 ## Gaps to fill
 
-- **Rigging and animation (biggest gap):** models are static T/A-poses. Send the Mixamo FBX
-  files (`mixamo_upload/` zips) and real animations replace the procedural bob and lean.
+- **Rigging and animation:** Oto is rigged (docs/RIGGING.md): walk, hot walk, the three-hit
+  combo and the flurry are animated; still missing an idle, a run and hit reactions. Male base
+  and Goku are still static T/A-poses. Send the Mixamo FBX
+  files (upload `mixamo_upload/oto_clean.zip` and `male_base_clean.zip`, the repaired meshes; `goku.zip`) and real animations replace the procedural bob and lean.
   Clothing then needs re-parenting to bones.
 - **Clothing is primitive-based:** low-poly shells and cones. It reads well from the game
   camera; up close it is blocky.

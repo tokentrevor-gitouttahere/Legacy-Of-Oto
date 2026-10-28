@@ -95,5 +95,5 @@ func _ready() -> void:
 	hud.player = player
 	layer.add_child(hud)
 	add_child(layer)
-	Overlay.hint("Test arena. Hold Z: heavy strike. Q: switch ki technique. V: charge ki. F/G: form up/down. Enter: stats and gear.")
+	Overlay.hint("Test arena. Hold Z: flurry. Q: switch ki technique. V: charge ki. F/G: form up/down. Enter: stats and gear.")
 	Overlay.fade_from(0.4)  # the title fades to black before loading us

@@ -68,6 +68,39 @@ that Shadow forms never use gold.
 - To preview it: `--gallery turnaround --preset oto --shadow`. Add `--closeup` to frame the
   gauntlet and the plaque.
 
+## Fitted to her body (Garment)
+
+The bodice, the sash and the trousers are cast onto her real body mesh (`scripts/characters/garment.gd`,
+used by `OutfitBuilder` when the preset has `"fitted": true`). The owner's rule: fix the clothing,
+never the model. Each piece is a grid of rays round a vertical axis, and the cloth:
+
+- stays `ease` mm outside the skin everywhere, so her chest no longer comes through;
+- bridges hollows (between the breasts, the small of the back), as fabric stretched over high points does;
+- hangs from its widest point and comes back in only as fast as `hang` allows (the bodice from
+  the bust, the trousers almost straight down from the hips and thighs);
+- is pulled back to the body where something binds it (`cinch`: the sash, the shin wraps), and
+  hangs on from there below it, so the peplum flares out from under the sash;
+- folds where it stands off the body, deeper where there is more slack.
+
+The trousers are a hip piece over two legs; the hip piece is snug under the peplum and loose at
+its hem, so it falls over the tops of the legs. The lapel, the second winding of the sash and
+the royal cord are bands lying on those surfaces; the scapular rests on the bodice clear of the
+bust. Building them takes about 0.3 s when she is dressed. The checks (`_test_face`) confirm
+that no point of the bodice, sash or trousers is inside her body.
+
+Also fitted (fourth round):
+- **Cleavage** (owner's call): the bodice and the scapular's front panel are cut in a deep V
+  over her chest, so neither strains to contain it. The V is faced in the darker green on the
+  bodice and trimmed in gold on the panel.
+- **Scapular above the sash** (`Garment.panel`): front and back panels lie on the bodice, pass
+  smoothly over its folds, hang from the bust and shoulder blades, and tuck under the sash.
+  The shoulder straps follow the real curve of her shoulders (`Garment.strip`).
+- **Gauntlets** (`Garment.sleeve`): gold shells shaped to her real forearm from the true wrist
+  (the narrowest point of the arm; the mesh's "wrist" landmark is at the knuckles). They have
+  flared lips, two raised ridges, a spine, and the sigil curved onto the gold (`Garment.patch`).
+- **Hand and forearm wraps**: linen that follows the palm (the fingers stay bare) and the
+  forearm, with the edges of the turns, three cords and the loose end.
+
 ## Cloth physics
 
 These pieces are `ClothPanel`s (`scripts/characters/cloth_panel.gd`):

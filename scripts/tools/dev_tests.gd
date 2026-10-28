@@ -17,6 +17,7 @@ func _ready() -> void:
 	await _test_content()
 	await _test_cloth()
 	await _test_sigil_and_silver()
+	await _test_face()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -142,7 +143,7 @@ func _test_behaviors() -> void:
 		n.queue_free()
 	await get_tree().process_frame
 
-## Drives the real input actions: a held attack lands a heavy strike; Ki Blast streams.
+## Drives the real input actions: a held attack lands the flurry; Ki Blast streams.
 func _test_moves() -> void:
 	GameState.new_run()
 	GameState.flags["no_death"] = true
@@ -160,10 +161,15 @@ func _test_moves() -> void:
 		await get_tree().physics_frame
 	Input.action_release("attack")
 	var launched := false
-	for i in 4:
+	var blows := 0
+	var last_hp := dummy.hp
+	for i in 60:
 		await get_tree().physics_frame
+		if dummy.hp < last_hp:
+			blows += 1
+			last_hp = dummy.hp
 		launched = launched or dummy.knock.length() > 5.0
-	_check(launched, "holding attack and releasing lands a heavy, launching strike")
+	_check(launched and blows == 4, "holding attack and releasing lands a four-punch flurry, the last one launching (%d blows)" % blows)
 	GameState.ki_move_index = GameState.ki_moves.find("ki_blast")
 	player.ki = player.max_ki
 	Input.action_press("special")
@@ -262,7 +268,8 @@ func _test_cloth() -> void:
 	add_child(ch)
 	var front: ClothPanel = ch.find_child("ScapularFront", true, false)
 	_check(front != null and ch.find_children("*", "ClothPanel", true, false).size() >= 6, "Oto's outfit has its cloth panels")
-	for i in 20:
+	front.wind = 0.0  # measure the settling alone: the wind would roll it round her forward thigh
+	for i in 90:  # the rig moves her from the T-pose into her standing pose; let the cloth settle
 		await get_tree().physics_frame
 	var outfit := front.get_parent() as Node3D
 	var bottom := func() -> Vector3:
@@ -277,7 +284,7 @@ func _test_cloth() -> void:
 	for i in 150:
 		await get_tree().physics_frame
 	var settled: Vector3 = bottom.call()
-	_check(absf(settled.x - rest.x) < 0.04, "it settles again when she stops")
+	_check(absf(settled.x - rest.x) < 0.04, "it settles again when she stops (%.3f m off)" % absf(settled.x - rest.x))
 	var behind := false
 	var finite := true
 	for p in front.particles():
@@ -333,6 +340,167 @@ func _test_sigil_and_silver() -> void:
 	for m: StandardMaterial3D in mats:
 		gold = gold and m.albedo_color.is_equal_approx(m.get_meta("base_color"))
 	_check(gold and front.color_swap.is_empty(), "back in base form, the gold returns")
+	p.queue_free()
+	await get_tree().process_frame
+
+## Faces (face.gd, face_rig.gd): every part draws, the plates sit just off the head, the eyes
+## blink, the mouth moves only while she talks, Shadow forms swap in the void eyes.
+func _test_face() -> void:
+	var painted := func(img: Image) -> bool:
+		if img == null:
+			return false
+		for y in range(0, img.get_height(), 3):
+			for x in range(0, img.get_width(), 3):
+				if img.get_pixel(x, y).a > 0.5:
+					return true
+		return false
+	var skin: Color = FaceParts.SKINS["dusk"]
+	var ok := true
+	for s: String in FaceParts.EYES:
+		for st: String in FaceParts.EYE_STATES:
+			ok = ok and painted.call(Face.layer_image({"eyes": s}, "eyes", st, "", skin))
+	_check(ok, "every eye style draws in every state")
+	ok = true
+	for s: String in FaceParts.BROWS:
+		for st: String in FaceParts.BROW_STATES:
+			ok = ok and painted.call(Face.layer_image({"brows": s}, "brows", st, "", skin))
+	_check(ok, "every brow style draws in every mood")
+	ok = true
+	for s: String in FaceParts.MOUTHS:
+		for st: String in FaceParts.MOUTH_SHAPES:
+			ok = ok and painted.call(Face.layer_image({"mouth": s}, "mouth", st, "", skin))
+	_check(ok, "every mouth style draws every shape")
+	ok = Face.layer_image({"nose": "none"}, "nose", "marks", "", skin) == null
+	for s: String in ["button", "pointed", "broad"]:
+		ok = ok and painted.call(Face.layer_image({"nose": s}, "nose", "marks", "", skin))
+	_check(ok, "noses draw their marks (and 'none' draws nothing)")
+	ok = NoseInks.names().size() == 40
+	for id: String in NoseInks.names():
+		ok = ok and painted.call(Face.layer_image({"nose": "wedge", "nose_ink": id}, "nose", "marks", "", skin))
+	_check(ok, "all 40 noses from the reference sheet draw")
+	_check(painted.call(Face.layer_image({"ears": "dbz"}, "ears", "on", "", skin)), "the DBZ ear lines draw")
+
+	GameState.new_run()
+	GameState.max_form = 3
+	var t0 := Time.get_ticks_msec()
+	var p := Player.new()
+	add_child(p)
+	await get_tree().physics_frame
+	var face: FaceRig = p.visual.get_meta("face", null)
+	_check(face != null and face.layers.size() == 6 and face.layers.has("ear_l") and face.layers.has("ear_r"), "Oto has a face with its four layers and both ears (built in %d ms)" % (Time.get_ticks_msec() - t0))
+	face.set_process(false)
+	var frame := Face.head_frame(p.visual)
+	var verts: PackedVector3Array = Rig.fit_arrays(face.layers["eyes"])[Mesh.ARRAY_VERTEX]
+	var axis: Vector3 = frame["axis"]
+	var near := true
+	for i in range(0, verts.size(), 7):
+		var v := verts[i]
+		var from := Vector3(axis.x, v.y, axis.z)
+		var hit := Face.cast(frame["tm"], frame["xf"], from, (v - from).normalized())
+		var gap := (v - from).length() - ((hit["position"] as Vector3) - from).length() if not hit.is_empty() else -1.0
+		near = near and gap > 0.0003 and gap < 0.0035
+	_check(near, "the face plates sit 0.3-3.5 mm off the head")
+	var open_tex: Texture2D = (face.layers["eyes"].material_override as StandardMaterial3D).albedo_texture
+	face.blink()
+	face._process(0.07)
+	var closed_now := face.shown("eyes") == "closed"
+	face._process(0.3)
+	var back_tex: Texture2D = (face.layers["eyes"].material_override as StandardMaterial3D).albedo_texture
+	_check(closed_now and face.shown("eyes") == "open" and back_tex == open_tex, "a blink closes the eyes and opens them again")
+	_check(face.shown("mouth") == "closed", "her mouth is closed when she is not speaking")
+	Overlay.talking.emit("Oto", true)
+	face._process(0.01)
+	var moving := face.shown("mouth") != "closed"
+	Overlay.talking.emit("Oto", false)
+	_check(moving and face.shown("mouth") == "closed", "the mouth moves while her line types and closes after")
+	Overlay.talking.emit("Bulma", true)
+	face._process(0.01)
+	_check(face.shown("mouth") == "closed", "someone else's line does not move her mouth")
+	Overlay.talking.emit("Bulma", false)
+	p.set_form(1, true)
+	_check(face.variant == "void", "Shadow Saiyan gives her the void eyes")
+	p.set_form(0, true)
+	_check(face.variant == "" and face.shown("eyes") == "open", "base form gives her own eyes back")
+	Outfits.apply(p.visual, "oto")
+	await get_tree().process_frame
+	var faces := p.visual.find_children("Face", "FaceRig", true, false)
+	_check(faces.size() == 1 and p.visual.get_meta("face") == faces[0], "the face survives dressing her again")
+	# the rig: skeleton, animations, and the outfit skinned to it
+	var ap: AnimationPlayer = p.visual.get_meta("anim", null)
+	var sk: Skeleton3D = p.visual.get_meta("skeleton", null)
+	var names := ["idle", "walk", "hot_walk", "l_punch", "r_punch", "cross_punch", "quad_punch"]
+	var has_all := ap != null
+	for n: String in names:
+		has_all = has_all and ap.has_animation(n)
+	_check(has_all and sk != null and sk.get_bone_count() == 65, "Oto is rigged: a 65-bone skeleton and her seven animations")
+	var unskinned := 0
+	for mi: MeshInstance3D in p.visual.get_node("Outfit").find_children("*", "MeshInstance3D", true, false):
+		if not (mi is ClothPanel) and mi.skin == null:
+			unskinned += 1
+	_check(unskinned == 0, "every outfit, hair and face piece is skinned to her skeleton (%d not)" % unskinned)
+	var follows := true
+	for cp: ClothPanel in p.visual.find_children("*", "ClothPanel", true, false):
+		follows = follows and cp.pin_node != null
+	_check(follows, "her hanging cloth is pinned to bones")
+	# her hair stops short of her ears (about 97-118 degrees round, 48 mm below to 35 mm above
+	# the eye line on her head)
+	var shell: MeshInstance3D = p.visual.find_child("hair_shell", true, false)
+	var hv: PackedVector3Array = Rig.fit_arrays(shell)[Mesh.ARRAY_VERTEX]
+	var bare := true
+	for v in hv:
+		var d := v - axis
+		var deg := rad_to_deg(absf(atan2(d.x, d.z)))
+		var y_mm := d.y * 1000.0
+		bare = bare and not (deg > 97.0 and deg < 118.0 and y_mm > -48.0 and y_mm < 35.0)
+	_check(bare, "her hair does not touch her ears")
+	# fitted clothing: no point of the bodice, sash or trousers inside her body
+	var body := Garment.body_frame(p.visual)
+	var outside := true
+	var pieces := 0
+	var worst := {}
+	for n: String in ["bodice", "sash", "trousers_hips", "trouser_leg_l", "trouser_leg_r"]:
+		var mi: MeshInstance3D = p.visual.find_child(n, true, false)
+		if mi == null:
+			outside = false
+			continue
+		pieces += 1
+		var ax: Callable = mi.get_meta("axis")
+		var gv: PackedVector3Array = Rig.fit_arrays(mi)[Mesh.ARRAY_VERTEX]
+		for i in range(0, gv.size(), 3):
+			var o: Vector3 = ax.call(gv[i].y)
+			var dir := Vector3(gv[i].x - o.x, 0, gv[i].z - o.z)
+			var hit := Face.cast(body["tm"], body["xf"], o, dir.normalized())
+			if not hit.is_empty() and ((hit["position"] as Vector3) - o).length() > dir.length() + 0.0005:
+				outside = false
+				var depth := ((hit["position"] as Vector3) - o).length() - dir.length()
+				if depth > float(worst.get(n, [0.0])[0]):
+					worst[n] = [depth, gv[i]]
+	_check(outside and pieces == 5, "her bodice, sash and trousers sit outside her body everywhere" + ("" if worst.is_empty() else " %s" % worst))
+	# the outer layer and the gauntlets: no point inside her body
+	var outer_ok := true
+	var bad := {}
+	var outer := p.visual.find_children("scapular_top_*", "", true, false) + p.visual.find_children("gauntlet_?", "", true, false) 		+ p.visual.find_children("hand_wrap_?", "", true, false) + p.visual.find_children("shin_wrap_?", "", true, false)
+	for mi: MeshInstance3D in outer:
+		var ov: PackedVector3Array = Rig.fit_arrays(mi)[Mesh.ARRAY_VERTEX]
+		var on: PackedVector3Array = Rig.fit_arrays(mi)[Mesh.ARRAY_NORMAL]
+		for i in range(0, ov.size(), 5):
+			# a point is inside if a ray from it out along +Z/-Z (scapular) or up (gauntlet) meets
+			# the body an odd number of times; count crossings with short hops
+			var inside := false
+			var o := ov[i]
+			var dir := on[i]  # straight out from the cloth
+			var cur := o
+			for hop in 16:
+				var hit := Face.cast(body["tm"], body["xf"], cur, dir)
+				if hit.is_empty():
+					break
+				inside = not inside
+				cur = (hit["position"] as Vector3) + dir * 0.0005
+			outer_ok = outer_ok and not inside
+			if inside:
+				bad[mi.name] = int(bad.get(mi.name, 0)) + 1
+	_check(outer_ok and outer.size() == 8, "the scapular, gauntlets, hand and shin wraps sit outside her body (%d pieces)%s" % [outer.size(), "" if bad.is_empty() else " inside: %s" % bad])
+	_check(p.visual.find_children("SigilEngraving_*", "", true, false).size() == 2, "the fitted gauntlets still carry the sigil")
 	p.queue_free()
 	await get_tree().process_frame
 

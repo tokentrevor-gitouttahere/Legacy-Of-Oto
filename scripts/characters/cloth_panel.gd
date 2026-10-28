@@ -18,7 +18,9 @@ var length := 0.6
 var pin_center := Vector3.ZERO  # middle of the pinned top edge (parent space)
 var across := Vector3.RIGHT  # width direction (parent space)
 var hang := Vector3.DOWN  # direction the cloth hangs at rest (parent space)
-var colliders: Array = []  # [[centre (parent space), radius], ...]
+var colliders: Array = []  # [[centre (parent space), radius], ...]; a third item, a Node3D,
+	# moves that collider with the node (its frame is the parent's at rest: Rig followers)
+var pin_node: Node3D = null  # when set, the pins ride this node (a bone) instead of the parent
 var floor_y := 0.02  # world height the cloth stays above
 var damping := 0.985
 var wind := 0.5
@@ -94,7 +96,7 @@ func _physics_process(delta: float) -> void:
 	var parent := get_parent() as Node3D
 	if parent == null or not is_visible_in_tree():
 		return
-	var xf := parent.global_transform
+	var xf := pin_node.global_transform if is_instance_valid(pin_node) else parent.global_transform
 	var pin := xf * pin_center
 	if _p.is_empty() or pin.distance_to(_last_pin) > 3.0:
 		_reset(xf)
@@ -125,7 +127,8 @@ func _step(xf: Transform3D, delta: float) -> void:
 	var sc := xf.basis.get_scale().x
 	var world_cols: Array = []
 	for c: Array in colliders:
-		world_cols.append([xf * (c[0] as Vector3), float(c[1]) * sc])
+		var cx := (c[2] as Node3D).global_transform if c.size() > 2 and is_instance_valid(c[2]) else xf
+		world_cols.append([cx * (c[0] as Vector3), float(c[1]) * sc])
 	for it in iterations:
 		for l: Array in _links:
 			var a: int = l[0]

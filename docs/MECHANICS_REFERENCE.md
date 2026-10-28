@@ -53,7 +53,9 @@ are story set pieces with one gimmick each. Flight points link the areas.
   (sword cross-slash, flying kick, spinning punch, two-handed smash, punch flurry). Buu's
   Fury dropped the charged melee.
 - **Oto:** 3-hit combo with a 0.4 s window. Damage is `(4 + STR*0.8 + 2 on hit 3) * form`,
-  hitting 1.3 m around a point 1 m ahead. Hit 3 launches the enemy. There is no held melee.
+  hitting 1.3 m around a point 1 m ahead. Hit 3 launches the enemy. The held melee is a
+  punch flurry: hold attack 0.75 s and release for four punches (the quad punch animation),
+  the last one launching. Animations: docs/RIGGING.md.
 
 ### Ki attacks
 - **LoG II:** every character has a weak basic blast (hold for a stream of small shots) plus

@@ -1,6 +1,10 @@
 extends CanvasLayer
 ## Autoload. Dialogue box, fades, flashes, title cards, toasts and hints.
 
+## A line starts typing (on) or is fully shown (off): faces (FaceRig) move their mouths only while
+## their speaker's line types.
+signal talking(speaker: String, on: bool)
+
 var auto := false  # developer flag: auto-advance dialogue
 
 var _fade: ColorRect
@@ -127,6 +131,7 @@ func say(lines: Array) -> void:
 		_speaker.text = sp
 		_text.text = tx
 		_text.visible_characters = 0
+		talking.emit(sp, true)
 		var t := 0.0
 		while _text.visible_characters < tx.length():
 			await get_tree().process_frame
@@ -134,6 +139,7 @@ func say(lines: Array) -> void:
 			_text.visible_characters = mini(int(t * 45.0), tx.length())
 			if _pressed():
 				_text.visible_characters = tx.length()
+		talking.emit(sp, false)
 		var wait := 0.0
 		await get_tree().process_frame
 		while not _pressed():

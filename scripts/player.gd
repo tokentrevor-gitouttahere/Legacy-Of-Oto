@@ -3,7 +3,7 @@ extends Node3D
 
 signal charged_from_empty  # charged from 10% ki or less to full without moving
 ## Oto. 8-direction movement on the XZ plane, sprint/stamina, 3-hit combo and a held
-## heavy strike, guard, ki barrier, ki techniques (charged orb, rapid blast; `cycle`
+## flurry (four punches), guard, ki barrier, ki techniques (charged orb, rapid blast; `cycle`
 ## switches), standing ki charge, Shadow forms and interaction. Units are metres.
 ## The meshes are unrigged, so animation is whole-body procedural for now.
 
@@ -16,7 +16,7 @@ const CHARGE_THRESHOLDS := [0.45, 1.1]
 const CHARGE_COST := [8.0, 20.0, 40.0]
 const BLAST_INTERVAL := 0.14
 const BLAST_COST := 2.0
-const HEAVY_DELAY := 0.3  # hold attack this long to start winding up a heavy strike
+const HEAVY_DELAY := 0.3  # hold attack this long to start winding up the flurry
 const HEAVY_CHARGE := 0.45  # then this long until it is ready; release to strike
 const BARRIER_DRAIN := 10.0
 const INTERACT_RANGE := 2.6
@@ -66,6 +66,17 @@ var _still_from_empty := false
 var attack_hold := 0.0
 var heavy_swing := 0.0
 var _moving := false
+# the rig (rig.gd): what the animation shows, and the flurry's hits still to land
+const STRIKES := ["l_punch", "r_punch", "cross_punch"]  # combo hits 1, 2, 3
+const STRIKE_SPEED := 1.6  # punches play this much faster than Mixamo made them
+const STRIKE_LEAD := 0.12  # seconds from the press to the fist landing
+const FLURRY_SPEED := 1.5
+const CALM_AFTER := 3.0  # seconds without fighting before she walks the hot walk
+var _ground_speed := 0.0
+var _rig_busy := 0.0  # an attack animation is playing for this long
+var _flurry: Array = []  # [[seconds until it lands, last hit?], ...]
+var _flurry_dmg := 0.0
+var _since_fight := 100.0
 var _tap_times := {}
 
 var visual: Node3D
@@ -150,6 +161,10 @@ func _apply_form_visual() -> void:
 	_form_fx.visible = form > 0
 	(_form_fx.material_override as StandardMaterial3D).albedo_color = FORM_FX[form]
 	Outfits.set_silver(visual, form > 0)  # Shadow forms: no gold anywhere on her
+	var face: FaceRig = visual.get_meta("face", null)
+	if face:
+		face.set_form(form, FORM_TINT[form])  # void eyes, black brows; the cold look in forms 2-3
+		face.set_alpha(1.0)
 	var long_hair: Node3D = visual.get_meta("form3_hair", null)
 	if long_hair:
 		long_hair.visible = form == 3  # Cohesion: hair past her knees, perfectly still
@@ -161,6 +176,9 @@ func _physics_process(delta: float) -> void:
 	combo_timer = maxf(combo_timer - delta, 0.0)
 	heavy_swing = maxf(heavy_swing - delta, 0.0)
 	iframes = maxf(iframes - delta, 0.0)
+	_rig_busy = maxf(_rig_busy - delta, 0.0)
+	_since_fight += delta
+	_update_flurry(delta)
 	if combo_timer == 0.0:
 		combo_step = 0
 
@@ -212,6 +230,7 @@ func _physics_process(delta: float) -> void:
 		attack_timer = ATTACK_TIME
 		combo_timer = COMBO_WINDOW
 		_melee(combo_step)
+		_strike_anim(STRIKES[combo_step - 1], STRIKE_SPEED)
 	_update_heavy(delta)
 
 	if _just("interact"):
@@ -235,6 +254,7 @@ func _physics_process(delta: float) -> void:
 		speed *= 0.2
 	speed *= GameState.FORM_SPEED[form] * GameState.speed_mult()
 	_moving = dir != Vector3.ZERO
+	_ground_speed = speed if _moving else 0.0
 	_move(dir * speed * delta)
 	_clamp()
 
@@ -334,7 +354,7 @@ func heavy_winding() -> bool:
 	return attack_hold >= HEAVY_DELAY
 
 ## Holding attack past HEAVY_DELAY winds up; releasing once HEAVY_CHARGE more has passed
-## lands a heavy strike (launches, and knocks a charger out of its wind-up).
+## lands the flurry (_heavy: four punches; the last launches and knocks a charger out of its wind-up).
 func _update_heavy(delta: float) -> void:
 	if _pressed("attack") and not guarding and not barrier:
 		attack_hold += delta
@@ -343,16 +363,82 @@ func _update_heavy(delta: float) -> void:
 		_heavy()
 	attack_hold = 0.0
 
+## The flurry: four fast punches (the quad punch), the last one launching. The held strike's
+## damage is shared over the four, with a little more on the last.
 func _heavy() -> void:
-	attack_timer = ATTACK_TIME * 1.6
-	heavy_swing = ATTACK_TIME * 1.6
 	combo_step = 0
 	combo_timer = 0.0
-	var dmg: float = (6.0 + GameState.stat("strength") * 1.6) * GameState.FORM_DAMAGE[form]
-	var center := position + facing * 1.2
-	for e in get_tree().get_nodes_in_group("enemies") + get_tree().get_nodes_in_group("breakables"):
-		if e.position.distance_to(center) <= (2.2 if e is Fixture else 1.6):
-			e.hurt(dmg, facing, true)
+	_flurry_dmg = (6.0 + GameState.stat("strength") * 1.6) * GameState.FORM_DAMAGE[form]
+	var times: Array = [0.0, 0.13, 0.27, 0.41]  # without a rig
+	var rig: Dictionary = visual.get_meta("rig", {})
+	if rig.has("hits"):
+		var hits: Array = rig["hits"]["quad_punch"]
+		var start := maxf(float(hits[0]) - STRIKE_LEAD * FLURRY_SPEED, 0.0)
+		times = []
+		for h: float in hits:
+			times.append((h - start) / FLURRY_SPEED)
+		_strike_anim("quad_punch", FLURRY_SPEED)
+	_flurry.clear()
+	for i in times.size():
+		_flurry.append([float(times[i]), i == times.size() - 1])
+	var total: float = float(times[times.size() - 1]) + 0.15
+	attack_timer = total
+	heavy_swing = total
+
+func _update_flurry(delta: float) -> void:
+	if _flurry.is_empty():
+		return
+	if hitstun > 0.0:  # a hit breaks the flurry
+		_flurry.clear()
+		return
+	for f: Array in _flurry:
+		f[0] = float(f[0]) - delta
+	while not _flurry.is_empty() and float(_flurry[0][0]) <= 0.0:
+		var last: bool = _flurry[0][1]
+		_flurry.pop_front()
+		var dmg := _flurry_dmg * (0.34 if last else 0.22)
+		var center := position + facing * 1.2
+		for e in get_tree().get_nodes_in_group("enemies") + get_tree().get_nodes_in_group("breakables"):
+			if e.position.distance_to(center) <= (2.2 if e is Fixture else 1.6):
+				e.hurt(dmg, facing, last)
+
+## Play a strike on the rig so that its first blow lands STRIKE_LEAD after now.
+func _strike_anim(anim_name: String, speed: float) -> void:
+	_since_fight = 0.0
+	var ap: AnimationPlayer = visual.get_meta("anim", null)
+	var rig: Dictionary = visual.get_meta("rig", {})
+	if ap == null or not rig.has("hits"):
+		return
+	var hits: Array = rig["hits"][anim_name]
+	var start := maxf(float(hits[0]) - STRIKE_LEAD * speed, 0.0)
+	ap.play(anim_name, 0.05, speed)
+	ap.seek(start, true)
+	_rig_busy = (float(hits[hits.size() - 1]) - start) / speed + 0.28  # the blow, then a beat of follow-through
+
+## What the rig shows when she is not striking: standing, the walk, or the hot walk when
+## nothing has threatened her for a while.
+func _animate_rig(ap: AnimationPlayer) -> void:
+	if _rig_busy > 0.0:
+		return
+	var rig: Dictionary = visual.get_meta("rig", {})
+	if _moving and _ground_speed > 0.0:
+		var walk := "hot_walk" if _calm() and not running else "walk"
+		var natural: float = rig.get("walk_speed", {}).get(walk, 1.4)
+		var spd := clampf(_ground_speed / natural, 0.7, 2.4)
+		if ap.current_animation != walk:
+			ap.play(walk, 0.18, spd)
+		else:
+			ap.speed_scale = spd
+	elif ap.current_animation != "idle":
+		ap.play("idle", 0.2, 1.0)
+
+func _calm() -> bool:
+	if _since_fight < CALM_AFTER:
+		return false
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if e.position.distance_to(position) < 12.0:
+			return false
+	return true
 
 func _melee(step: int) -> void:
 	var dmg: float = (4.0 + GameState.stat("strength") * 0.8 + (2.0 if step == 3 else 0.0)) * GameState.FORM_DAMAGE[form]
@@ -377,6 +463,7 @@ func restore_ki(frac: float) -> void:
 func hurt(amount: float, from_pos: Vector3) -> void:
 	if barrier or iframes > 0.0 or cinematic:
 		return
+	_since_fight = 0.0
 	if form == 2 and randf() < 0.25:
 		return  # an edge of her was not there to be hit
 	var mult := 1.0 - minf(GameState.stat("endurance") * 0.015, 0.7)
@@ -414,14 +501,20 @@ func _process(delta: float) -> void:
 
 	var bob := sin(t * 2.0) * 0.01
 	var lean := 0.0
-	if _moving:
-		bob = absf(sin(t * (15.0 if running else 10.0))) * 0.06
-		lean = 0.2 if running else 0.07
 	var lunge := Vector3.ZERO
-	if attack_timer > 0.0:
-		var k := attack_timer / ATTACK_TIME
-		lunge = facing * k * 0.35
-		lean += 0.3 * k
+	var ap: AnimationPlayer = visual.get_meta("anim", null)
+	if ap:  # the rig animates her; only a lean when running and the knock-back remain
+		_animate_rig(ap)
+		bob = 0.0
+		lean = 0.12 if running and _moving else 0.0
+	else:
+		if _moving:
+			bob = absf(sin(t * (15.0 if running else 10.0))) * 0.06
+			lean = 0.2 if running else 0.07
+		if attack_timer > 0.0:
+			var k := attack_timer / ATTACK_TIME
+			lunge = facing * k * 0.35
+			lean += 0.3 * k
 	if hitstun > 0.0:
 		lean = -0.35
 	visual.position = Vector3(0, bob, 0) + lunge
@@ -434,6 +527,9 @@ func _process(delta: float) -> void:
 			var c: Color = m.albedo_color
 			c.a = 0.35 if gap else 1.0
 			m.albedo_color = c
+		var face: FaceRig = visual.get_meta("face", null)
+		if face:
+			face.set_alpha(0.35 if gap else 1.0)
 	if form > 0:
 		_form_fx.scale = Vector3.ONE * (1.0 + (0.12 * sin(t * 20.0) if form == 2 else 0.0))
 

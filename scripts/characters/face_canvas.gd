@@ -23,13 +23,17 @@ var img: Image
 ## pixels: use the skin colour with alpha 0, so that edges blend toward skin and not toward black.
 func _init(region: Rect2, bg := Color(0, 0, 0, 0), supersample := 4) -> void:
 	ss = supersample
+	rect = px_rect(region)
+	img = Image.create(rect.size.x * ss, rect.size.y * ss, false, Image.FORMAT_RGBA8)
+	img.fill(bg)
+
+## A face-space region (mm) as whole texture pixels.
+static func px_rect(region: Rect2) -> Rect2i:
 	var x0 := floori(region.position.x * PPMM + TEX_W * 0.5)
 	var x1 := ceili(region.end.x * PPMM + TEX_W * 0.5)
 	var y0 := floori(EYE_ROW - region.end.y * PPMM)
 	var y1 := ceili(EYE_ROW - region.position.y * PPMM)
-	rect = Rect2i(x0, y0, x1 - x0, y1 - y0)
-	img = Image.create(rect.size.x * ss, rect.size.y * ss, false, Image.FORMAT_RGBA8)
-	img.fill(bg)
+	return Rect2i(x0, y0, x1 - x0, y1 - y0)
 
 ## Face space (mm) -> this canvas's supersampled pixels.
 func to_px(p: Vector2) -> Vector2:
