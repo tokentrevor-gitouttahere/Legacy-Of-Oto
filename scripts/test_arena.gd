@@ -11,6 +11,7 @@ func _ready() -> void:
 	GameState.new_run()
 	GameState.max_form = 3
 	GameState.menu_enabled = true
+	Music.play_area("battle")
 	for id in Items.DB.keys():
 		GameState.give_item(id)
 	GameState.stat_points = 6

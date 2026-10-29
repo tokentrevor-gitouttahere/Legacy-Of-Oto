@@ -25,6 +25,7 @@ var _detail := FastNoiseLite.new()
 var _forest := FastNoiseLite.new()
 
 func _ready() -> void:
+	Music.play_area("world")
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://levels/world.json"))
 	world = parsed if parsed is Dictionary else {}
 	size = float(world.get("size", 3000))

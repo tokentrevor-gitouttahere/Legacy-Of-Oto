@@ -27,6 +27,7 @@ func _ready() -> void:
 	await _test_cutscene()
 	await _test_ki_techniques()
 	_test_sound()
+	_test_music()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -859,6 +860,30 @@ func _test_sound() -> void:
 		"each speaker babbles in the right voice (Oto, Goku, women, men)")
 	_check(is_equal_approx(float(Sfx.VOICES["oto"]["pitch"]), 209.0) and is_equal_approx(float(Sfx.VOICES["woman"]["pitch"]), 340.0),
 		"Oto's babble is pitched at 209 Hz and the women's at 340 Hz, as picked")
+
+## Music (music.gd): every track loads and loops, and each place gets the owner's pick.
+func _test_music() -> void:
+	var bad: Array = []
+	for t: String in Music.TRACKS:
+		var st := Music.stream_for(t)
+		var loops := false
+		if st is AudioStreamMP3:
+			loops = (st as AudioStreamMP3).loop
+		elif st is AudioStreamOggVorbis:
+			loops = (st as AudioStreamOggVorbis).loop
+		elif st is AudioStreamWAV:
+			loops = (st as AudioStreamWAV).loop_mode != AudioStreamWAV.LOOP_DISABLED
+		if st == null or not loops:
+			bad.append(t)
+	_check(bad.is_empty(), "all eight music tracks load and loop %s" % [bad])
+	var want := {"west_city": "town", "oto_room": "town", "diablo_desert": "desert", "wasteland": "desert", "granite_peaks": "ice",
+		"northern_ice_fields": "ice", "kami_lookout": "ice", "crystal_cavern": "cave", "mt_paozu": "town"}
+	var wrong: Array = []
+	for id: String in want:
+		var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://levels/%s.json" % id))
+		if Music.for_level(d) != want[id]:
+			wrong.append("%s: %s" % [id, Music.for_level(d)])
+	_check(wrong.is_empty(), "each place plays its picked track (towns, desert, ice and mountains, cave) %s" % [wrong])
 
 ## The body shaper (docs/BODY_STUDY.md): the shape itself, the skinned copy, and the outfit.
 func _test_body_shape() -> void:

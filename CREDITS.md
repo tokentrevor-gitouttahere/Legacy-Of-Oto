@@ -44,3 +44,16 @@
   blips in `assets/audio/`, from the packs Impact Sounds, Sci-fi Sounds, Interface Sounds,
   RPG Audio and Digital Audio. Licence text in `assets/audio/LICENSE-Kenney-CC0.txt`. Credit is not
   required by CC0; given gladly.
+
+## Music
+
+All CC0 (public domain), from OpenGameArt.org, in `assets/audio/music/`:
+
+- `title.mp3`: "Battle Theme A" by cynicmusic (opengameart.org/content/battle-theme-a)
+- `town.mp3`: "Town Theme RPG" by cynicmusic (opengameart.org/content/town-theme-rpg)
+- `battle.mp3`: "Awake! (Megawall-10)" by cynicmusic (opengameart.org/content/awake-megawall-10)
+- `boss.wav`: "Fast fight / battle music" by Ville Nousiainen, looped by XCVG (opengameart.org/content/fast-fight-battle-music-looped)
+- `desert.ogg`: "Desert theme" (caravan) by yd (opengameart.org/content/desert-theme)
+- `ice.ogg`: "Snowfall (Looped ver.)" by Kistol (opengameart.org/content/snowfall)
+- `cave.mp3`: "Crystal Cave (song18)" by cynicmusic (opengameart.org/content/crystal-cave-song18)
+- `world.mp3`: "To The Wind" by Bobjt (opengameart.org/content/to-the-wind)

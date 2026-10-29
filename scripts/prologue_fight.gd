@@ -16,6 +16,7 @@ func _ready() -> void:
 	GameState.start_power_fantasy()
 	GameState.flags["no_death"] = true
 	GameState.menu_enabled = false
+	Music.play_area("boss")  # the life-energy Saiyan: the prologue is one long boss fight
 	_build_world()
 
 	player = Player.new()

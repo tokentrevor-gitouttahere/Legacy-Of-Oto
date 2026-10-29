@@ -28,6 +28,7 @@ func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	if GameState.has_save():
 		items.insert(0, "Continue")
+	Music.play_area("title")  # carries on from the intro without a restart
 	GameState.menu_enabled = false
 	GameState.input_locked = false
 	GameState.in_location = false

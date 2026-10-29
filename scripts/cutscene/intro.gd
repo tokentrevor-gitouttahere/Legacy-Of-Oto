@@ -13,6 +13,7 @@ var _spire: Node3D
 
 func play() -> void:
 	Overlay.fade_to(Color.BLACK, 0.01)
+	Music.play_area("title")
 	sky("dusk")
 	open_set(Color(0.86, 0.62, 0.42), "noise", "mesa", ["cactus", "rock", "cactus", "dead_tree", "hoodoo"], 5)
 	var spot := Vector3.ZERO                   # where she lands

@@ -48,4 +48,24 @@ The intro cutscene uses flight, ki_charge, ki_orb, ki_beam, explosion and rock_b
 
 `python tools/run.py test` checks every file loads and each speaker's voice. To hear them:
 `godot --path . --fixed-fps 30 --write-movie tools/out/voice_reel.avi --quit-after 480 -- --scene res://scenes/ui_preview.tscn --ui voices`.
-No music yet.
+
+## Music (`scripts/music.gd`, the `Music` autoload)
+
+```gdscript
+Music.play_area("town")       # a scene's own track (fights return to it)
+Music.set_fight(1, delta)     # each frame: 0 calm, 1 a fight, 2 a boss; locations do this
+Music.for_level(level.data)   # a level's track: its "music" key, else by sky and id
+```
+
+| Track | Plays in | Piece |
+| --- | --- | --- |
+| title | the intro and the title screen | Battle Theme A, cynicmusic |
+| town | towns, homes, interiors, Mt. Paozu, Kame House | Town Theme RPG, cynicmusic |
+| battle | while a foe within 24 m is fighting her | Awake! (Megawall-10), cynicmusic |
+| boss | a boss (BossKit) fight, the prologue | Fast fight (looped), Ville Nousiainen and XCVG |
+| desert | Diablo Desert, the Wasteland | Desert theme (caravan), yd |
+| ice | the Ice Fields, Granite Peaks, Kami's Lookout | Snowfall (looped), Kistol |
+| cave | the Crystal Cavern | Crystal Cave (song18), cynicmusic |
+| world | the world map | To The Wind, Bobjt |
+
+Tracks crossfade over 1.2 s and loop. Give a level its own track with `"music": "<track>"`.

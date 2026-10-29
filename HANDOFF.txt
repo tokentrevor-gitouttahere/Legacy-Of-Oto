@@ -1,8 +1,32 @@
 LEGACY OF OTO - HANDOFF
-Last updated: 2026-10-28, end of session 4 (Oto's face, fitted outfit, Mixamo rig: done, committed,
-pushed and deployed). Read SESSION 5 first (the brief for the next task), then SESSION 4, then
-SESSION 3 (queen's attire), then SESSION 2 (the big build, locked decisions, how to ship).
-Session 5 has begun: ten more Oto animations are in (see "SESSION 5 SO FAR" below).
+Last updated: 2026-10-29, session 5 (UI, townswomen, Capsule Corp home, regions, cutscenes, ki
+animations, sound, music). Read "STATE NOW" first, then the SESSION 5 parts below it (newest last),
+then SESSION 4, 3 and 2 for older decisions.
+
+STATE NOW (2026-10-29)
+  Machine: the owner's laptop for Claude ("Token"). Repo cloned at
+    C:\Users\Token\source\repos\Legacy-Of-Oto. Godot 4.7.2 from winget; tools/godot_path.txt (git-
+    ignored) points at its console exe. Web export templates installed (web_* only) in
+    %APPDATA%\Godot\export_templates\4.7.2.stable. No ffmpeg on this machine.
+  Branches: main only. Every session-5 feature branch was merged into main (fast-forward) and
+    deleted, here and on GitHub (the owner does not like having many branches), music included.
+  Published: gh-pages carries the latest main build (python tools/publish_web.py).
+  Tests: python tools/run.py test, 135 PASS, 0 FAIL.
+  The game opens on the intro cutscene (scenes/intro.tscn), then the title.
+
+OWNER'S STANDING RULES (session 5, on top of the older ones below)
+  - Ask about branching EVERY time before the first edit of a task.
+  - Bring open issues and decisions as MULTIPLE-CHOICE questions, not prose lists.
+  - Preview before changing anything that is a matter of taste (sounds, music, looks): build a
+    preview the owner can try, and wait for their picks.
+  - Ask before downloading anything (state the file, the source and the size).
+
+OPEN FOR THE OWNER (session 5)
+  - Which memory-ladder rung gives Oto back the Void Beam and Void Burst (locked until then).
+  - Oto's move into Capsule Corp: the owner wants it told through a cutscene (not built yet).
+  - Most of the 124 townswomen are not placed in levels yet.
+  - The spare ki animations (cast_spell, ki_blast_2h_b, ki_area_b) have no use yet.
+  - All the lines Claude wrote this session are listed in the parts below, waiting for review.
 
 HOW TO USE THIS FILE
 Paste this whole file (or attach it) at the start of your next prompt. It records what was asked
@@ -95,8 +119,8 @@ SESSION 5 SO FAR (before the stack below; not committed yet)
     (bust, waist, hips, stomach, ...) is allowed when the owner asks. CLAUDE.md and the notes
     below were reworded.
 
-SESSION 5, PART 2 (2026-10-29): UI, TITLE, TOWNSWOMEN. On branch feature/ui-title-npc-women (the
-  owner chose a branch this time and said: ASK EVERY TIME before branching). NOT committed yet.
+SESSION 5, PART 2 (2026-10-29): UI, TITLE, TOWNSWOMEN. Committed 602908e, merged into main.
+  (The owner chose a branch this time and said: ASK EVERY TIME before branching.)
   Owner's task: "design and create UI to include speaking animations, dialog boxes, items, menus,
   and make them look well made. A logo and title screen ... designing other outfits for the female
   body shape", then "design dozens of female npc faces and outfits ... then recolor the ones you've
@@ -189,7 +213,7 @@ SESSION 5, PART 4 (2026-10-29): REGION KIT, FOUR REGIONS, A FULLER WEST CITY. On
   - Bug fixed: with no save, a fallen Oto respawned at the map's centre (inside the cavern lake);
     she now gets up at the location's spawn.
   - Tests: 0 failures (new: the regions, the kit's letters, the shops' doors, the respawn).
-  - World map overview restyled with UiKit (branch feature/world-map-ui, from 26395ec): see docs/UI.md.
+  - World map overview restyled with UiKit (d9acced): see docs/UI.md. Merged into main.
   WRITTEN BY CLAUDE, WAITING FOR REVIEW (tools/make_locations.py)
   - Region names: Diablo Desert (from the DB world), Granite Peaks, Northern Ice Fields, Crystal Cavern.
   - Nadia: "You walked here? Nobody walks here. Sit. The bread is nearly done." / Oto: "I can wait
@@ -213,7 +237,7 @@ SESSION 5, PART 4 (2026-10-29): REGION KIT, FOUR REGIONS, A FULLER WEST CITY. On
   - TOWNSWOMAN_LINES (six street lines), stall and street names, foe names (Sand Bandit, Frost
     Raider, Crystal Crawler, Lake Crab, The Lake Warden, Training Drone).
 
-SESSION 5, PART 5 (2026-10-29): CUTSCENES. Branch feature/cutscene-intro (from main d9acced).
+SESSION 5, PART 5 (2026-10-29): CUTSCENES. Committed a26c93c, merged into main, published.
   NOTE: the three earlier feature branches were merged into main and deleted (owner: "I don't like
   having so many branches"), and main d9acced is published to gh-pages.
   Owner: "a test cutscene of Oto flying into the scene and shooting a beam before posing and the
@@ -224,13 +248,27 @@ SESSION 5, PART 5 (2026-10-29): CUTSCENES. Branch feature/cutscene-intro (from m
     ki_blast_2h_b, ki_area, ki_area_b. All in place. The intro uses beam. Not in combat yet.
   - pose_sheet scene for picking poses. Tests: 126 PASS, 0 FAIL.
   - The Godot web export templates are installed on this laptop now (web_* only).
-  - Ki animations in combat (branch feature/ki-attack-anims): Charged Orb and Ki Blast play their
+  - Ki animations in combat (0b568b1, merged, published): Charged Orb and Ki Blast play their
     clips; new Void Beam and Void Burst techniques exist but are NOT unlocked (memory ladder: the
     owner picks the rung). Test arena has all four. 130 PASS. docs/CUTSCENES.md has the table.
   OPEN: which memory-ladder rung gives back Void Beam and Void Burst.
-  SOUND (branch feature/sound): owner chose Kenney CC0 packs (downloaded with approval), picked from a
+  SOUND (ac669b2, merged, published): owner chose Kenney CC0 packs (downloaded with approval), picked from a
   preview page: style A blip babble for Oto 209 Hz, women 340, men 118, Goku 172 (x1.25, rising);
-  33 effects wired through the Sfx autoload. docs/SOUND.md. No music yet.
+  33 effects wired through the Sfx autoload. docs/SOUND.md.
+
+SESSION 5, PART 7 (2026-10-29): MUSIC. Merged into main and published.
+  The owner chose CC0 tracks from OpenGameArt (downloaded with approval) on a preview page, and
+  asked for "something more airy for flying"; five airy candidates followed, and they picked To The Wind.
+  - Music autoload (scripts/music.gd): crossfades, every track loops; a location plays its area
+    track (Music.for_level: by sky and id, or a level's "music" key) and switches to the fight track
+    while a foe within 24 m is engaged, or the boss track for a boss (BossKit); back 4 s after.
+  - Picks: title and intro = Battle Theme A (cynicmusic); towns and homes = Town Theme RPG
+    (cynicmusic); fights = Awake! (Megawall-10) (cynicmusic); bosses and the prologue = Fast fight /
+    battle music (looped) (Ville Nousiainen, looped by XCVG); desert and wasteland = Desert theme
+    (caravan) (yd); ice, mountains and Kami's Lookout = Snowfall (looped) (Kistol); caves = Crystal
+    Cave (song18) (cynicmusic); world map = To The Wind (Bobjt). Credited in CREDITS.md.
+  - 15 MB of music; the web build grows by about that much.
+  - Tests: 135 PASS (new: every track loads and loops, each place plays its pick).
 
 THE LIKELY TASK (the owner's words, end of session 4)
   "likely GUI options, dialogue boxes, talking animations, a cutscene editor or director and

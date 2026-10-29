@@ -21,6 +21,7 @@ func _ready() -> void:
 	level = Level.load_level(id)
 	add_child(level)
 	Skies.apply(self, level.data.get("sky", "day"))
+	Music.play_area(Music.for_level(level.data))
 
 	GameState.current_level = id
 	GameState.in_location = true
@@ -147,6 +148,7 @@ func _spawn_pickups() -> void:
 		add_child(p)
 
 func _process(_delta: float) -> void:
+	_fight_music(_delta)
 	if GameState.input_locked or player.cinematic:
 		return
 	var ex := level.exit_at(player.position)
@@ -161,3 +163,11 @@ func _process(_delta: float) -> void:
 		GameState.travel_world(level.id)
 	else:
 		GameState.travel(to, ex.get("spawn", "default"))
+
+## Fight music while a foe in reach is fighting her; boss music for a boss.
+func _fight_music(delta: float) -> void:
+	var threat := 0
+	for e: Node3D in get_tree().get_nodes_in_group("enemies"):
+		if e.get("engaged") and e.position.distance_to(player.position) < 24.0:
+			threat = maxi(threat, 2 if e.get("kit") != null else 1)
+	Music.set_fight(threat, delta)

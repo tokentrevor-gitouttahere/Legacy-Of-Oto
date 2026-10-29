@@ -20,6 +20,7 @@ func _ready() -> void:
 		GameState.amnesia_reset()
 	GameState.menu_enabled = false
 	GameState.flags["no_death"] = true
+	Music.play_area("town")
 	_build_world()
 
 	player = Player.new()
