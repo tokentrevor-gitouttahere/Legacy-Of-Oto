@@ -161,9 +161,16 @@ func cloth_panel(pin: Vector3, across: Vector3, w: float, length: float, cols: i
 	cloth_panels.append(p)
 	return p
 
-## Spheres along the legs and hips (in metres) that hanging cloth drapes over.
-func leg_colliders(loose := 1.4, sides: Array = [1.0, -1.0]) -> Array:
-	var out: Array = [[Vector3(0, f("hip_y"), 0.0), f("hip_hd") * 1.18], [Vector3(0, f("crotch_y"), 0.0), f("hip_hd") * 1.05]]
+## Spheres along the legs and hips (in metres) that hanging cloth drapes over. `seat` ("front" or
+## "back"), on a body whose mesh is known, swaps the two big hip spheres for a column of small
+## ones tucked just inside her real skin on that side, so cloth lies over her belly or her seat
+## (whatever shape she has) instead of standing off it or passing through.
+func leg_colliders(loose := 1.4, sides: Array = [1.0, -1.0], seat := "") -> Array:
+	var out: Array = []
+	if seat == "" or body.is_empty():
+		out = [[Vector3(0, f("hip_y"), 0.0), f("hip_hd") * 1.18], [Vector3(0, f("crotch_y"), 0.0), f("hip_hd") * 1.05]]
+	else:
+		out = _seat_colliders(seat == "front", sides)
 	for side: float in sides:
 		var x := f("leg_x") * side
 		var mid := (f("crotch_y") + f("knee_y")) * 0.5
@@ -171,6 +178,49 @@ func leg_colliders(loose := 1.4, sides: Array = [1.0, -1.0]) -> Array:
 		out.append([Vector3(x, f("knee_y"), 0), f("calf_r") * loose * 1.25])
 		out.append([Vector3(x * 1.05, (f("knee_y") + f("ankle_y")) * 0.5, 0), f("calf_r") * loose * 1.2])
 	return out
+
+## Small spheres down one side (front or back) of her hips, each tucked just inside the outermost
+## layer a ray from that side meets: her skin, or the trousers, the bodice's peplum or the sash
+## over it (they stand off the skin by a couple of centimetres). The cloth hanging over them
+## stands off by its own thickness.
+func _seat_colliders(front: bool, sides: Array) -> Array:
+	var layers := _layers()
+	var out: Array = []
+	var r := 0.05
+	var from := f("crotch_y") - 0.05 * H  # down past the crease of the seat, over the back of the thigh
+	var to := f("waist_y") - 0.012 * H
+	var steps := 9
+	for k in steps:
+		var y := lerpf(from, to, float(k) / (steps - 1))
+		var xs: Array = [0.0]
+		for side: float in sides:
+			xs.append(f("leg_x") * 0.9 * side)
+		for x: float in xs:  # down the middle, and through the middle of each cheek or thigh
+			var z := _outer_z(layers, x, y, front)
+			if absf(z) < 100.0:  # a centimetre of room: cloth over cloth, whose folds stand off a little
+				out.append([Vector3(x, y, z - r if front else z + r), r + 0.012])
+	return out
+
+## Her body and the fitted pieces over it that cloth hanging from the waist must clear:
+## [[TriangleMesh, Transform3D], ...].
+func _layers() -> Array:
+	var layers: Array = [[body["tm"], body["xf"]]]
+	for n in ["trousers_hips", "bodice", "sash"]:
+		var mi := root.get_node_or_null(n) as MeshInstance3D
+		if mi:
+			layers.append([mi.mesh.generate_triangle_mesh(), mi.transform])
+	return layers
+
+## The z of the outermost layer a ray along the body meets at (x, y), from the front or the
+## back; infinity (of the wrong sign) when it meets none.
+func _outer_z(layers: Array, x: float, y: float, front: bool) -> float:
+	var z := -INF if front else INF
+	for layer: Array in layers:
+		var hit := Face.cast(layer[0], layer[1], Vector3(x, y, 3.0 if front else -3.0), Vector3(0, 0, -1.0 if front else 1.0))
+		if not hit.is_empty():
+			var hz: float = (hit["position"] as Vector3).z
+			z = maxf(z, hz) if front else minf(z, hz)
+	return z
 
 ## An elliptical vertical tube (torso, skirt) from y0 (radius w0) to y1 (radius w1).
 func tube(y0: float, y1: float, w0: float, w1: float, depth_ratio: float, m: Material, z := 0.0) -> MeshInstance3D:
@@ -265,7 +315,7 @@ func _top(t: Dictionary) -> void:
 			_shell(c, 1.2)
 			_sleeves(c, "long", 1.15)
 			tube(f("knee_y"), f("waist_y"), f("hip_hw") * 1.6, f("waist_hw") * 1.25, f("hip_hd") / f("hip_hw") * 1.2, cloth(c))
-		"wrap_bodice":  # sleeveless, crossed over at the chest, low standing collar
+		"wrap_bodice":  # sleeveless, crossed over at the chest, no collar (the owner took the ring off)
 			if not body.is_empty():
 				_fitted_bodice(c, under)
 				return
@@ -273,7 +323,6 @@ func _top(t: Dictionary) -> void:
 			var lap := slab(Vector3(f("chest_hw") * 0.85, f("waist_y"), f("waist_hd") * 1.12),
 				Vector3(-f("chest_hw") * 0.55, f("shoulder_y") - 0.01 * H, f("chest_z") + f("chest_hd") * 0.75), 0.02 * H, 0.004 * H, cloth(under))
 			lap.position.z += 0.004 * H
-			ring(f("neck_y") - 0.014 * H, f("neck_r") * 1.75, f("neck_r") * 1.75, 0.45, cloth(under))
 		"vest":
 			_shell(under, 1.07)
 			var vm := cloth(c)
@@ -465,7 +514,6 @@ func _fitted_bodice(c: Color, under: Color) -> void:
 		lap.mesh = Garment.band(g["point"], path, 0.012 * H, 0.0015, axis)
 		lap.material_override = Garment.two_sided(cloth(under))
 		root.add_child(lap)
-	ring(f("neck_y") - 0.014 * H, f("neck_r") * 1.75, f("neck_r") * 1.75, 0.45, cloth(under))
 
 ## Loose trousers cast onto her hips and legs: they hang straight from the hips and thighs,
 ## fold where they stand off the leg, and gather into the shin wraps.
@@ -872,11 +920,20 @@ func _board_scapular_top(pm: StandardMaterial3D, tm: StandardMaterial3D, w: floa
 ## The scapular below the sash: two ClothPanels, front and back, gold-edged, the sigil in front.
 func _scapular_cloth(c: Color, trim: Color, plaque: Color, w: float) -> void:
 	var drop := f("waist_y") - 0.035 * H - (f("knee_y") - (f("knee_y") - f("ankle_y")) * 0.45)
-	var cols := leg_colliders()
 	var us := [0.0, 0.07, 0.3, 0.5, 0.7, 0.93, 1.0]
-	var rows := 9
+	var layers := _layers() if not body.is_empty() else []
+	var pin_y := f("waist_y") - 0.035 * H
 	for zs: float in [1.0, -1.0]:
-		var p := cloth_panel(Vector3(0, f("waist_y") - 0.035 * H, zs * (_sash_front() + 0.003 * H)), Vector3.RIGHT, w, drop, us.size(), rows, cols, c)
+		# the back hangs over her real seat (whatever shape it is), on close rows: the peplum and
+		# the seat are only a few cm tall. The front is as it always was.
+		var rows := 9 if zs > 0.0 else 12
+		var cols := leg_colliders(1.4, [1.0, -1.0], "" if zs > 0.0 else "back")
+		var pin_z := zs * (_sash_front() + 0.003 * H)
+		if zs < 0.0 and not layers.is_empty():  # hang from outside whatever she wears at the waist (the peplum flares)
+			var outer := _outer_z(layers, 0.0, pin_y, zs > 0.0)
+			if absf(outer) < 100.0:
+				pin_z = maxf(pin_z, outer + 0.012) if zs > 0.0 else minf(pin_z, outer - 0.012)
+		var p := cloth_panel(Vector3(0, pin_y, pin_z), Vector3.RIGHT, w, drop, us.size(), rows, cols, c)
 		p.us = us
 		p.name = "ScapularFront" if zs > 0.0 else "ScapularBack"
 		p.face_color = func(i: int, j: int) -> Color:

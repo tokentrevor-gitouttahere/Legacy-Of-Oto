@@ -18,6 +18,8 @@ func _ready() -> void:
 	await _test_cloth()
 	await _test_sigil_and_silver()
 	await _test_face()
+	await _test_body_shape()
+	await _test_oto_owned()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -428,11 +430,30 @@ func _test_face() -> void:
 	# the rig: skeleton, animations, and the outfit skinned to it
 	var ap: AnimationPlayer = p.visual.get_meta("anim", null)
 	var sk: Skeleton3D = p.visual.get_meta("skeleton", null)
-	var names := ["idle", "walk", "hot_walk", "l_punch", "r_punch", "cross_punch", "quad_punch"]
+	var names := ["idle", "walk", "hot_walk", "l_punch", "r_punch", "cross_punch", "quad_punch",
+			"kick", "roundhouse_kick", "flying_kick", "flying", "falling", "fall_impact",
+			"hit_reaction", "taking_punch", "stunned", "defeated"]
 	var has_all := ap != null
 	for n: String in names:
 		has_all = has_all and ap.has_animation(n)
-	_check(has_all and sk != null and sk.get_bone_count() == 65, "Oto is rigged: a 65-bone skeleton and her seven animations")
+	_check(has_all and sk != null and sk.get_bone_count() == 65, "Oto is rigged: a 65-bone skeleton and her seventeen animations")
+	var lib := Rig.library("oto")
+	var drift := 0.0
+	for n: String in Rig.RIGS["oto"]["in_place"]:
+		var an := lib.get_animation(n)
+		for i in an.get_track_count():
+			if an.track_get_type(i) == Animation.TYPE_POSITION_3D and an.track_get_path(i).get_subname(0) == "mixamorig_Hips":
+				var first: Vector3 = an.track_get_key_value(i, 0)
+				for k in an.track_get_key_count(i):
+					var v: Vector3 = an.track_get_key_value(i, k)
+					drift = maxf(drift, Vector2(v.x - first.x, v.z - first.z).length())
+	_check(drift < 0.0001, "the flying kick and the stun play in place (the hips do not travel)")
+	var hits_ok := true
+	for n: String in Rig.RIGS["oto"]["hits"]:
+		for h: float in Rig.RIGS["oto"]["hits"][n]:
+			hits_ok = hits_ok and h > 0.0 and h < lib.get_animation(n).length
+	_check(hits_ok and lib.get_animation("flying").loop_mode == Animation.LOOP_LINEAR and lib.get_animation("falling").loop_mode == Animation.LOOP_LINEAR
+			and lib.get_animation("kick").loop_mode == Animation.LOOP_NONE, "every strike lands inside its animation; flying and falling loop, kicks do not")
 	var unskinned := 0
 	for mi: MeshInstance3D in p.visual.get_node("Outfit").find_children("*", "MeshInstance3D", true, false):
 		if not (mi is ClothPanel) and mi.skin == null:
@@ -503,6 +524,183 @@ func _test_face() -> void:
 	_check(p.visual.find_children("SigilEngraving_*", "", true, false).size() == 2, "the fitted gauntlets still carry the sigil")
 	p.queue_free()
 	await get_tree().process_frame
+
+## Oto's body, outfit and cloth are hers (docs/BODY_STUDY.md, docs/OTO_OUTFIT.md): her own build,
+## the soft tint on her chest, nobody else wearing her pieces or sharing her shape, the scapular
+## over her seat.
+func _test_oto_owned() -> void:
+	GameState.new_run()
+	var oto := Outfits.make_character("oto")
+	add_child(oto)
+	var plain := ModelLoader.make("oto")
+	var oto_body := (oto.get_child(0).get_child(0) as MeshInstance3D).mesh
+	var plain_body := (plain.get_child(0).get_child(0) as MeshInstance3D).mesh
+	_check(Outfits.is_oto(oto) and oto_body.get_aabb().size.z > plain_body.get_aabb().size.z + 0.02, "Oto spawns with her own body, deeper at the bust and seat than the plain base")
+	plain.free()
+	# the soft darker area on each breast: a hint only, no edge, subtle, front and chest only
+	var arrs := oto_body.surface_get_arrays(0)
+	var cols: PackedColorArray = arrs[Mesh.ARRAY_COLOR]
+	var verts: PackedVector3Array = arrs[Mesh.ARRAY_VERTEX]
+	var lo := verts[0]
+	var hi := verts[0]
+	for v in verts:
+		lo = lo.min(v)
+		hi = hi.max(v)
+	var tinted := 0
+	var darkest := 1.0
+	var placed := true
+	for i in cols.size():
+		if cols[i] != Color.WHITE:
+			tinted += 1
+			darkest = minf(darkest, cols[i].b)
+			var w := (verts[i].y - lo.y) / (hi.y - lo.y)
+			placed = placed and w > 0.62 and w < 0.78 and verts[i].z > (lo.z + hi.z) * 0.5 and absf(verts[i].x) < 0.12 * (hi.y - lo.y)
+	_check(tinted >= 20 and tinted <= 800 and darkest > 0.6 and placed, "a soft darker area on each breast (%d points, darkest %.2f, on the chest, facing front)" % [tinted, darkest])
+	var skin_mi := _skin_body(oto)
+	_check(skin_mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_COLOR] != null, "the skinned body carries the same tint")
+	# nobody else wears her outfits, has her pieces or her proportions
+	var male := ModelLoader.make("male_base")
+	add_child(male)
+	Outfits.apply(male, "oto")
+	var not_hers := ModelLoader.make("oto")
+	not_hers.set_meta("custom_body", true)  # a female body with some other shape
+	add_child(not_hers)
+	Outfits.apply(not_hers, "oto_stage")
+	_check(male.get_node_or_null("Outfit") == null and not_hers.get_node_or_null("Outfit") == null, "her outfits refuse any body that is not hers")
+	var stray: Array = []
+	var own: Dictionary = BodyShape.amounts_of(BodyShape.OTO)
+	for n: String in Outfits.PRESETS:
+		if n in Outfits.OTO_PRESETS:
+			continue
+		var sp: Dictionary = Outfits.PRESETS[n]
+		for part: String in ["top", "bottom"]:
+			if sp.has(part) and (Outfits.OTO_ONLY[part] as Array).has((sp[part] as Dictionary).get("style", "")):
+				stray.append(n)
+		for a: Dictionary in sp.get("acc", []):
+			if (Outfits.OTO_ONLY["acc"] as Array).has(a.get("style", "")):
+				stray.append(n)
+		if sp.has("build") and BodyShape.same_shape(BodyShape.amounts_of(sp["build"]), own):
+			stray.append(n)
+	_check(stray.is_empty(), "no other preset wears her pieces or has her build %s" % [stray])
+	var twins: Array = []
+	var table := BodyShape.load_presets()
+	for n: String in table:
+		if n != BodyShape.OTO and BodyShape.same_shape(table[n], own):
+			twins.append(n)
+	_check(not own.is_empty() and twins.is_empty(), "no saved body shape but hers has her exact proportions %s" % [twins])
+	var shaper := BodyShape.new(load(BodyShape.SOURCE) as Mesh)
+	var other_shape := shaper.dressed({"bust": 1.0})
+	var her_shape := shaper.dressed(own)
+	add_child(other_shape)
+	add_child(her_shape)
+	_check(other_shape.find_child("ScapularBack", true, false) == null and her_shape.find_child("ScapularBack", true, false) != null, "the body editor dresses only her own shape in her outfit")
+	# the scapular hangs over her seat
+	var back: ClothPanel = oto.find_child("ScapularBack", true, false)
+	_check(back != null, "her back scapular is a cloth panel")
+	for i in 120:
+		await get_tree().physics_frame
+	var bf := Garment.body_frame(oto)
+	var seat := 0
+	var through := 0
+	for p in back.particles():
+		var lp: Vector3 = oto.global_transform.affine_inverse() * p
+		var hit := Face.cast(bf["tm"], bf["xf"], Vector3(lp.x, lp.y, -3.0), Vector3(0, 0, 1))
+		if not hit.is_empty() and lp.y > 0.5:
+			seat += 1
+			if lp.z > (hit["position"] as Vector3).z + 0.003:
+				through += 1
+	_check(seat > 10 and through == 0, "the back scapular hangs outside her seat, not through it (%d of %d points inside)" % [through, seat])
+	for n: Node in [oto, male, not_hers, other_shape, her_shape]:
+		n.queue_free()
+	await get_tree().process_frame
+
+## The body shaper (docs/BODY_STUDY.md): the shape itself, the skinned copy, and the outfit.
+func _test_body_shape() -> void:
+	var src := load("res://assets/models/base_female/model_0.obj") as Mesh
+	var shaper := BodyShape.new(src)
+	var still := shaper.shape({})
+	var same := true
+	var a: PackedVector3Array = still.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+	for i in a.size():
+		same = same and a[i].is_equal_approx(shaper.verts[i])
+	_check(same and a.size() == shaper.verts.size(), "with every amount at zero the body is the source mesh")
+	# the same numbers as tools/body_shape.py gives for the same amounts (probes read from it)
+	var amounts := {"bust": 4.0, "waist": -1.8, "hips": 2.5, "butt": 4.0, "stomach": 1.5}
+	var d := shaper.delta(amounts)
+	var probes := [
+		[Vector3(0.093698, 0.877677, -0.097198), Vector3(0.019361, -0.002383, -0.040741)],  # butt
+		[Vector3(-0.071732, 1.19871, 0.143589), Vector3(-0.002567, -0.008702, 0.034869)],  # bust
+		[Vector3(0.000343, 0.954428, 0.112625), Vector3(0.000012, -0.000357, 0.014362)],  # stomach
+		[Vector3(-0.086833, 1.068316, 0.056265), Vector3(0.017248, 0.000006, -0.001466)],  # waist
+	]
+	var agree := true
+	for pr: Array in probes:
+		var best := 0
+		for i in shaper.verts.size():
+			if shaper.verts[i].distance_squared_to(pr[0]) < shaper.verts[best].distance_squared_to(pr[0]):
+				best = i
+		agree = agree and shaper.verts[best].distance_to(pr[0]) < 1e-4 and d[best].distance_to(pr[1]) < 5e-5
+	var seen := {}
+	var total := 0.0
+	var tears := 0.0
+	var body_h := shaper.aabb.size.y
+	var fixed := true
+	for i in shaper.verts.size():
+		var key := Vector3i((shaper.verts[i] * 1e6).round())
+		if seen.has(key):
+			tears = maxf(tears, d[i].distance_to(d[seen[key]]))
+		else:
+			seen[key] = i
+			total += d[i].length()
+		var w := (shaper.verts[i].y - shaper.aabb.position.y) / body_h
+		if (w > 0.80 or w < 0.30) and d[i].length() > 0.0:
+			fixed = false
+	_check(agree and absf(total - 15.838093) < 0.005, "the shaping matches the Python tool (probes and total movement %.3f)" % total)
+	_check(tears < 1e-7, "points the mesh repeats at one position move together (no seams tear)")
+	_check(fixed, "the head, and the legs below the thigh, do not move")
+	# the full figure: her own shape (the big one), then none: no figure changes another's body.
+	# Her outfit is hers alone, so the plain body wears a stand-in outfit.
+	var big := shaper.dressed(BodyShape.amounts_of(BodyShape.OTO))
+	add_child(big)
+	var plain := shaper.dressed({})
+	add_child(plain)
+	var big_mi := _skin_body(big)
+	var plain_mi := _skin_body(plain)
+	var fresh := (load(Rig.RIGS["oto"]["skin"]) as PackedScene).instantiate()
+	var fresh_mi := _skin_body(fresh)
+	var z_big := big_mi.mesh.get_aabb().size.z
+	var z_plain := plain_mi.mesh.get_aabb().size.z
+	var z_file := fresh_mi.mesh.get_aabb().size.z
+	_check(z_big > z_file * 1.03 and absf(z_plain - z_file) < 1e-6, "each figure's skinned body is its own: the big one is deeper (%.5f), the plain one is the file's (%.5f vs %.5f)" % [z_big, z_plain, z_file])
+	_check((big_mi.mesh.surface_get_format(0) & Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS) != 0, "the reshaped skinned body keeps its 8 bone weights a point")
+	fresh.free()
+	_check(big.has_meta("face") and big.get_meta("anim") != null, "a reshaped figure keeps her face and her animations")
+	# her outfit sits outside the reshaped body (the same ray test as the stock one)
+	var body := Garment.body_frame(big)
+	var outside := true
+	var pieces := 0
+	for n: String in ["bodice", "sash", "trousers_hips", "trouser_leg_l", "trouser_leg_r"]:
+		var mi: MeshInstance3D = big.find_child(n, true, false)
+		if mi == null:
+			outside = false
+			continue
+		pieces += 1
+		var ax: Callable = mi.get_meta("axis")
+		var gv: PackedVector3Array = Rig.fit_arrays(mi)[Mesh.ARRAY_VERTEX]
+		for i in range(0, gv.size(), 3):
+			var o: Vector3 = ax.call(gv[i].y)
+			var dir := Vector3(gv[i].x - o.x, 0, gv[i].z - o.z)
+			var hit := Face.cast(body["tm"], body["xf"], o, dir.normalized())
+			if not hit.is_empty() and ((hit["position"] as Vector3) - o).length() > dir.length() + 0.0005:
+				outside = false
+	_check(outside and pieces == 5, "her bodice, sash and trousers sit outside a reshaped body everywhere")
+	big.queue_free()
+	plain.queue_free()
+	await get_tree().process_frame
+
+func _skin_body(visual: Node3D) -> MeshInstance3D:
+	var sk: Skeleton3D = visual.get_meta("skeleton") if visual.has_meta("skeleton") else visual.find_children("*", "Skeleton3D", true, false)[0]
+	return sk.find_children("*", "MeshInstance3D", true, false)[0]
 
 func _enemy(kind: String, pos: Vector3, arena: Rect2, target: Player) -> Enemy:
 	var e := Enemy.new()

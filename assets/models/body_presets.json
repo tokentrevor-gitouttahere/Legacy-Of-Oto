@@ -1,0 +1,33 @@
+{
+  "_doc": "Body shapes for the female base mesh, in cm on a 170 cm figure (negative reduces). Made with scenes/body_editor.tscn; read by scripts/characters/body_shape.gd and tools/body_shape.py --preset.",
+  "presets": {
+    "Oto Body Final": {
+      "bust": 4.5,
+      "butt": 5.0,
+      "hips": 1.7,
+      "stomach": 0.6,
+      "waist": 0.8
+    },
+    "curvy": {
+      "bust": 2.0,
+      "butt": 0.0,
+      "hips": 2.0,
+      "stomach": 0.0,
+      "waist": -1.2
+    },
+    "full_figure": {
+      "bust": 4.0,
+      "butt": 4.0,
+      "hips": 2.5,
+      "stomach": 0.0,
+      "waist": -1.8
+    },
+    "slim": {
+      "bust": -1.0,
+      "butt": 0.0,
+      "hips": -1.2,
+      "stomach": 0.0,
+      "waist": -0.5
+    }
+  }
+}

@@ -20,9 +20,17 @@ const FEET_STYLES := ["boots", "shoes", "sandals", "none"]
 const ACCESSORIES := ["sash", "belt", "wristbands", "gloves", "scouter", "headband", "cape", "mustache", "glasses", "hat_ball", "earrings", "trim", "apron", "antennae", "third_eye", "tail",
 	"scapular", "wide_sash", "royal_cord", "gauntlets", "arm_wraps"]  # the last five are Oto's queen's attire (cloth physics)
 
+## Oto's outfits are hers alone: no other model may wear them. `apply` dresses these presets only on
+## her own body (the build BodyShape.OTO), and refuses them on anyone else; dev_tests also checks
+## that no other preset uses the pieces below, which exist only for her queen's attire.
+const OTO_PRESETS := ["oto", "oto_stage"]
+const OTO_ONLY := {"top": ["wrap_bodice"], "bottom": ["wrapped"],
+	"acc": ["scapular", "wide_sash", "royal_cord", "gauntlets", "arm_wraps"]}
+
 const PRESETS := {
 	"oto": {  # her queen's attire: docs/OTO_OUTFIT.md
 		"model": "oto",
+		"build": "Oto Body Final",  # her body (docs/BODY_STUDY.md); no other woman shares it
 		"fitted": true,
 		"face": "oto",
 		"speaker": "Oto",
@@ -40,6 +48,7 @@ const PRESETS := {
 	},
 	"oto_stage": {  # the earlier green bodysuit with gold trim (stage-art look)
 		"model": "oto",
+		"build": "Oto Body Final",
 		"fitted": true,
 		"face": "oto",
 		"speaker": "Oto",
@@ -251,17 +260,53 @@ static func make_character(preset: String) -> Node3D:
 	visual.scale = Vector3.ONE * float(PRESETS.get(preset, {}).get("scale", 1.0))
 	return visual
 
+## Is this figure Oto: the female base with her own build?
+static func is_oto(visual: Node3D) -> bool:
+	return visual.get_meta("model_key", "") == "oto" and visual.get_meta("build_name", "") == BodyShape.OTO
+
+## A copy of `spec` without the pieces that are only for Oto's queen's attire (an error if it had any).
+static func _without_oto_pieces(spec: Dictionary, preset: String) -> Dictionary:
+	var out := spec.duplicate(true)
+	var removed: Array = []
+	for part: String in ["top", "bottom"]:
+		if out.has(part) and (OTO_ONLY[part] as Array).has((out[part] as Dictionary).get("style", "")):
+			removed.append(out[part]["style"])
+			out.erase(part)
+	var acc: Array = []
+	for a: Dictionary in out.get("acc", []):
+		if (OTO_ONLY["acc"] as Array).has(a.get("style", "")):
+			removed.append(a["style"])
+		else:
+			acc.append(a)
+	out["acc"] = acc
+	if not removed.is_empty():
+		push_warning("Outfits: '%s' uses %s, which are Oto's own and were left off" % [preset, removed])
+	return out
+
 static func apply(visual: Node3D, preset: String) -> void:
 	if not PRESETS.has(preset):
 		push_warning("Outfits: unknown preset '%s'" % preset)
 		return
+	var key: String = visual.get_meta("model_key", "oto")
+	var spec: Dictionary = PRESETS[preset]
+	# the body: the plain base, or the preset's build (docs/BODY_STUDY.md); the outfit is built on it
+	if not visual.get_meta("custom_body", false) and (spec.has("build") or visual.has_meta("base_body")):
+		BodyShape.set_build(visual, spec.get("build", ""))
+	# her outfits are hers alone: only on her own body; nobody else wears her pieces
+	if preset in OTO_PRESETS:
+		if not is_oto(visual):
+			push_warning("Outfits: '%s' is Oto's own outfit and may only be worn on her body" % preset)
+			return
+	else:
+		spec = _without_oto_pieces(spec, preset)
 	var old := visual.get_node_or_null("Outfit")
 	if old:
 		visual.remove_child(old)
 		old.queue_free()
-	var key: String = visual.get_meta("model_key", "oto")
-	var b := OutfitBuilder.new(landmarks(key), float(visual.get_meta("height", 1.8)))
-	var spec: Dictionary = PRESETS[preset]
+	var lm := landmarks(key)
+	if visual.has_meta("build_amounts"):
+		lm = BodyShape.landmarks(lm, visual.get_meta("build_amounts"))
+	var b := OutfitBuilder.new(lm, float(visual.get_meta("height", 1.8)))
 	if spec.get("fitted", false):  # clothing cast onto the real body (Garment)
 		b.body = Garment.body_frame(visual)
 	# "skin" replaces the body colour (it multiplies the male base's texture).

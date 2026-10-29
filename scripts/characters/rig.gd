@@ -20,13 +20,27 @@ const RIGS := {
 			"r_punch": DIR + "r_punch.fbx",
 			"cross_punch": DIR + "cross_punch.fbx",
 			"quad_punch": DIR + "quad_punch.fbx",
+			"kick": DIR + "kick.fbx",
+			"roundhouse_kick": DIR + "roundhouse_kick.fbx",
+			"flying_kick": DIR + "flying_kick.fbx",
+			"flying": DIR + "flying.fbx",
+			"falling": DIR + "falling.fbx",
+			"fall_impact": DIR + "fall_impact.fbx",
+			"hit_reaction": DIR + "hit_reaction.fbx",
+			"taking_punch": DIR + "taking_punch.fbx",
+			"stunned": DIR + "stunned.fbx",
+			"defeated": DIR + "defeated.fbx",
 		},
-		"loop": ["walk", "hot_walk"],
+		"loop": ["walk", "hot_walk", "flying", "falling"],
+		# Downloaded without "In Place": the hips travel along the floor. Hold the spot (keep the
+		# height); the game moves her.
+		"in_place": ["flying_kick", "stunned"],
 		# No idle animation yet: hold the walk's passing frame (feet together).
 		"idle": ["walk", 0.032],
 		# Seconds into each animation where a strike lands (each hand's furthest reach ahead of
 		# the chest, measured by scripts/tools/probe_anims.gd).
-		"hits": {"l_punch": [0.57], "r_punch": [0.40], "cross_punch": [1.13], "quad_punch": [0.235, 0.444, 0.679, 0.914]},
+		"hits": {"l_punch": [0.57], "r_punch": [0.40], "cross_punch": [1.13], "quad_punch": [0.235, 0.444, 0.679, 0.914],
+			"kick": [1.26], "roundhouse_kick": [1.0], "flying_kick": [0.45]},
 		# Ground speed the walks were made for (m/s): stride from the feet, per cycle.
 		"walk_speed": {"walk": 1.47, "hot_walk": 1.0},
 	},
@@ -51,12 +65,24 @@ static func library(model_key: String) -> AnimationLibrary:
 		var ap: AnimationPlayer = src.find_children("*", "AnimationPlayer", true, false)[0]
 		var a := (ap.get_animation(ap.get_animation_list()[0]) as Animation).duplicate(true) as Animation
 		a.loop_mode = Animation.LOOP_LINEAR if anim_name in inf["loop"] else Animation.LOOP_NONE
+		if anim_name in inf.get("in_place", []):
+			_in_place(a)
 		lib.add_animation(anim_name, a)
 		src.free()
 	var idle: Array = inf["idle"]
 	lib.add_animation("idle", _held(lib.get_animation(idle[0]), float(idle[1])))
 	_libs[model_key] = lib
 	return lib
+
+## The hips keep their height but not their ground track: every key takes the first key's x and z.
+static func _in_place(a: Animation) -> void:
+	for i in a.get_track_count():
+		if a.track_get_type(i) != Animation.TYPE_POSITION_3D or a.track_get_path(i).get_subname(0) != "mixamorig_Hips":
+			continue
+		var first: Vector3 = a.track_get_key_value(i, 0)
+		for k in a.track_get_key_count(i):
+			var p: Vector3 = a.track_get_key_value(i, k)
+			a.track_set_key_value(i, k, Vector3(first.x, p.y, first.z))
 
 ## One frame of `a`, held.
 static func _held(a: Animation, t: float) -> Animation:
@@ -105,6 +131,9 @@ static func attach(visual: Node3D) -> void:
 		ap.free()
 	var sk: Skeleton3D = inst.find_children("*", "Skeleton3D", true, false)[0]
 	var bmi: MeshInstance3D = sk.find_children("*", "MeshInstance3D", true, false)[0]
+	var hook: Callable = visual.get_meta("skin_hook", Callable())
+	if hook.is_valid():  # a reshaped body (docs/BODY_STUDY.md) moves this copy of the skinned mesh first
+		hook.call(sk, bmi)
 	# line the rig's rest pose up with the static mesh (Mixamo returns it at 1/100 scale)
 	var rest := _rest_body(sk, bmi)
 	var rig_box := _box(rest["pos"])

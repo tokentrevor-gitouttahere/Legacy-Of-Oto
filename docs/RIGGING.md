@@ -16,7 +16,27 @@ so any of them works as the skin.
 | `r_punch.fbx` | Right punch | combo hit 2 |
 | `cross_punch.fbx` | Cross punch | combo hit 3 (it launches) |
 | `quad_punch.fbx` | Quad punch | the flurry: hold attack and release, four hits, the last one launching |
+| `kick.fbx` | Kick | not wired to a move yet; impact at 1.26 s (`hits`) |
+| `roundhouse_kick.fbx` | Roundhouse kick | not wired yet; impact at about 1.0 s |
+| `flying_kick.fbx` | Flying kick | not wired yet; impact at 0.45 s. Played in place (see below) |
+| `flying.fbx` | Flying | loops; the body lies flat, hips at standing height |
+| `falling.fbx` | Falling | loops; arms out, hips about 0.35 m above standing height |
+| `fall_impact.fbx` | Falling flat impact | plays once, from mid-air to lying face down (hips end at 0.11 m) |
+| `hit_reaction.fbx` | Hit reaction | plays once, 1.6 s flinch |
+| `taking_punch.fbx` | Taking a punch | plays once, 5.7 s: the stagger comes first, then she recovers to a guard |
+| `stunned.fbx` | Stunned | plays once, 2.1 s: a stumble that ends on her back. Played in place |
+| `defeated.fbx` | Defeated | plays once, 6.7 s: a standing slump, hips do not drop |
 | (none yet) | idle | until an idle animation arrives, she holds the walk's passing frame |
+
+The last ten are registered in `Rig.RIGS["oto"]["anims"]` and play by name
+(`ap.play("hit_reaction")`), but nothing in the game calls them yet. They were renamed from
+the Mixamo names (Hit Reaction, Taking Punch, Falling Flat Impact, ...) to lowercase with
+underscores, like the first six.
+
+`flying_kick` and `stunned` were downloaded without "In Place": the hips travel 2.1 m and
+1.0 m along the floor. `Rig.RIGS["oto"]["in_place"]` lists them, and `Rig.library` flattens the
+hips' x and z to the first key (the height is kept), so the game moves her by code. A new
+animation that travels goes in the same list.
 
 How the files were made: upload `mixamo_upload/oto_clean.zip` to Mixamo, place the markers,
 then download each animation as FBX Binary, 30 fps, no keyframe reduction, with "In Place"
@@ -50,6 +70,8 @@ ticked for anything that travels.
 
 - `python tools/orbit_video.py --mode anims --no-gif` records the animation reel (walk, hot
   walk, combo, flurry, from level, high, low and behind) to `tools/out/anims.avi`.
+- `python tools/orbit_video.py --mode moves --no-gif` records the kicks, flight, falls and
+  reactions one after another (`MOVES` in `scripts/tools/gallery.gd`) to `tools/out/moves.avi`.
 - `godot --headless --path . --script res://scripts/tools/probe_anims.gd -- <fbx...>` prints each
   hand's reach over time. That is how the `hits` times were found.
 - `godot --headless --path . --script res://scripts/tools/inspect_rig.gd -- <fbx...>` lists the
@@ -57,6 +79,8 @@ ticked for anything that travels.
 
 ## Next
 
-- An idle, a run and getting-hit/knock-down animations from Mixamo. The run would replace the
-  sped-up walk when sprinting.
+- An idle and a run from Mixamo. The run would replace the sped-up walk when sprinting.
+- Wire the new clips: hit_reaction on damage (replacing the procedural lean), stunned or
+  fall_impact for a knockdown, defeated for the defeat card, the kicks as moves, flying and
+  falling for the world map and for being launched.
 - Rig the male base (`mixamo_upload/male_base_clean.zip`) and Goku the same way.

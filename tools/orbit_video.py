@@ -23,7 +23,7 @@ def main():
     ap.add_argument("--preset", default="oto")
     ap.add_argument("--shadow", action="store_true")
     ap.add_argument("--resolution", default="960x720")
-    ap.add_argument("--mode", default="orbit", help="gallery mode to record: orbit or anims")
+    ap.add_argument("--mode", default="orbit", help="gallery mode to record: orbit, anims or moves")
     ap.add_argument("--no-gif", action="store_true")
     a = ap.parse_args()
     os.makedirs(run.OUT, exist_ok=True)

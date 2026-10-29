@@ -2,6 +2,7 @@ LEGACY OF OTO - HANDOFF
 Last updated: 2026-10-28, end of session 4 (Oto's face, fitted outfit, Mixamo rig: done, committed,
 pushed and deployed). Read SESSION 5 first (the brief for the next task), then SESSION 4, then
 SESSION 3 (queen's attire), then SESSION 2 (the big build, locked decisions, how to ship).
+Session 5 has begun: ten more Oto animations are in (see "SESSION 5 SO FAR" below).
 
 HOW TO USE THIS FILE
 Paste this whole file (or attach it) at the start of your next prompt. It records what was asked
@@ -28,6 +29,71 @@ STATE AT THE START
   main = 79d6eda "Oto's face, fitted outfit and Mixamo rig" (pushed). gh-pages = e2c0f84, the web
   build of 79d6eda (deployed by the owner with python tools/publish_web.py, live and checked).
   Working tree clean. python tools/run.py test: 86 PASS, 0 FAIL.
+  (main was at 3f42e5b when session 5 began: the handoff close, then the damaged oto.zip and
+  male_base.zip uploads deleted. The clean uploads stay in mixamo_upload/.)
+
+SESSION 5 SO FAR (before the stack below; not committed yet)
+  - The owner sent ten more Oto animations, Mixamo FBX, and said the agent could rename them.
+    They are in assets/models/oto/rig/ under these names (Mixamo's name in brackets):
+      kick [Kicking], roundhouse_kick [Roundhouse Kick], flying_kick [Flying Kick],
+      flying [Flying], falling [falling], fall_impact [Falling Flat Impact],
+      hit_reaction [Hit Reaction], taking_punch [Taking Punch], stunned [Stunned],
+      defeated [Defeated]
+  - Registered in Rig.RIGS["oto"]: they play by name, flying and falling loop, the kicks have
+    "hits" (kick 1.26 s, roundhouse 1.0 s, flying kick 0.45 s; measured, not tuned in play).
+    flying_kick and stunned were downloaded without "In Place" (the hips travel 2.1 m and 1.0 m),
+    so Rig.library flattens their hips x/z ("in_place" list). What each one is: kick, roundhouse
+    and flying kick are strikes; flying is a flat body pose; falling is a mid-air loop; fall_impact
+    drops from the air to lying face down; hit_reaction is a 1.6 s flinch; taking_punch is a long
+    5.7 s stagger-then-recover; stunned stumbles and ends on her back; defeated is a standing
+    slump (hips do not drop).
+  - NOT wired into the game yet: nothing calls them (no hit reaction on damage, no knockdown, no
+    kick move). That is a gameplay decision for the owner (see docs/RIGGING.md, Next).
+  - New: python tools/orbit_video.py --mode moves --no-gif -> tools/out/moves.avi (all ten, one
+    after another, 40 s). Checked by stills: the outfit and cloth follow the body in every pose.
+  - Tests: 88 PASS, 0 FAIL (new: all seventeen animations exist, the two in-place clips do not
+    travel, every strike time lies inside its clip and flying/falling loop).
+  - BODY SHAPES (owner asked: "clone the base model and attempt your changes on that first", then
+    "a figure with the maximum reasonable bust and butt, or a tool with sliders that saves the
+    shape as a preset"). Done as a study; Oto's own mesh and her game characters are untouched.
+      Read docs/BODY_STUDY.md. Title menu > Body Shape Editor (scenes/body_editor.tscn): sliders
+      for bust, waist, hips, butt, stomach (cm), her outfit follows, Save as preset ->
+      assets/models/body_presets.json (curvy, slim, full_figure so far). full_figure (bust 4,
+      waist -1.8, hips 2.5, butt 4) is the "maximum reasonable" figure; 5 cm bust/butt bulges.
+      Code: scripts/characters/body_shape.gd (BodyShape), tools/body_shape.py (offline twin, exports
+      OBJ), scenes/body_study.tscn (side-by-side renders), one optional "skin_hook" in Rig.attach.
+      Pitfalls found (details in the doc): the skinned Mixamo body must be reshaped too; all figures
+      share one skinned mesh resource (never edit it); it has 8 bone weights a point; the two
+      bodies are aligned by bounding box.
+  - OTO'S FINAL BODY (owner, 2026-10-28; BINDING). The owner saved "Oto Body Final" (bust 4.5, waist
+    0.8, hips 1.7, butt 5.0, stomach 0.6) and said it is the new Oto model:
+      * It is her game body now: the oto and oto_stage presets carry "build": "Oto Body Final";
+        Outfits.apply gives every character dressed with them that body (cached).
+      * NO other woman may share her exact proportions; other women get their own builds from the
+        editor (they use the plain base until then).
+      * Her outfits (oto, oto_stage) and the pieces of her queen's attire (Outfits.OTO_ONLY) are hers
+        alone: never on another model. Enforced in Outfits.apply and dev_tests (_test_oto_owned); the
+        editor refuses to save a copy of her shape under another name, and dresses only her shape in
+        her outfit.
+      * Her back scapular now hangs over her real seat (colliders from her body and the fitted
+        pieces over it, 12 rows, pinned outside the peplum). The front panel is unchanged.
+      * The ring round her neck is GONE (owner: "she looks fine without it"). It was first rebuilt as
+        a cloth collar, then removed with its ClothPanel ring mode. She has no collar now.
+      * A soft darker area on each breast (vertex colours, 16-29% darker at the centre, 2.6 cm wide),
+        a hint only: no detail, nothing raised. Strength: BodyShape.AREOLA_DARKEN / AREOLA_RADIUS.
+    Tests: 105 PASS, 0 FAIL after the collar came out. (The angle sweep was run once: hips, chest,
+    back look right.)
+    DEPLOYED (owner asked, 2026-10-28): gh-pages = 33fa291, a web build of main 3f42e5b PLUS this
+    session's uncommitted work (new animations, body editor, Oto Body Final, scapular, no collar).
+    The live pck (5,218,452 bytes) carries body_presets.json with her numbers. NOT yet committed to
+    main: the live build is ahead of the repo until the owner says to commit. tools/publish_web.py
+    now says "plus uncommitted changes" in the gh-pages message when that is so.
+  - OWNER PREFERENCE (2026-10-28): do not run the every-part level/high/low sweep
+    (tools/angle_check.py) by default; ask the owner first. Look at a screenshot of what changed.
+  - CLARIFICATION (owner, 2026-10-28): "Don't adjust the model, adjust the clothing" (session 4)
+    was said about one clothing-fit problem. It is NOT a standing rule: reshaping Oto's body
+    (bust, waist, hips, stomach, ...) is allowed when the owner asks. CLAUDE.md and the notes
+    below were reworded.
 
 THE LIKELY TASK (the owner's words, end of session 4)
   "likely GUI options, dialogue boxes, talking animations, a cutscene editor or director and
@@ -55,7 +121,8 @@ WHAT EXISTS TODAY (so nothing is rebuilt by accident)
     renders a flat face image (a ready-made portrait source). NPC/canon faces are not made
     (Face.HEADS has only "oto").
   - Rig (docs/RIGGING.md): only Oto is rigged. Animations: idle (a held walk frame), walk, hot_walk,
-    l_punch, r_punch, cross_punch, quad_punch. Add one by putting the FBX in
+    l_punch, r_punch, cross_punch, quad_punch, and (session 5) kick, roundhouse_kick, flying_kick,
+    flying, falling, fall_impact, hit_reaction, taking_punch, stunned, defeated. Add one by putting the FBX in
     assets/models/oto/rig/ and a line in Rig.RIGS["oto"]["anims"]; strike timing via
     scripts/tools/probe_anims.gd. male_base and goku are NOT rigged; their cleaned Mixamo uploads
     are mixamo_upload/male_base_clean.zip and goku.zip.
@@ -94,8 +161,9 @@ BRIEF C - TALKING ANIMATIONS
     Skeleton3D bone override on mixamorig_Head/Neck, plus small nods on stressed words. Then
     Mixamo gestures. Ask the owner to download (FBX Binary, 30 fps, no keyframe reduction;
     "Without Skin" is fine): Idle (a female idle), Talking (2-3 variants), Thinking, Nodding
-    (yes), Head shake (no), Waving, Surprised, Angry gesture, Arms crossed, plus Run, Hit reaction,
-    Knocked down, Getting up and a power-up/transform pose for gameplay and cutscenes. The same
+    (yes), Head shake (no), Waving, Surprised, Angry gesture, Arms crossed, plus Run, Getting up
+    and a power-up/transform pose for gameplay and cutscenes (Hit reaction, knockdown and
+    defeated arrived in session 5). The same
     upload process applies (mixamo_upload/oto_clean.zip, see docs/RIGGING.md).
   - NPCs: talking NPCs need faces and rigs first: rig male_base (male_base_clean.zip) and Goku,
     add Face.HEADS entries for them (eye line, ears), then looks per character.
@@ -276,8 +344,9 @@ HOW SESSION 4 ENDED
     by the owner (gh-pages e2c0f84; the live build contains the rig, animations, outfit and
     noses, checked in the exported index.pck).
   - Owner decisions this session, all BINDING: listed in the rounds above. In short: hair never
-    touches the ears; nose size C, all 40 sheet noses kept; clothing is fixed by changing the
-    clothing, never the model; a deep V neckline; check every part from level, high and low; the
+    touches the ears; nose size C, all 40 sheet noses kept; the clothing, not the model, was
+    changed to fix the chest poking through (the owner later said that was for that issue only, not
+    a rule); a deep V neckline; check every part from level, high and low; the
     combo is L punch / R punch / cross; the quad punch is the flurry (the held melee); the
     hot-walk rule (calm 3 s, no enemy within 12 m) is kept.
   - Tests: 86 PASS, 0 FAIL.
@@ -288,7 +357,8 @@ KNOWN LIMITS (after session 4)
     and portraits (Face.card).
   - Only Oto has a face and a rig. Face.HEADS has only "oto"; male_base and goku are unrigged.
   - No idle animation (she holds the walk's passing frame), no run (sprinting plays the walk
-    faster), no hit reactions (still the old procedural lean).
+    faster), hit reactions exist as animations (session 5) but are not wired in: the game still uses
+    the old procedural lean.
   - Dressing Oto takes about 1.6 s (weight transfer for ~60 pieces). Cache per preset if more
     rigged characters share a scene.
   - The static T-pose mesh stays in each rigged wrapper, hidden: outfit, face and fit checks are

@@ -11,7 +11,8 @@ const MALE_SKIN := "res://assets/models/base_male/HUM-Skin-G.png"
 const MODELS := {
 	"oto": {
 		"height": 1.7,
-		"parts": [{"path": "res://assets/models/base_female/model_0.obj", "color": Color(0.29, 0.16, 0.09)}],
+		# vertex colours multiply the skin: BodyShape's soft darker area on each breast
+		"parts": [{"path": "res://assets/models/base_female/model_0.obj", "color": Color(0.29, 0.16, 0.09), "vertex_color": true}],
 	},
 	"goku": {
 		"height": 1.75,
@@ -58,6 +59,7 @@ static func make(key: String, tint: Color = Color.WHITE) -> Node3D:
 		if part.has("texture") or part.has("color"):
 			var m := StandardMaterial3D.new()
 			m.roughness = 0.8
+			m.vertex_color_use_as_albedo = part.get("vertex_color", false)
 			if part.has("texture"):
 				m.albedo_texture = load(part["texture"])
 			var base: Color = part.get("color", Color.WHITE)

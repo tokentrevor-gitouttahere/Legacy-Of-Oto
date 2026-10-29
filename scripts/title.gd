@@ -1,7 +1,7 @@
 extends Control
 ## Title screen. Start the prologue or jump to the test arena.
 
-var items := ["Begin: Prologue", "Explore: World Map", "Test Arena", "Prop and Outfit Gallery", "Quit"]
+var items := ["Begin: Prologue", "Explore: World Map", "Test Arena", "Prop and Outfit Gallery", "Body Shape Editor", "Quit"]
 var cursor := 0
 var _busy := false
 
@@ -45,6 +45,9 @@ func _choose() -> void:
 		"Prop and Outfit Gallery":
 			await Overlay.fade_to(Color.BLACK, 0.5)
 			get_tree().change_scene_to_file("res://scenes/gallery.tscn")
+		"Body Shape Editor":
+			await Overlay.fade_to(Color.BLACK, 0.5)
+			get_tree().change_scene_to_file("res://scenes/body_editor.tscn")
 		"Quit":
 			get_tree().quit()
 

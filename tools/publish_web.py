@@ -41,6 +41,8 @@ def publish(dry_run):
     remote = git("remote", "get-url", "origin")
     name, email = git("config", "user.name"), git("config", "user.email")
     rev = git("rev-parse", "--short", "HEAD")
+    if git("status", "--porcelain"):
+        rev += " plus uncommitted changes"  # the export is of the working tree, not of the commit
     tmp = tempfile.mkdtemp(prefix="oto_pages_")
     try:
         for f in os.listdir(WEB):
@@ -50,7 +52,7 @@ def publish(dry_run):
         git("config", "user.name", name, cwd=tmp)
         git("config", "user.email", email, cwd=tmp)
         git("add", "-A", cwd=tmp)
-        git("commit", "-q", "-m", "Web build of %s\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" % rev, cwd=tmp)
+        git("commit", "-q", "-m", "Web build of %s\n\nCo-Authored-By: Claude <noreply@anthropic.com>" % rev, cwd=tmp)
         if dry_run:
             print("dry run: staged in", tmp)
             return

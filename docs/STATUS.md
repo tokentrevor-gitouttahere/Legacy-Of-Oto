@@ -36,6 +36,11 @@ Test Arena, Prop and Outfit Gallery.
   the real head. She blinks every 5.5-9 s, her mouth moves only while her line types, and Shadow
   forms give her void eyes and black brows. Her hair is now cast onto the head with a fringe and
   a loose strand kept off her eyes. NPC and canon faces are not made yet.
+- **Body shapes** (`docs/BODY_STUDY.md`): a Body Shape Editor on the title menu, with sliders for
+  bust, waist, hips, butt and stomach, and presets saved to `assets/models/body_presets.json`.
+  Oto's game body is the build `Oto Body Final` (no other woman may share it; her outfits are
+  hers alone). A soft darker area on each breast, her back scapular hanging over her seat, and
+  no collar ring. Other women still use the plain base until they get a build.
 - **Characters:** 24 outfit presets with hair, clothes and accessories fitted to measured body
   landmarks: Oto, Chi-Chi, Gohan, Bulma, Krillin, Yamcha, Tien, Piccolo, Kami, Vegeta, Raditz,
   Nappa, Hercule, Master Roshi, the life-energy Saiyan, Saiyan soldier, scientist,

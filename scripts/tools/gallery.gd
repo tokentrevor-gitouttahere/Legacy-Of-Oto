@@ -55,8 +55,9 @@ func _ready() -> void:
 	elif mode == "mesh":  # one raw OBJ, front and side: --mesh res://path.obj
 		Overlay.hint("")
 		_mesh(cam)
-	elif mode == "anims":
+	elif mode == "anims" or mode == "moves":
 		Overlay.hint("")
+		_reel_table = MOVES if mode == "moves" else REEL
 		_anims_setup(cam)
 	elif mode == "orbit":
 		Overlay.hint("")
@@ -125,6 +126,7 @@ var _reel_ch: Node3D
 var _reel_ap: AnimationPlayer
 var _reel_label: Label
 var _reel_cue := -1
+var _reel_table: Array = REEL
 ## [start s, caption, action, camera yaw deg, camera pitch deg, distance]
 const REEL := [
 	[0.0, "Walk", "walk", 30.0, 12.0, 4.2],
@@ -135,6 +137,21 @@ const REEL := [
 	[26.0, "Flurry, from below", "flurry", -25.0, -30.0, 2.9],
 	[30.0, "Combo into flurry, from behind", "combo_flurry", 160.0, 15.0, 3.0],
 	[36.0, "", "end", 0.0, 0.0, 3.0],
+]
+## The kicks, flight, falls and reactions: "clip:<name>" plays that animation once, 0.4 s into its
+## cue, and holds the last pose (a fall stays down). Each cue is the clip's length plus a second.
+const MOVES := [
+	[0.0, "Kick", "clip:kick", 35.0, 8.0, 3.2],
+	[3.2, "Roundhouse kick", "clip:roundhouse_kick", 35.0, 8.0, 3.2],
+	[6.7, "Flying kick (in place)", "clip:flying_kick", 60.0, 8.0, 3.4],
+	[9.2, "Flying", "clip:flying", 50.0, 10.0, 4.8],
+	[12.9, "Falling", "clip:falling", 30.0, 6.0, 3.6],
+	[17.5, "Fall and flat impact", "clip:fall_impact", 70.0, 20.0, 5.0],
+	[20.1, "Hit reaction", "clip:hit_reaction", 35.0, 8.0, 3.2],
+	[22.7, "Taking a punch", "clip:taking_punch", 35.0, 8.0, 3.2],
+	[29.4, "Stunned (in place)", "clip:stunned", 55.0, 20.0, 4.6],
+	[32.5, "Defeated", "clip:defeated", 20.0, 8.0, 3.2],
+	[40.2, "", "end", 0.0, 0.0, 3.0],
 ]
 
 func _anims_setup(cam: Camera3D) -> void:
@@ -171,10 +188,10 @@ func _reel_strike(anim_name: String) -> void:
 
 func _reel_step(t: float) -> void:
 	var cue := 0
-	for i in REEL.size():
-		if t >= float(REEL[i][0]):
+	for i in _reel_table.size():
+		if t >= float(_reel_table[i][0]):
 			cue = i
-	var c: Array = REEL[cue]
+	var c: Array = _reel_table[cue]
 	var local := t - float(c[0])
 	var action: String = c[2]
 	if action == "end":
@@ -196,6 +213,9 @@ func _reel_step(t: float) -> void:
 		var a := local * v / r
 		_reel_ch.position = Vector3(sin(a) * r, 0, cos(a) * r - r)
 		_reel_ch.rotation.y = a + PI / 2.0
+	elif action.begins_with("clip:"):
+		if _orbit_frame - roundi(float(c[0]) * ORBIT_FPS) == roundi(0.4 * ORBIT_FPS):
+			_reel_ap.play(action.substr(5), 0.05)
 	else:
 		# strikes on a beat: combo every 0.42 s, flurry once, a breath between
 		var beat := [] as Array

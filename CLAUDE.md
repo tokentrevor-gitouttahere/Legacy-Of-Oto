@@ -20,9 +20,10 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 | `scripts/models.gd` | `ModelLoader`: base meshes (oto, male_base, goku) |
 | `scripts/characters/rig.gd` | `Rig`: Mixamo skeleton and animations, skinning the outfit to it (`docs/RIGGING.md`); FBX files in `assets/models/oto/rig/` |
 | `scripts/characters/` | `Outfits` presets and `OutfitBuilder` (clothes, hair, accessories); `ClothPanel` cloth physics; `Beast` procedural animals; faces: `FaceCanvas` painter, `FaceParts` kit, `Face` looks and head plates, `FaceRig` live face, `NoseInks` the 40 DBZ noses (`docs/OTO_FACE.md`); `Garment` clothing cast onto the real body |
+| `scripts/characters/body_shape.gd` | `BodyShape`: reshape the female base (bust, waist, hips, butt, stomach) as a copy, with the skinned body moved to match; presets in `assets/models/body_presets.json`; the slider tool is `scenes/body_editor.tscn` (title menu). Not used by the game's characters yet (`docs/BODY_STUDY.md`) |
 | `scripts/world/` | `Props` library, `Mats` textures, `Skies`, `Level` tile maps, `Fixture` (gates, doors, lanterns...), `location.gd`, `world_map.gd` |
 | `scripts/tools/dev_tests.gd` | Headless rule checks, run by `python tools/run.py test` |
-| `scenes/` | title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests |
+| `scenes/` | title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests, body_editor, body_study |
 | `levels/*.json` | Tile-map locations; `levels/world.json` places them on the world map |
 | `assets/models/` | OBJ meshes and `landmarks.json` (body measurements for clothing) |
 | `docs/MECHANICS_REFERENCE.md` | Legacy of Goku II systems vs ours, gameplay backlog, open decisions. Read before building a gameplay system |
@@ -43,7 +44,10 @@ python tools/model_sheet.py male_base              # front/side silhouette with 
 python tools/publish_web.py                        # export the Web preset and deploy it to GitHub Pages
 python tools/orbit_video.py [--shadow]             # 360 orbit + over/under -> tools/out/orbit.avi/.gif
 python tools/orbit_video.py --mode anims --no-gif  # the animation reel -> tools/out/anims.avi
+python tools/orbit_video.py --mode moves --no-gif  # kicks, flight, falls, reactions -> tools/out/moves.avi
 python tools/angle_check.py [--shadow] [--only a,b] # every outfit part level/high/low -> tools/out/angles_*.png
+python tools/run.py shot body_study --resolution 1800x800 --args="--study original;curvy;full_figure --view front [--dress]"  # reshaped bodies side by side
+python tools/body_shape.py --preset full_figure --out tools/out/x.obj  # export a reshaped OBJ (offline twin of BodyShape)
 ```
 
 Repo: github.com/tokentrevor-gitouttahere/Legacy-Of-Oto (public). Live build:
@@ -80,15 +84,23 @@ More sims: `--sim charge|north|interact`. Test arena only: `--pickups`, `--behav
   a cook NPC `"dish": "<id>"`.
 - New outfit: add a preset to `Outfits.PRESETS` (styles listed at the top of `outfits.gd`),
   check it in the gallery turnaround. Hanging cloth (panels, tails) is a `ClothPanel` added with
-  `OutfitBuilder.cloth_panel()`. After any outfit change run `tools/angle_check.py` (the owner
-checks every part from level, high and low) and look at the sheets. Oto's queen's attire (`docs/OTO_OUTFIT.md`) is the example.
+  `OutfitBuilder.cloth_panel()`. Look at a screenshot of what you changed. Do not run the
+  every-part sweep `tools/angle_check.py` (level, high, low) by default: the owner said (2026-10-28) to
+  ask them before doing it. Oto's queen's attire (`docs/OTO_OUTFIT.md`) is the example.
   Clothing that must not let the body through goes in `Garment.tube` (preset `"fitted": true`
-  gives the builder the body mesh); never reshape the base mesh to fit clothes.
+  gives the builder the body mesh). Fix a misfit in the clothing first; reshaping the body is
+  fine when the owner asks for it (they said "adjust the clothing" about one fit problem, not
+  as a rule).
   New face: add a look to `Face.LOOKS` and `"face": "<look>"` (plus `"speaker"`) to the preset;
   check it in `--gallery faces --page 3` and the turnaround `--head`. New location: see
   `docs/LEVEL_FORMAT.md`.
 - Place things in the canonical locations through `tools/make_locations.py`, then
   regenerate. It reproduces the level files exactly.
+- **Oto is hers alone** (owner's rules, `docs/BODY_STUDY.md`): her body is the build `Oto Body Final`
+  (`"build"` on her outfit presets; made in the Body Shape Editor, `assets/models/body_presets.json`);
+  no other woman may share her exact proportions, and her outfits (`oto`, `oto_stage`) and the pieces
+  of her queen's attire (`Outfits.OTO_ONLY`) are never put on another model. `dev_tests` enforces it.
+  Another woman gets her own build in the editor, or the plain base.
 - Oto is rigged (`docs/RIGGING.md`): build clothing on the static T-pose mesh as before;
   `Rig.attach` skins every outfit piece to the skeleton afterwards (fit checks read
   `Rig.fit_arrays`). male_base and goku are still unrigged with procedural motion.

@@ -23,7 +23,7 @@ forearms and shins. They were for mood, not to copy. The design document adds th
 
 | Layer | Look | Style key |
 | --- | --- | --- |
-| Bodice | Sleeveless deep-green linen, crossed over at the chest, low standing collar. Arms and shoulders bare | top `wrap_bodice` |
+| Bodice | Sleeveless deep-green linen, crossed over at the chest, no collar. Arms and shoulders bare | top `wrap_bodice` |
 | Scapular | One long panel over both shoulders, hanging front and back to mid-shin. Gold-thread edges, gold hem; on the front only, a gold plaque bearing the sigil in black | acc `scapular` |
 | Sash | Wide undyed linen wound twice, knotted at her left hip, two tails hanging free | acc `wide_sash` |
 | Royal cord | Gold cord over the sash, gold disc clasp with a black stone, a short gold tassel | acc `royal_cord` |
@@ -71,8 +71,10 @@ that Shadow forms never use gold.
 ## Fitted to her body (Garment)
 
 The bodice, the sash and the trousers are cast onto her real body mesh (`scripts/characters/garment.gd`,
-used by `OutfitBuilder` when the preset has `"fitted": true`). The owner's rule: fix the clothing,
-never the model. Each piece is a grid of rays round a vertical axis, and the cloth:
+used by `OutfitBuilder` when the preset has `"fitted": true`). Her body is the build `Oto Body Final`
+(`docs/BODY_STUDY.md`); the clothing is built on whatever body she has. (The owner once said "adjust the
+clothing, not the model" about one fit problem; that was for that problem, not a rule.) Each piece is a
+grid of rays round a vertical axis, and the cloth:
 
 - stays `ease` mm outside the skin everywhere, so her chest no longer comes through;
 - bridges hollows (between the breasts, the small of the back), as fabric stretched over high points does;
@@ -101,10 +103,22 @@ Also fitted (fourth round):
 - **Hand and forearm wraps**: linen that follows the palm (the fingers stay bare) and the
   forearm, with the edges of the turns, three cords and the loose end.
 
+## Hers alone
+
+Both of Oto's outfits (`oto`, `oto_stage`) are hers: they are only ever dressed on her own body (the
+build `Oto Body Final`), and the pieces of her queen's attire exist for no one else. See
+`Outfits.OTO_PRESETS`, `Outfits.OTO_ONLY` and `docs/BODY_STUDY.md`.
+
+## No collar
+
+The bodice used to have a low standing collar, a hoop round her neck. The owner (2026-10-28) asked
+for it to become cloth, then decided she looks fine without it and had it removed. She has no
+collar; the neckline is the bodice's V over her chest and its shoulder straps.
+
 ## Cloth physics
 
 These pieces are `ClothPanel`s (`scripts/characters/cloth_panel.gd`):
-- the scapular below the sash, front and back
+- the scapular below the sash, front and back (the back hangs over her real seat)
 - the two sash tails
 - the tassel
 - the two wrap ends
