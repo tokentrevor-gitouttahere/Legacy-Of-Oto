@@ -24,8 +24,11 @@ const MODELS := {
 		"height": 1.55,
 		"parts": [
 			{"path": "res://assets/models/base_male/model_2.obj", "texture": MALE_SKIN},
-			{"path": "res://assets/models/base_male/model_0.obj", "texture": MALE_SKIN, "role": "head"},
-			{"path": "res://assets/models/base_male/model_1.obj", "texture": MALE_SKIN, "role": "ears"},
+			# the head and ears were UV-mapped for a texture that did not come with the model: on the
+			# body's sheet they showed its muscle drawings, so they are flat skin at the sheet's
+			# average tone ("shade" keeps them matching the body when a preset sets "skin")
+			{"path": "res://assets/models/base_male/model_0.obj", "color": Color(0.853, 0.853, 0.853), "shade": 0.853, "role": "head"},
+			{"path": "res://assets/models/base_male/model_1.obj", "color": Color(0.853, 0.853, 0.853), "shade": 0.853, "role": "ears"},
 		],
 	},
 }
@@ -65,6 +68,7 @@ static func make(key: String, tint: Color = Color.WHITE) -> Node3D:
 			var base: Color = part.get("color", Color.WHITE)
 			m.albedo_color = base * tint
 			m.set_meta("base_color", m.albedo_color)
+			m.set_meta("shade", float(part.get("shade", 1.0)))
 			mi.material_override = m
 			mats.append(m)
 		rig.add_child(mi)

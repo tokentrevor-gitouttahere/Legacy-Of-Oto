@@ -68,6 +68,7 @@ func _spawn_npcs() -> void:
 		var outfit: String = spec.get("outfit", "")
 		n.model_key = spec.get("model", Outfits.model_for(outfit) if outfit != "" else "male_base")
 		n.display_name = spec.get("name", "")
+		n.prompt = spec.get("prompt", "Talk")  # e.g. "Read" for a note
 		n.model_scale = float(spec.get("scale", Outfits.preset_spec(outfit).get("scale", 1.0)))
 		if spec.has("tint"):
 			n.tint = Level._color(spec["tint"])

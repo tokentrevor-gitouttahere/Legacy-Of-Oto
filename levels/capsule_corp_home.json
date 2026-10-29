@@ -1,0 +1,336 @@
+{
+ "id": "capsule_corp_home",
+ "name": "Capsule Corp: Home",
+ "floor": "carpet",
+ "wall_color": [
+  0.96,
+  0.93,
+  0.88
+ ],
+ "wall_tex": "panels",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "spawns": {
+  "default": [
+   12,
+   13
+  ],
+  "door": [
+   12,
+   13
+  ],
+  "from_capsule_corp_kitchen": [
+   4,
+   2
+  ],
+  "from_capsule_corp_pantry": [
+   9,
+   2
+  ],
+  "from_capsule_corp_garden": [
+   14,
+   2
+  ],
+  "from_capsule_corp_gravity": [
+   19,
+   2
+  ],
+  "from_oto_room": [
+   21,
+   7
+  ],
+  "from_lab": [
+   2,
+   7
+  ],
+  "front": [
+   12,
+   13
+  ]
+ },
+ "exits": {
+  "3": {
+   "to": "capsule_corp_kitchen",
+   "spawn": "door"
+  },
+  "4": {
+   "to": "capsule_corp_pantry",
+   "spawn": "door"
+  },
+  "5": {
+   "to": "capsule_corp_garden",
+   "spawn": "door"
+  },
+  "6": {
+   "to": "capsule_corp_gravity",
+   "spawn": "door"
+  },
+  "7": {
+   "to": "oto_room",
+   "spawn": "door"
+  },
+  "2": {
+   "to": "capsule_corp_lab",
+   "spawn": "home_door"
+  },
+  "1": {
+   "to": "west_city",
+   "spawn": "cc_front"
+  }
+ },
+ "props": [
+  {
+   "type": "sign",
+   "at": [
+    5.3,
+    2
+   ],
+   "params": {
+    "text": "KITCHEN"
+   }
+  },
+  {
+   "type": "sign",
+   "at": [
+    10.3,
+    2
+   ],
+   "params": {
+    "text": "PANTRY"
+   }
+  },
+  {
+   "type": "sign",
+   "at": [
+    15.3,
+    2
+   ],
+   "params": {
+    "text": "GARDEN"
+   }
+  },
+  {
+   "type": "sign",
+   "at": [
+    20.3,
+    2
+   ],
+   "params": {
+    "text": "GRAVITY ROOM"
+   }
+  },
+  {
+   "type": "sign",
+   "at": [
+    20.8,
+    5.8
+   ],
+   "rot": 270,
+   "params": {
+    "text": "OTO"
+   }
+  },
+  {
+   "type": "rug",
+   "at": [
+    11.5,
+    8
+   ],
+   "params": {
+    "w": 8,
+    "d": 5,
+    "color": [
+     0.32,
+     0.5,
+     0.72
+    ]
+   }
+  },
+  {
+   "type": "tv",
+   "at": [
+    11.5,
+    5.2
+   ]
+  },
+  {
+   "type": "sofa",
+   "at": [
+    11.5,
+    10.3
+   ],
+   "rot": 180,
+   "params": {
+    "color": [
+     0.95,
+     0.92,
+     0.86
+    ]
+   }
+  },
+  {
+   "type": "sofa",
+   "at": [
+    8.3,
+    8
+   ],
+   "rot": 90,
+   "params": {
+    "color": [
+     0.95,
+     0.92,
+     0.86
+    ]
+   }
+  },
+  {
+   "type": "sofa",
+   "at": [
+    14.7,
+    8
+   ],
+   "rot": 270,
+   "params": {
+    "color": [
+     0.95,
+     0.92,
+     0.86
+    ]
+   }
+  },
+  {
+   "type": "table",
+   "at": [
+    11.5,
+    8
+   ],
+   "params": {
+    "w": 2.0,
+    "d": 1.0,
+    "color": [
+     0.85,
+     0.85,
+     0.88
+    ]
+   }
+  },
+  {
+   "type": "takeout_stack",
+   "at": [
+    11.2,
+    8
+   ],
+   "params": {
+    "n": 2
+   },
+   "y": 0.8
+  },
+  {
+   "type": "floor_lamp",
+   "at": [
+    6.6,
+    5
+   ]
+  },
+  {
+   "type": "floor_lamp",
+   "at": [
+    16.4,
+    5
+   ]
+  },
+  {
+   "type": "floor_lamp",
+   "at": [
+    6.6,
+    11.6
+   ]
+  },
+  {
+   "type": "floor_lamp",
+   "at": [
+    16.4,
+    11.6
+   ]
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    2.5,
+    2.5
+   ]
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    21.5,
+    2.5
+   ]
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    2.5,
+    13
+   ]
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    21.5,
+    13
+   ]
+  },
+  {
+   "type": "shelf",
+   "at": [
+    2.4,
+    10.4
+   ],
+   "rot": 90
+  },
+  {
+   "type": "capsule_rack",
+   "at": [
+    21.6,
+    10.6
+   ],
+   "rot": 270
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Ayame",
+   "at": [
+    9.8,
+    10.5
+   ],
+   "lines": [
+    "Ayame|You're the new houseguest? Bulma said you'd find the kitchen before you found your room.",
+    "Oto|The kitchen is the first door.",
+    "Ayame|...She was right."
+   ],
+   "outfit": "woman_ayame",
+   "rot": 180
+  }
+ ],
+ "grid": [
+  "                        ",
+  " ###3####4####5####6### ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " 2CCCCCCCCCCCCCCCCCCCC7 ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " #CCCCCCCCCCCCCCCCCCCC# ",
+  " ###########1########## ",
+  "                        "
+ ]
+}

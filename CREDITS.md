@@ -28,3 +28,12 @@
 - **Mixamo** by Adobe (https://www.mixamo.com): the auto-rig and the animations in
   `assets/models/oto/rig/` (Walking, Hot Walking, Left Punching, Right Punching, Cross Punch,
   Quad Punch). Used under Adobe's Mixamo terms, which allow them in games royalty-free.
+
+## Fonts
+
+- **EB Garamond** by Georg Duffner and Octavio Pardo (The EB Garamond Project Authors),
+  SIL Open Font License 1.1: `assets/fonts/EBGaramond-*.ttf`, licence in
+  `assets/fonts/OFL-EBGaramond.txt`. From github.com/google/fonts.
+- **Nunito** by Vernon Adams, Cyreal and Jacques Le Bailly (The Nunito Project Authors),
+  SIL Open Font License 1.1: `assets/fonts/Nunito-*.ttf`, licence in `assets/fonts/OFL-Nunito.txt`.
+  From github.com/google/fonts.

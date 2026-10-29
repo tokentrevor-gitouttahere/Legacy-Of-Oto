@@ -22,6 +22,7 @@ func _ready() -> void:
 	await _test_oto_owned()
 	await _test_women()
 	_test_ui()
+	_test_home()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -678,6 +679,53 @@ func _test_ui() -> void:
 	for id: String in Items.DB.keys() + Items.KEYS.keys() + Dishes.DB.keys():
 		known = known and ItemIcons.tint(id) != UiKit.MUTED
 	_check(known, "every gear piece, key item and dish has an icon colour")
+
+## Capsule Corp, where Oto lives: every door of the house leads to a room that leads back,
+## the house is reached from the lab and from West City, and each new dish has its cook.
+func _test_home() -> void:
+	var rooms := ["capsule_corp_home", "capsule_corp_kitchen", "capsule_corp_pantry", "capsule_corp_garden",
+		"capsule_corp_gravity", "oto_room"]
+	var data := {}
+	for id: String in rooms + ["capsule_corp_lab", "west_city"]:
+		data[id] = JSON.parse_string(FileAccess.get_file_as_string("res://levels/%s.json" % id))
+	var broken: Array = []
+	for id: String in data:
+		for key: String in (data[id].get("exits", {}) as Dictionary):
+			var ex: Dictionary = data[id]["exits"][key]
+			var to: String = ex.get("to", "")
+			if to == "world" or not data.has(to):
+				continue
+			if not (data[to].get("spawns", {}) as Dictionary).has(ex.get("spawn", "default")):
+				broken.append("%s -> %s:%s" % [id, to, ex.get("spawn", "")])
+	_check(broken.is_empty(), "every door in and around the house lands on a real spawn %s" % [broken])
+	var home_exits: Array = []
+	for ex: Dictionary in (data["capsule_corp_home"]["exits"] as Dictionary).values():
+		home_exits.append(ex["to"])
+	var all_rooms := true
+	for id: String in rooms.slice(1):
+		all_rooms = all_rooms and id in home_exits and data[id]["exits"]["1"]["to"] == "capsule_corp_home"
+	var ways_in := 0
+	for id: String in ["capsule_corp_lab", "west_city"]:
+		for ex: Dictionary in (data[id]["exits"] as Dictionary).values():
+			if ex["to"] == "capsule_corp_home":
+				ways_in += 1
+	_check(all_rooms and ways_in == 2, "the hall opens on all five rooms and her bedroom, and is reached from the lab and the city")
+	var served := {}
+	for id: String in data:
+		for n: Dictionary in data[id].get("npcs", []):
+			if n.has("dish"):
+				served[n["dish"]] = true
+	var missing: Array = []
+	for d: String in ["briefs_shortcake", "freezer_ice_cream", "dome_fruit", "gravity_shake", "midnight_noodles"]:
+		if not Dishes.DB.has(d) or not served.has(d):
+			missing.append(d)
+	_check(missing.is_empty(), "each Capsule Corp dish is on the Menu and has someone to serve it %s" % [missing])
+	var den := 0
+	for pr: Dictionary in data["oto_room"]["props"]:
+		if pr["type"] in ["snack_shelf", "minifridge", "takeout_stack", "pizza_boxes", "bean_bag"]:
+			den += 1
+		_check(Props.DOCS.has(pr["type"]), "Oto's room prop %s exists" % pr["type"]) if not Props.DOCS.has(pr["type"]) else null
+	_check(den >= 8, "her room is a food lover's den (%d snack, fridge and takeout props)" % den)
 
 ## The body shaper (docs/BODY_STUDY.md): the shape itself, the skinned copy, and the outfit.
 func _test_body_shape() -> void:

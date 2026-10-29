@@ -1,0 +1,229 @@
+{
+ "id": "capsule_corp_garden",
+ "name": "Capsule Corp: Garden Dome",
+ "base": "grass",
+ "floor": "grass",
+ "wall_color": [
+  0.82,
+  0.92,
+  0.98
+ ],
+ "wall_tex": "panels",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "spawns": {
+  "default": [
+   11,
+   13
+  ],
+  "door": [
+   11,
+   13
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "capsule_corp_home",
+   "spawn": "from_capsule_corp_garden"
+  }
+ },
+ "props": [
+  {
+   "type": "tree_palm",
+   "at": [
+    3,
+    3
+   ],
+   "params": {
+    "size": 0.8
+   }
+  },
+  {
+   "type": "tree_palm",
+   "at": [
+    18,
+    3
+   ],
+   "params": {
+    "size": 0.8
+   }
+  },
+  {
+   "type": "tree_palm",
+   "at": [
+    3,
+    12
+   ],
+   "params": {
+    "size": 0.8
+   }
+  },
+  {
+   "type": "tree_palm",
+   "at": [
+    18,
+    12
+   ],
+   "params": {
+    "size": 0.8
+   }
+  },
+  {
+   "type": "tree_palm",
+   "at": [
+    6,
+    7
+   ],
+   "params": {
+    "size": 0.8
+   }
+  },
+  {
+   "type": "tree_palm",
+   "at": [
+    16,
+    7
+   ],
+   "params": {
+    "size": 0.8
+   }
+  },
+  {
+   "type": "flowers",
+   "at": [
+    6,
+    3.5
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    15,
+    3.5
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    5,
+    10
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    16,
+    10
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    8,
+    11
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    14,
+    11
+   ]
+  },
+  {
+   "type": "bush",
+   "at": [
+    15.5,
+    8.5
+   ],
+   "params": {
+    "size": 0.6
+   }
+  },
+  {
+   "type": "bush",
+   "at": [
+    15.5,
+    12.5
+   ],
+   "params": {
+    "size": 0.6
+   }
+  },
+  {
+   "type": "bush",
+   "at": [
+    3.5,
+    6.5
+   ],
+   "params": {
+    "size": 0.6
+   }
+  },
+  {
+   "type": "bush",
+   "at": [
+    3.5,
+    10.5
+   ],
+   "params": {
+    "size": 0.6
+   }
+  },
+  {
+   "type": "bush",
+   "at": [
+    7.5,
+    5.5
+   ],
+   "params": {
+    "size": 0.6
+   }
+  },
+  {
+   "type": "bush",
+   "at": [
+    13.5,
+    5.5
+   ],
+   "params": {
+    "size": 0.6
+   }
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Hana",
+   "at": [
+    13.6,
+    9
+   ],
+   "lines": [
+    "Hana|Dr. Brief keeps the dome at summer all year. The fruit never stops coming.",
+    "Hana|Take a plate. The parrots are getting ahead of you."
+   ],
+   "outfit": "woman_hana",
+   "rot": 200,
+   "dish": "dome_fruit"
+  }
+ ],
+ "grid": [
+  "                      ",
+  " #################### ",
+  " #..................# ",
+  " #..................# ",
+  " #..................# ",
+  " #.......~~~~.......# ",
+  " #.......~~~~.......# ",
+  " #.......~~~~.......# ",
+  " #........,,,.......# ",
+  " #........,,,.......# ",
+  " #........,,,.......# ",
+  " #........,,,.......# ",
+  " #........,,,.......# ",
+  " #........,,,.......# ",
+  " ##########1######### ",
+  "                      "
+ ]
+}

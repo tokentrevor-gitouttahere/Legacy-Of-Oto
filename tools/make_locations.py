@@ -153,6 +153,13 @@ def west_city():
     g.put(int(cx), int(cy) + 8, "2")
     g.exits["2"] = {"to": "capsule_corp_lab", "spawn": "door"}
     g.spawns["cc_door"] = [int(cx), int(cy) + 10]
+    # the house's own front door, east of the lab's
+    hx = int(cx) + 5
+    g.fill(hx - 1, int(cy) + 8, hx + 1, int(cy) + 11, "+")
+    g.put(hx, int(cy) + 8, "3")
+    g.exits["3"] = {"to": "capsule_corp_home", "spawn": "front"}
+    g.spawns["cc_front"] = [hx, int(cy) + 10]
+    g.prop("sign", hx + 1.6, int(cy) + 9.5, text="HOME")
     g.spawns["default"] = [int(cx), y1 + 2]
     for c, r in [(x0 + 2, y0 + 2), (x1 - 2, y0 + 2), (x0 + 2, y1 - 2), (x1 - 2, y1 - 2)]:
         g.prop("tree_oak", c, r)
@@ -210,6 +217,10 @@ def capsule_corp_lab():
         "Dr. Brief|It is not food.",
     ], rot=180)
     g.exits["1"] = {"to": "west_city", "spawn": "cc_door"}
+    g.put(26, 8, "2")  # east: the hall of the house, where Oto lives now
+    g.exits["2"] = {"to": "capsule_corp_home", "spawn": "from_lab"}
+    g.spawns["home_door"] = [25, 8]
+    g.prop("sign", 24.6, 6.6, rot=270, text="HOME")
     write(gl.level_json(g, "capsule_corp_lab", "Capsule Corp: Laboratory", interior=True, tile=1.5,
                         sky="interior", floor="tile", wall_color=[0.88, 0.92, 0.98], wall_tex="panels"))
 
@@ -461,11 +472,215 @@ def dev_fixtures():
     write(gl.level_json(g, "dev_fixtures", "Fixture Test Room", sky="day", base="grass", wall_color=[0.7, 0.68, 0.64], wall_tex="bricks"))
 
 
+
+# --- Capsule Corp home: where Oto lives now ---------------------------------------
+# A hall with the living room in it, and a door to each room. The rooms lead back to the hall;
+# the hall leads to the lab (west) and out to West City (south).
+
+CC_WALLS = dict(interior=True, tile=1.5, sky="interior")
+HOME_ROOMS = [  # door char, hall cell, level id
+    ("3", (4, 1), "capsule_corp_kitchen"),
+    ("4", (9, 1), "capsule_corp_pantry"),
+    ("5", (14, 1), "capsule_corp_garden"),
+    ("6", (19, 1), "capsule_corp_gravity"),
+    ("7", (22, 7), "oto_room"),
+]
+
+
+def room(cols, rows, floor):
+    """A room whose south door ("1") leads back into the hall, by its own door."""
+    return gl.interior(cols, rows, floor=floor)
+
+
+def back_to_hall(g, level_id):
+    g.exits["1"] = {"to": "capsule_corp_home", "spawn": "from_" + level_id}
+
+
+def capsule_corp_home():
+    g = gl.interior(22, 14, floor="C")
+    for ch, (c, r), to in HOME_ROOMS:
+        g.put(c, r, ch)
+        g.exits[ch] = {"to": to, "spawn": "door"}
+        g.spawns["from_" + to] = [c - 1, r] if c == 22 else [c, r + 1]
+    g.put(1, 7, "2")
+    g.exits["2"] = {"to": "capsule_corp_lab", "spawn": "home_door"}
+    g.spawns["from_lab"] = [2, 7]
+    g.exits["1"] = {"to": "west_city", "spawn": "cc_front"}
+    g.spawns["front"] = list(g.spawns["door"])
+    labels = {"3": "KITCHEN", "4": "PANTRY", "5": "GARDEN", "6": "GRAVITY ROOM"}
+    for ch, (c, r), _ in HOME_ROOMS:
+        if ch in labels:
+            g.prop("sign", c + 1.3, r + 1, text=labels[ch])
+    g.prop("sign", 20.8, 5.8, rot=270, text="OTO")
+    # the living room: a rug, three sofas round the TV, lamps and plants
+    g.prop("rug", 11.5, 8, w=8, d=5, color=[0.32, 0.5, 0.72])
+    g.prop("tv", 11.5, 5.2)
+    g.prop("sofa", 11.5, 10.3, rot=180, color=[0.95, 0.92, 0.86])
+    g.prop("sofa", 8.3, 8, rot=90, color=[0.95, 0.92, 0.86])
+    g.prop("sofa", 14.7, 8, rot=270, color=[0.95, 0.92, 0.86])
+    g.prop("table", 11.5, 8, w=2.0, d=1.0, color=[0.85, 0.85, 0.88])
+    g.prop("takeout_stack", 11.2, 8, n=2)
+    g.props[-1]["y"] = 0.8
+    for c, r in [(6.6, 5), (16.4, 5), (6.6, 11.6), (16.4, 11.6)]:
+        g.prop("floor_lamp", c, r)
+    for c, r in [(2.5, 2.5), (21.5, 2.5), (2.5, 13), (21.5, 13)]:
+        g.prop("plant_pot", c, r)
+    g.prop("shelf", 2.4, 10.4, rot=90)
+    g.prop("capsule_rack", 21.6, 10.6, rot=270)
+    g.npc("Ayame", "woman_ayame", 9.8, 10.5, [
+        "Ayame|You're the new houseguest? Bulma said you'd find the kitchen before you found your room.",
+        "Oto|The kitchen is the first door.",
+        "Ayame|...She was right.",
+    ], rot=180)
+    write(gl.level_json(g, "capsule_corp_home", "Capsule Corp: Home", floor="carpet", wall_color=[0.96, 0.93, 0.88],
+                        wall_tex="panels", **CC_WALLS))
+
+
+def capsule_corp_kitchen():
+    g = room(16, 10, "F")
+    back_to_hall(g, "capsule_corp_kitchen")
+    # the kitchen along the north wall, an island in the middle, the dining tables to the south
+    g.prop("fridge", 2.6, 2.3, rot=180)
+    g.prop("fridge", 3.6, 2.3, rot=180)
+    g.prop("counter", 6.4, 2.3, rot=180, length=3.5)
+    g.prop("stove", 9, 2.3, rot=180)
+    g.prop("stove", 10.2, 2.3, rot=180)
+    g.prop("counter", 13, 2.3, rot=180, length=3.5)
+    g.prop("food_pot", 5.9, 2.3)
+    g.props[-1]["y"] = 0.95  # leftovers on the counter, as often as she likes
+    g.prop("takeout_stack", 13.8, 2.3, n=2)
+    g.props[-1]["y"] = 0.95
+    g.prop("counter", 8.5, 4.6, length=4.5)
+    for c in (7, 8.5, 10):
+        g.prop("chair", c, 5.6, rot=180)
+    g.prop("rug", 8.5, 8, w=13, d=3, color=[0.85, 0.55, 0.3])
+    for cx in (5, 12):
+        g.prop("dinner_table", cx, 8)
+        for c in (cx - 0.9, cx + 0.9):
+            g.prop("chair", c, 7.1, rot=0)
+            g.prop("chair", c, 8.9, rot=180)
+    for c, r in [(2, 9.2), (15, 9.2)]:
+        g.prop("plant_pot", c, r)
+    g.npc("Mrs. Briefs", "mrs_briefs", 7.8, 3.4, [
+        "Mrs. Briefs|Oh, you're up! I made a cake. I always make a cake.",
+        "Mrs. Briefs|Bulma says you eat like a whole army. Isn't that wonderful? Nobody ever finishes my cakes.",
+        "Oto|I will finish it.",
+    ], rot=180, dish="briefs_shortcake")
+    g.npc("Lottie", "woman_lottie", 12, 3.4, [
+        "Lottie|Mrs. Briefs hired me to keep up with you. They told me it was a full-time job.",
+        "Lottie|They undersold it.",
+    ], rot=180)
+    write(gl.level_json(g, "capsule_corp_kitchen", "Capsule Corp: Kitchen", floor="tile", wall_color=[0.98, 0.95, 0.9],
+                        wall_tex="panels", **CC_WALLS))
+
+
+def capsule_corp_pantry():
+    g = room(13, 9, "F")
+    back_to_hall(g, "capsule_corp_pantry")
+    for r in (2.4, 4.9):
+        for c in (3.8, 9.2):
+            g.prop("pantry_rack", c, r)
+    g.prop("pantry_rack", 6.5, 2.4)  # the back wall; the aisle runs down the middle below it
+    g.prop("freezer", 2.8, 7.4, rot=90)
+    g.prop("freezer", 11.2, 7.4, rot=270)
+    g.prop("barrel", 4.6, 8.3)
+    g.prop("barrel", 8.4, 8.3)
+    g.prop("crate", 9.6, 8.3)
+    g.pickups += [{"kind": "rice_ball", "at": [6.5, 4]}, {"kind": "rice_ball", "at": [3.8, 6.6]},
+                  {"kind": "haunch", "at": [6.5, 5.8]}, {"kind": "rice_ball", "at": [9.2, 6.6]}]
+    g.npc("Bryn", "woman_bryn", 10.2, 6.6, [
+        "Bryn|The freezer's capsule core iced over. Everything in it thaws in ten minutes.",
+        "Bryn|So. Ten minutes. Go.",
+    ], rot=200, dish="freezer_ice_cream")
+    write(gl.level_json(g, "capsule_corp_pantry", "Capsule Corp: Pantry", floor="tile", wall_color=[0.86, 0.88, 0.9],
+                        wall_tex="panels", **CC_WALLS))
+
+
+def capsule_corp_garden():
+    rng = random.Random(41)
+    g = room(20, 14, ".")
+    back_to_hall(g, "capsule_corp_garden")
+    g.fill(9, 5, 12, 7, "~")  # the pond
+    g.fill(10, 8, 12, 13, ",")  # a dirt path from the door
+    for c, r in [(3, 3), (18, 3), (3, 12), (18, 12), (6, 7), (16, 7)]:
+        g.prop("tree_palm", c, r, size=0.8)
+    for c, r in [(6, 3.5), (15, 3.5), (5, 10), (16, 10), (8, 11), (14, 11)]:
+        g.prop("flowers", c, r)
+    for _ in range(10):
+        c, r = rng.randint(3, 18), rng.randint(3, 12)
+        if g.get(c, r) == ".":
+            g.prop("bush", c + 0.5, r + 0.5, size=0.6)
+    g.npc("Hana", "woman_hana", 13.6, 9, [
+        "Hana|Dr. Brief keeps the dome at summer all year. The fruit never stops coming.",
+        "Hana|Take a plate. The parrots are getting ahead of you.",
+    ], rot=200, dish="dome_fruit")
+    write(gl.level_json(g, "capsule_corp_garden", "Capsule Corp: Garden Dome", base="grass", floor="grass",
+                        wall_color=[0.82, 0.92, 0.98], wall_tex="panels", **CC_WALLS))
+
+
+def capsule_corp_gravity():
+    g = room(15, 11, "m")
+    back_to_hall(g, "capsule_corp_gravity")
+    g.prop("gravity_machine", 8, 5.2)
+    g.prop("rug", 8, 5.2, w=5, d=5, color=[0.25, 0.25, 0.3])
+    g.prop("weight_rack", 3.5, 2.4)
+    g.prop("weight_rack", 12.5, 2.4)
+    for c, r in [(2.8, 6), (13.2, 6), (2.8, 9), (13.2, 9)]:
+        g.prop("punching_bag", c, r, color=[0.75, 0.15, 0.15])
+    g.enemies += [
+        {"at": [4.5, 4.5], "name": "Training Drone", "hp": 40, "damage": 4, "speed": 2.6, "xp": 6, "behavior": "chase"},
+        {"at": [11.5, 4.5], "name": "Training Drone", "hp": 40, "damage": 4, "speed": 2.6, "xp": 6, "behavior": "shooter"},
+        {"at": [5, 8.5], "name": "Training Drone", "hp": 40, "damage": 4, "speed": 2.6, "xp": 6, "behavior": "chase"},
+    ]
+    g.npc("Jun", "woman_jun", 11, 8.8, [
+        "Jun|I run a class in here at ten times gravity. Nobody comes back for the second lesson.",
+        "Jun|Have a shake. It's mostly protein.",
+    ], rot=200, dish="gravity_shake")
+    write(gl.level_json(g, "capsule_corp_gravity", "Capsule Corp: Gravity Room", floor="metal", wall_color=[0.55, 0.58, 0.64],
+                        wall_tex="panels", **CC_WALLS))
+
+
+def oto_room():
+    """Her room: a guest room turned food lover's den."""
+    g = room(11, 8, "W")
+    back_to_hall(g, "oto_room")
+    g.prop("bed", 9.2, 3.3, color=[0.09, 0.27, 0.16])
+    g.prop("sigil_banner", 9.2, 2.05)
+    g.prop("minifridge", 7.3, 2.2, rot=180)
+    g.prop("takeout_stack", 8.0, 2.1, n=3)
+    for r in (3, 4.6, 6.2):
+        g.prop("snack_shelf", 2.4, r, rot=90)
+    g.prop("tv", 4.8, 2.2)
+    g.prop("rug", 5, 4.4, w=4, d=3, color=[0.85, 0.55, 0.25])
+    g.prop("bean_bag", 4.8, 4.9, rot=180, color=[0.9, 0.48, 0.2])
+    g.prop("pizza_boxes", 3.8, 6.6, n=4)
+    g.prop("pizza_boxes", 6.4, 3.6, n=2)
+    g.prop("takeout_stack", 3.6, 7.4, n=4)
+    g.prop("takeout_stack", 4.2, 7.5, n=2)
+    g.prop("takeout_stack", 10.2, 7.2, n=3)
+    g.prop("table", 8.6, 6.2, w=1.6, d=1.0)
+    g.prop("food_pot", 8.6, 6.2)
+    g.props[-1]["y"] = 0.8  # last night's pot, still warm
+    g.prop("save_lantern", 10.3, 4.9)
+    g.npc("Note on the minifridge", "", 7.3, 3.0, [
+        "|A note on the minifridge, in Bulma's handwriting:",
+        "|\"Oto. This fridge restocks itself every night. It is not a challenge. - B.\"",
+        "|Under it, in a different hand: \"Accepted.\"",
+    ], prompt="Read", dish="midnight_noodles")
+    g.npcs[-1]["model"] = ""  # an invisible marker: the note itself
+    g.spawns["bed"] = [7.3, 3.9]  # beside the bed, facing the minifridge
+    write(gl.level_json(g, "oto_room", "Oto's Room", floor="wood", wall_color=[0.93, 0.9, 0.84],
+                        wall_tex="panels", **CC_WALLS))
+
+
 LOCATIONS = {
     "west_city": west_city, "capsule_corp_lab": capsule_corp_lab, "hercule_city": hercule_city,
     "hercule_mansion_hall": hercule_mansion_hall, "mt_paozu": mt_paozu, "goku_house_interior": goku_house_interior,
     "kame_house": kame_house, "wasteland": wasteland, "korin_forest": korin_forest, "kami_lookout": kami_lookout,
     "dev_fixtures": dev_fixtures,
+    "capsule_corp_home": capsule_corp_home, "capsule_corp_kitchen": capsule_corp_kitchen,
+    "capsule_corp_pantry": capsule_corp_pantry, "capsule_corp_garden": capsule_corp_garden,
+    "capsule_corp_gravity": capsule_corp_gravity, "oto_room": oto_room,
 }
 
 # World map placement (metres on a 3000 x 3000 map, origin at the centre).

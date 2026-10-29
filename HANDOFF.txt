@@ -128,6 +128,49 @@ SESSION 5, PART 2 (2026-10-29): UI, TITLE, TOWNSWOMEN. On branch feature/ui-titl
   - ui_preview test lines (not in the story): Oto "The rice was good. I would like to know where the
     rest of it went." and narration "Then she looks at the tray as if it owes her an explanation."
 
+SESSION 5, PART 3 (2026-10-29): CAPSULE CORP HOME, FONTS, CLOTHING. On branch
+  feature/capsule-corp-home, started from feature/ui-title-npc-women at 602908e (the UI work,
+  committed). The owner's new standing rules: ask about branching EVERY time, and bring open
+  issues as MULTIPLE-CHOICE questions (AskUserQuestion), not prose lists.
+  Owner's task: "fix the clothing to not show the model through it. add the new font. build some
+  interiors and a bedroom for Oto inside Capsule Corp where she lives now". Owner's picks (multiple
+  choice): fonts EB Garamond + Nunito; her room a "food lover's den"; rooms: kitchen and dining,
+  living room, pantry and cold storage, garden dome, plus a gravity chamber (their addition);
+  entrances from the lab and from West City.
+  - Fonts: assets/fonts (OFL, credited in CREDITS.md), wired through UiKit.
+  - Clothing: every woman on the female base but Oto gets cast clothing by default; the male base
+    gets eased box clothes (landmarks ease_k 1.14), looser tights; male heads and ears are flat
+    skin (they showed the body texture sheet's muscle drawings).
+  - Levels: capsule_corp_home (hall and living room), capsule_corp_kitchen (Mrs. Briefs, Lottie),
+    capsule_corp_pantry (Bryn, food pickups), capsule_corp_garden (Hana), capsule_corp_gravity (Jun,
+    three Training Drones; it does NOT teach Focused: the ship's gravity machine does), oto_room
+    (bed, banner, minifridge note, snack shelves, takeout, save lantern, spawn "bed"). Doors: lab
+    east wall, West City "HOME" door east of the lab door.
+  - New props: snack_shelf, takeout_stack, minifridge, pizza_boxes, bean_bag, sigil_banner,
+    pantry_rack, freezer, weight_rack, punching_bag. New preset mrs_briefs. NPC "prompt" key.
+  - Five new dishes (13 on the Menu now): Mrs. Briefs' strawberry shortcake, Rescued freezer ice
+    cream, Garden dome fruit platter, Ten-gravity protein shake, Midnight cup noodles.
+  - Tests: 0 failures (new: the house's doors and spawns, both ways in, every dish has a cook, the
+    den's props).
+  - OWNER (2026-10-29): she will move into Capsule Corp through a CUTSCENE (not built yet). Starts
+    are unchanged until then; the house is reached through West City or the lab.
+  WRITTEN BY CLAUDE, WAITING FOR REVIEW (tools/make_locations.py)
+  - Ayame: "You're the new houseguest? Bulma said you'd find the kitchen before you found your
+    room." / Oto: "The kitchen is the first door." / "...She was right."
+  - Mrs. Briefs: "Oh, you're up! I made a cake. I always make a cake." / "Bulma says you eat like a
+    whole army. Isn't that wonderful? Nobody ever finishes my cakes." / Oto: "I will finish it."
+  - Lottie: "Mrs. Briefs hired me to keep up with you. They told me it was a full-time job." /
+    "They undersold it."
+  - Bryn: "The freezer's capsule core iced over. Everything in it thaws in ten minutes." / "So.
+    Ten minutes. Go."
+  - Hana: "Dr. Brief keeps the dome at summer all year. The fruit never stops coming." / "Take a
+    plate. The parrots are getting ahead of you."
+  - Jun: "I run a class in here at ten times gravity. Nobody comes back for the second lesson." /
+    "Have a shake. It's mostly protein."
+  - The minifridge note: "Oto. This fridge restocks itself every night. It is not a challenge. -
+    B." / Under it, in a different hand: "Accepted."
+  - Dish names above, and the signs KITCHEN, PANTRY, GARDEN, GRAVITY ROOM, OTO, HOME.
+
 THE LIKELY TASK (the owner's words, end of session 4)
   "likely GUI options, dialogue boxes, talking animations, a cutscene editor or director and
   several cutscenes to test proof of concepts." Wait for the owner to say which; then use the

@@ -19,12 +19,20 @@
   "door": [
    14,
    15
+  ],
+  "home_door": [
+   25,
+   8
   ]
  },
  "exits": {
   "1": {
    "to": "west_city",
    "spawn": "cc_door"
+  },
+  "2": {
+   "to": "capsule_corp_home",
+   "spawn": "from_lab"
   }
  },
  "props": [
@@ -141,6 +149,17 @@
      0.75
     ]
    }
+  },
+  {
+   "type": "sign",
+   "at": [
+    24.6,
+    6.6
+   ],
+   "rot": 270,
+   "params": {
+    "text": "HOME"
+   }
   }
  ],
  "npcs": [
@@ -183,7 +202,7 @@
   " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
   " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
   " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
-  " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFFFFFFFFFFFF2 ",
   " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
   " #FFFFFFFFFFFFFFFFFFFFFFFF# ",
   " #FFFFFFFFFFFFFFFFFFFFFFFF# ",

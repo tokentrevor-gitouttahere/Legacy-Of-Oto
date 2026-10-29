@@ -7,10 +7,10 @@ women on the female base: 31 hand-designed women, each recoloured three ways.
 
 The Shadow Saiyans' court: void-violet lacquer panels edged in gold, Oto's jade as the second
 accent, and the Wall sigil (a frame split by one upright line) as the ornament. Gold is trim,
-never fire. Fonts are system fonts (`SystemFont`): a book serif for names and titles
-(Palatino Linotype, Book Antiqua, Georgia), Segoe UI for body text. **The web build has no
-system fonts**, so it falls back to Godot's default font there. Shipping an open-licence font
-(OFL) in `assets/fonts/` would fix that. It needs a download, so it waits for the owner.
+never fire. The fonts ship with the game in `assets/fonts/` (SIL OFL 1.1, licences beside
+them), so the web build matches the desktop: **EB Garamond** (variable, weights 400-800) for
+names and titles, **Nunito** for body text. `UiKit.display_font()` / `body_font()` return them
+at a weight through a `FontVariation`.
 
 | Helper | What |
 | --- | --- |
@@ -81,8 +81,10 @@ python tools/run.py shot title --frames 200
 
 ## Open
 
-- Chi-Chi, Bulma and the two `civilian_f` presets still use the box clothing. Setting
-  `"fitted": true, "cast": true` on them would fix the poke-through, but it changes how
-  established characters look, so it waits for the owner.
-- The 124 women are not placed in any level yet.
-- No web font (see above). No sound for typing or menus yet.
+- Every woman on the female base but Oto now gets cast clothing by default
+  (`Outfits.apply` sets `"cast"` for model `oto`); Chi-Chi, Bulma, the civilians and Mrs. Briefs
+  included. The male base is several overlapping parts, which casting tears, so its box clothes
+  are eased instead (landmarks `"ease_k": 1.14`). Its head and ears are flat skin now: their UVs
+  were made for a texture that never came with the model.
+- Most townswomen are not placed in levels yet; five work at Capsule Corp (Ayame, Lottie, Bryn, Hana, Jun).
+- No sound for typing or menus yet.

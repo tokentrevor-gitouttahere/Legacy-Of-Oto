@@ -43,7 +43,10 @@ def _keys_from_gd(path, const):
 
 def validate_all():
     props = _keys_from_gd("scripts/world/props.gd", "DOCS")
-    outfits = _keys_from_gd("scripts/characters/outfits.gd", "PRESETS")
+    outfits = set(_keys_from_gd("scripts/characters/outfits.gd", "PRESETS"))
+    # the townswomen (npc_women.gd): woman_<design> and its recolours woman_<design>_2..4
+    for d in _keys_from_gd("scripts/characters/npc_women.gd", "DESIGNS"):
+        outfits.update(["woman_" + d] + ["woman_%s_%d" % (d, n) for n in (2, 3, 4)])
     levels = {}
     problems = []
     for path in sorted(glob.glob(os.path.join(ROOT, "levels", "*.json"))):

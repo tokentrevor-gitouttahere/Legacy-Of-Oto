@@ -41,25 +41,34 @@ const SPEAKERS := {
 
 static var _fonts := {}
 
-## The display face for titles and names: a book serif where the system has one.
-static func display_font(bold := true) -> Font:
-	var key := "display%s" % bold
+## The game's fonts ship in assets/fonts (SIL OFL 1.1, see the OFL-*.txt beside them), so the
+## web build looks the same as the desktop: EB Garamond for names and titles, Nunito for text.
+const DISPLAY := "res://assets/fonts/EBGaramond-Variable.ttf"
+const DISPLAY_ITALIC := "res://assets/fonts/EBGaramond-Italic-Variable.ttf"
+const BODY := "res://assets/fonts/Nunito-Variable.ttf"
+const BODY_ITALIC := "res://assets/fonts/Nunito-Italic-Variable.ttf"
+
+## A shipped variable font at a weight (100-900), cached.
+static func _font(path: String, weight: int) -> Font:
+	var key := "%s|%d" % [path, weight]
 	if not _fonts.has(key):
-		var f := SystemFont.new()
-		f.font_names = PackedStringArray(["Palatino Linotype", "Book Antiqua", "Palatino", "Georgia", "Times New Roman", "serif"])
-		f.font_weight = 700 if bold else 400
-		_fonts[key] = f
+		var base := load(path) as FontFile
+		if base == null:
+			_fonts[key] = ThemeDB.fallback_font
+		else:
+			var v := FontVariation.new()
+			v.base_font = base
+			v.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): weight}
+			_fonts[key] = v
 	return _fonts[key]
+
+## The display face for titles and names.
+static func display_font(bold := true) -> Font:
+	return _font(DISPLAY, 700 if bold else 500)
 
 ## The body face for dialogue and menus.
 static func body_font(italic := false) -> Font:
-	var key := "body%s" % italic
-	if not _fonts.has(key):
-		var f := SystemFont.new()
-		f.font_names = PackedStringArray(["Segoe UI", "Helvetica Neue", "Arial", "sans-serif"])
-		f.font_italic = italic
-		_fonts[key] = f
-	return _fonts[key]
+	return _font(BODY_ITALIC if italic else BODY, 500)
 
 ## A font with extra space between letters, for small capitals and the logo.
 static func spaced(base: Font, glyph: int) -> Font:

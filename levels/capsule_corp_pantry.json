@@ -1,0 +1,163 @@
+{
+ "id": "capsule_corp_pantry",
+ "name": "Capsule Corp: Pantry",
+ "floor": "tile",
+ "wall_color": [
+  0.86,
+  0.88,
+  0.9
+ ],
+ "wall_tex": "panels",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "spawns": {
+  "default": [
+   7,
+   8
+  ],
+  "door": [
+   7,
+   8
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "capsule_corp_home",
+   "spawn": "from_capsule_corp_pantry"
+  }
+ },
+ "props": [
+  {
+   "type": "pantry_rack",
+   "at": [
+    3.8,
+    2.4
+   ]
+  },
+  {
+   "type": "pantry_rack",
+   "at": [
+    9.2,
+    2.4
+   ]
+  },
+  {
+   "type": "pantry_rack",
+   "at": [
+    3.8,
+    4.9
+   ]
+  },
+  {
+   "type": "pantry_rack",
+   "at": [
+    9.2,
+    4.9
+   ]
+  },
+  {
+   "type": "pantry_rack",
+   "at": [
+    6.5,
+    2.4
+   ]
+  },
+  {
+   "type": "freezer",
+   "at": [
+    2.8,
+    7.4
+   ],
+   "rot": 90
+  },
+  {
+   "type": "freezer",
+   "at": [
+    11.2,
+    7.4
+   ],
+   "rot": 270
+  },
+  {
+   "type": "barrel",
+   "at": [
+    4.6,
+    8.3
+   ]
+  },
+  {
+   "type": "barrel",
+   "at": [
+    8.4,
+    8.3
+   ]
+  },
+  {
+   "type": "crate",
+   "at": [
+    9.6,
+    8.3
+   ]
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Bryn",
+   "at": [
+    10.2,
+    6.6
+   ],
+   "lines": [
+    "Bryn|The freezer's capsule core iced over. Everything in it thaws in ten minutes.",
+    "Bryn|So. Ten minutes. Go."
+   ],
+   "outfit": "woman_bryn",
+   "rot": 200,
+   "dish": "freezer_ice_cream"
+  }
+ ],
+ "pickups": [
+  {
+   "kind": "rice_ball",
+   "at": [
+    6.5,
+    4
+   ]
+  },
+  {
+   "kind": "rice_ball",
+   "at": [
+    3.8,
+    6.6
+   ]
+  },
+  {
+   "kind": "haunch",
+   "at": [
+    6.5,
+    5.8
+   ]
+  },
+  {
+   "kind": "rice_ball",
+   "at": [
+    9.2,
+    6.6
+   ]
+  }
+ ],
+ "grid": [
+  "               ",
+  " ############# ",
+  " #FFFFFFFFFFF# ",
+  " #FFFFFFFFFFF# ",
+  " #FFFFFFFFFFF# ",
+  " #FFFFFFFFFFF# ",
+  " #FFFFFFFFFFF# ",
+  " #FFFFFFFFFFF# ",
+  " #FFFFFFFFFFF# ",
+  " ######1###### ",
+  "               "
+ ]
+}

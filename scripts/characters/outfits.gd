@@ -62,6 +62,7 @@ const PRESETS := {
 	"chichi": {
 		"skin": [0.98, 0.84, 0.74],
 		"model": "oto",
+		"fitted": true, "cast": true,  # clothes cast onto her body, so it never shows through
 		"hair": {"style": "bun", "color": [0.05, 0.05, 0.07]},
 		"top": {"style": "dress", "color": [0.5, 0.25, 0.6], "sleeves": "short"},
 		"feet": {"style": "shoes", "color": [0.3, 0.15, 0.2]},
@@ -79,11 +80,21 @@ const PRESETS := {
 	"bulma": {
 		"skin": [0.99, 0.86, 0.77],
 		"model": "oto",
+		"fitted": true, "cast": true,  # clothes cast onto her body, so it never shows through
 		"hair": {"style": "bob", "color": [0.2, 0.62, 0.68]},
 		"top": {"style": "jacket", "color": [0.95, 0.55, 0.65], "sleeves": "long"},
 		"bottom": {"style": "pants", "color": [0.22, 0.32, 0.6]},
 		"feet": {"style": "boots", "color": [0.9, 0.9, 0.9]},
 		"acc": [{"style": "belt", "color": [0.2, 0.2, 0.2]}],
+	},
+	"mrs_briefs": {  # Bulma's mother: the house's cook (the Capsule Corp kitchen)
+		"skin": [1.0, 0.87, 0.78],
+		"model": "oto",
+		"fitted": true, "cast": true,
+		"hair": {"style": "bob", "color": [0.98, 0.85, 0.45]},
+		"top": {"style": "dress", "color": [0.98, 0.7, 0.75], "sleeves": "short", "neck": "round"},
+		"feet": {"style": "shoes", "color": [0.95, 0.5, 0.6]},
+		"acc": [{"style": "apron", "color": [0.98, 0.97, 0.95]}, {"style": "earrings", "color": [0.95, 0.8, 0.35]}],
 	},
 	"krillin": {
 		"skin": [1.0, 0.83, 0.7],
@@ -199,6 +210,7 @@ const PRESETS := {
 	"civilian_f": {
 		"skin": [0.98, 0.83, 0.7],
 		"model": "oto",
+		"fitted": true, "cast": true,  # clothes cast onto her body, so it never shows through
 		"hair": {"style": "ponytail", "color": [0.55, 0.3, 0.15]},
 		"top": {"style": "dress", "color": [0.95, 0.85, 0.4], "sleeves": "short"},
 		"feet": {"style": "shoes", "color": [0.7, 0.3, 0.3]},
@@ -206,6 +218,7 @@ const PRESETS := {
 	"civilian_f2": {
 		"skin": [0.6, 0.42, 0.3],
 		"model": "oto",
+		"fitted": true, "cast": true,  # clothes cast onto her body, so it never shows through
 		"hair": {"style": "bob", "color": [0.1, 0.08, 0.06]},
 		"top": {"style": "jacket", "color": [0.4, 0.7, 0.75], "sleeves": "long"},
 		"bottom": {"style": "skirt", "color": [0.3, 0.3, 0.45]},
@@ -308,6 +321,10 @@ static func apply(visual: Node3D, preset: String) -> void:
 			return
 	else:
 		spec = _without_oto_pieces(spec, preset)
+		# every other woman on the female base has the ordinary styles cast onto her real body, so
+		# it never shows through (Oto's outfits are fitted piece by piece and keep their look). The
+		# male base is several overlapping parts, which casting tears; it keeps the eased box clothes.
+		spec["cast"] = spec.get("cast", key == "oto")
 	var old := visual.get_node_or_null("Outfit")
 	if old:
 		visual.remove_child(old)
@@ -316,12 +333,12 @@ static func apply(visual: Node3D, preset: String) -> void:
 	if visual.has_meta("build_amounts"):
 		lm = BodyShape.landmarks(lm, visual.get_meta("build_amounts"))
 	var b := OutfitBuilder.new(lm, float(visual.get_meta("height", 1.8)))
-	if spec.get("fitted", false):  # clothing cast onto the real body (Garment)
+	if spec.get("fitted", false) or spec.get("cast", false):  # clothing cast onto the real body (Garment)
 		b.body = Garment.body_frame(visual)
 	# "skin" replaces the body colour (it multiplies the male base's texture).
 	if spec.has("skin"):
 		for m: StandardMaterial3D in visual.get_meta("mats", []):
-			m.albedo_color = _c(spec["skin"])
+			m.albedo_color = _c(spec["skin"]) * float(m.get_meta("shade", 1.0))
 			m.set_meta("base_color", m.albedo_color)
 	b.build(spec)
 	b.root.name = "Outfit"

@@ -36,6 +36,12 @@ const DOCS := {
 	"plant_pot": "Potted plant", "floor_lamp": "Floor lamp with light", "dinner_table": "Table set with bowls",
 	"crate": "Wooden crate", "barrel": "Barrel", "gravity_machine": "Capsule Corp gravity machine column",
 	"trophy": "Gold trophy on a stand", "pillar": "Stone pillar. h", "torii": "Shrine gate",
+	# Capsule Corp home: Oto's room, the pantry, the gravity chamber
+	"snack_shelf": "Shelf packed with snacks, jars and instant noodles", "takeout_stack": "Stack of takeout boxes with chopsticks. n",
+	"minifridge": "Small fridge with a snack-shaped magnet", "pizza_boxes": "Flat stack of pizza boxes on the floor (walkable). n",
+	"bean_bag": "Floor cushion seat. color", "sigil_banner": "Hanging banner with the Wall sigil. color",
+	"pantry_rack": "Steel pantry shelving: rice sacks, capsule cans, jars", "freezer": "Chest freezer, frosted",
+	"weight_rack": "Rack of heavy dumbbells", "punching_bag": "Hanging punching bag. color",
 	# fixtures: interactive in locations (behaviour in scripts/world/fixture.gd)
 	"level_gate": "Barrier of hard light between posts; opens at a level. level, w",
 	"memory_gate": "Void seal between dark posts; opens with a form or flag. form or flag, w",
@@ -511,6 +517,124 @@ static func make(type: String, p: Dictionary = {}) -> Node3D:
 			_box(n, Vector3(0, 1.3, 0.55), Vector3(0.6, 0.4, 0.06), Mats.glow(Color(1.0, 0.3, 0.3), 0.8))
 			_ball(n, Vector3(0, 2.0, 0), 0.35, Mats.glow(Color(0.5, 0.8, 1.0), 1.0))
 			_block(n, 1.3, 1.3)
+		"snack_shelf":
+			var wood := _m(Color(0.45, 0.3, 0.2), "planks", 2.0)
+			_box(n, Vector3(0, 0.9, -0.2), Vector3(1.4, 1.8, 0.05), wood)  # open-fronted: a back, two sides, a top
+			for x in [-0.68, 0.68]:
+				_box(n, Vector3(x, 0.9, 0), Vector3(0.04, 1.8, 0.45), wood)
+			_box(n, Vector3(0, 1.79, 0), Vector3(1.4, 0.04, 0.45), wood)
+			var rng := RandomNumberGenerator.new()
+			rng.seed = 21
+			for row in 3:
+				_box(n, Vector3(0, 0.32 + row * 0.55, 0.05), Vector3(1.32, 0.03, 0.4), wood)
+				for i in 6:
+					var x := -0.55 + i * 0.22
+					var y := 0.34 + row * 0.55
+					match (i + row) % 3:
+						0:  # a cup of instant noodles
+							_cyl(n, Vector3(x, y, 0.1), 0.08, 0.06, 0.16, _m(Color(0.96, 0.95, 0.9)))
+							_cyl(n, Vector3(x, y + 0.15, 0.1), 0.085, 0.085, 0.015, _m(Color.from_hsv(rng.randf(), 0.7, 0.9)))
+						1:  # a bright snack bag
+							var bag := _box(n, Vector3(x, y + 0.14, 0.12), Vector3(0.16, 0.26, 0.08), _m(Color.from_hsv(rng.randf(), 0.75, 0.95)))
+							bag.rotation.z = rng.randf_range(-0.15, 0.15)
+						_:  # a jar
+							_cyl(n, Vector3(x, y, 0.1), 0.07, 0.07, 0.18, _m(Color(0.85, 0.6, 0.25), "", 1.0, {"alpha": 0.8}))
+							_cyl(n, Vector3(x, y + 0.18, 0.1), 0.072, 0.072, 0.03, _m(Color(0.8, 0.2, 0.2)))
+			_block(n, 0.7, 0.22)
+		"takeout_stack":
+			var k: int = int(p.get("n", 3))
+			for i in k:
+				var b := Node3D.new()
+				b.position = Vector3(0.02 * sin(i * 2.1), 0.0, 0.02 * cos(i * 1.3))
+				b.rotation.y = i * 0.35
+				n.add_child(b)
+				_cyl(b, Vector3(0, i * 0.17, 0), 0.13, 0.1, 0.16, _m(Color(0.97, 0.96, 0.93)), 4)
+				_cyl(b, Vector3(0, i * 0.17 + 0.07, 0), 0.132, 0.132, 0.025, _m(Color(0.85, 0.15, 0.15)), 4)
+			var sticks := _box(n, Vector3(0.05, k * 0.17 + 0.01, 0), Vector3(0.012, 0.012, 0.32), _m(Color(0.8, 0.65, 0.4)))
+			sticks.rotation.y = 0.4
+		"minifridge":
+			_box(n, Vector3(0, 0.42, 0), Vector3(0.6, 0.84, 0.55), _m(Color(0.95, 0.95, 0.97), "", 1.0, {"rough": 0.3}))
+			_box(n, Vector3(0.22, 0.5, 0.28), Vector3(0.04, 0.3, 0.03), _m(Color(0.6, 0.6, 0.62)))
+			_cyl(n, Vector3(-0.1, 0.62, 0.285), 0.07, 0.07, 0.01, _m(Color(1.0, 0.7, 0.3)))  # a magnet shaped like a dumpling
+			_box(n, Vector3(0, 0.86, 0), Vector3(0.62, 0.02, 0.57), _m(Color(0.35, 0.35, 0.38)))
+			_block(n, 0.3, 0.28)
+		"pizza_boxes":
+			var k: int = int(p.get("n", 3))
+			for i in k:
+				var bx := _box(n, Vector3(0.03 * i, 0.03 + i * 0.05, -0.02 * i), Vector3(0.45, 0.045, 0.45), _m(Color(0.78, 0.62, 0.42)))
+				bx.rotation.y = i * 0.3
+			_cyl(n, Vector3(0, k * 0.05 + 0.02, 0), 0.08, 0.08, 0.005, _m(Color(0.85, 0.15, 0.15)))
+		"bean_bag":
+			var c: Color = p.get("color", Color(0.85, 0.45, 0.25))
+			var seat := _ball(n, Vector3(0, 0.28, 0), 0.5, _m(c, "noise", 3.0))
+			seat.scale = Vector3(1.0, 0.6, 1.0)
+			var back := _ball(n, Vector3(0, 0.5, -0.25), 0.4, _m(c.darkened(0.08), "noise", 3.0))
+			back.scale = Vector3(1.0, 0.8, 0.6)
+			_block(n, 0.45, 0.45)
+		"sigil_banner":
+			var c: Color = p.get("color", Color(0.09, 0.27, 0.16))
+			_cyl(n, Vector3(-0.55, 2.3, 0), 0.025, 0.025, 1.1, _m(Color(0.93, 0.73, 0.3), "", 1.0, {"metal": 0.7})).rotation.z = PI / 2
+			_box(n, Vector3(0, 1.6, 0), Vector3(0.9, 1.4, 0.02), _m(c, "noise", 3.0))
+			var pm := StandardMaterial3D.new()  # its own material: the shared ones are cached
+			pm.albedo_color = Color(0.93, 0.73, 0.3)
+			pm.albedo_texture = Sigil.texture(false)
+			pm.metallic = 0.5
+			pm.roughness = 0.4
+			var quad := QuadMesh.new()  # a quad, so the sigil texture covers the face once
+			quad.size = Vector2(0.35, 0.7)
+			_add(n, quad, Vector3(0, 1.65, 0.02), pm)
+			_box(n, Vector3(0, 0.88, 0), Vector3(0.9, 0.05, 0.03), _m(Color(0.93, 0.73, 0.3), "", 1.0, {"metal": 0.7}))
+		"pantry_rack":
+			var steel := _m(Color(0.78, 0.8, 0.84), "", 1.0, {"metal": 0.5, "rough": 0.4})
+			for x in [-0.95, 0.95]:
+				for z in [-0.22, 0.22]:
+					_box(n, Vector3(x, 1.0, z), Vector3(0.04, 2.0, 0.04), steel)
+			var rng := RandomNumberGenerator.new()
+			rng.seed = 33
+			for row in 4:
+				var y := 0.1 + row * 0.55
+				_box(n, Vector3(0, y, 0), Vector3(1.95, 0.03, 0.48), steel)
+				if row == 0:
+					for i in 3:  # rice sacks on the bottom shelf
+						var sack := _ball(n, Vector3(-0.6 + i * 0.6, y + 0.2, 0), 0.24, _m(Color(0.9, 0.86, 0.75), "noise", 4.0))
+						sack.scale = Vector3(1.0, 0.85, 0.8)
+				else:
+					for i in 7:
+						var x := -0.78 + i * 0.26
+						if (i + row) % 2 == 0:  # capsule cans
+							_cyl(n, Vector3(x, y + 0.02, 0.05), 0.08, 0.08, 0.2, _m(Color.from_hsv(rng.randf(), 0.45, 0.95), "", 1.0, {"metal": 0.4}))
+						else:  # jars
+							_cyl(n, Vector3(x, y + 0.02, 0.05), 0.07, 0.07, 0.22, _m(Color.from_hsv(rng.randf() * 0.15, 0.7, 0.8), "", 1.0, {"alpha": 0.85}))
+			_block(n, 1.0, 0.25)
+		"freezer":
+			_box(n, Vector3(0, 0.45, 0), Vector3(1.6, 0.9, 0.8), _m(Color(0.93, 0.95, 0.98), "", 1.0, {"rough": 0.25}))
+			_box(n, Vector3(0, 0.92, 0), Vector3(1.62, 0.06, 0.82), _m(Color(0.75, 0.88, 0.98), "", 1.0, {"alpha": 0.7}))
+			_box(n, Vector3(0, 0.97, 0), Vector3(1.3, 0.04, 0.6), _m(Color(1, 1, 1), "noise", 6.0))  # frost
+			_block(n, 0.8, 0.4)
+		"weight_rack":
+			var steel := _m(Color(0.25, 0.25, 0.28), "", 1.0, {"metal": 0.7, "rough": 0.35})
+			_box(n, Vector3(0, 0.45, 0), Vector3(1.8, 0.06, 0.5), steel)
+			_box(n, Vector3(0, 0.85, 0), Vector3(1.8, 0.06, 0.5), steel)
+			for x in [-0.85, 0.85]:
+				_box(n, Vector3(x, 0.45, 0), Vector3(0.06, 0.9, 0.5), steel)
+			for row in 2:
+				for i in 4:
+					var x := -0.6 + i * 0.4
+					var y := 0.55 + row * 0.4
+					var bar := _cyl(n, Vector3(x - 0.15, y, 0), 0.025, 0.025, 0.3, steel)
+					bar.rotation.z = PI / 2
+					bar.position = Vector3(x, y, 0)
+					for side: float in [-0.13, 0.13]:
+						var plate := _cyl(n, Vector3.ZERO, 0.09 + row * 0.02, 0.09 + row * 0.02, 0.06, _m(Color(0.1, 0.1, 0.12), "", 1.0, {"metal": 0.4}))
+						plate.rotation.z = PI / 2
+						plate.position = Vector3(x + side, y, 0)
+			_block(n, 0.9, 0.25)
+		"punching_bag":
+			var c: Color = p.get("color", Color(0.75, 0.15, 0.15))
+			_cyl(n, Vector3(0, 2.2, 0), 0.015, 0.015, 0.8, _m(Color(0.3, 0.3, 0.3), "", 1.0, {"metal": 0.6}))
+			_cyl(n, Vector3(0, 0.9, 0), 0.28, 0.28, 1.3, _m(c, "noise", 2.0), 14)
+			_cyl(n, Vector3(0, 2.15, 0), 0.24, 0.28, 0.08, _m(c.darkened(0.3)), 14)
+			_block(n, 0.3, 0.3)
 		"trophy":
 			_box(n, Vector3(0, 0.5, 0), Vector3(0.7, 1.0, 0.7), _m(Color(0.3, 0.2, 0.25), "planks", 2.0))
 			var gold := _m(Color(0.95, 0.75, 0.2), "", 1.0, {"metal": 0.8, "rough": 0.25})

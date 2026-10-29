@@ -1,0 +1,287 @@
+{
+ "id": "capsule_corp_kitchen",
+ "name": "Capsule Corp: Kitchen",
+ "floor": "tile",
+ "wall_color": [
+  0.98,
+  0.95,
+  0.9
+ ],
+ "wall_tex": "panels",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "spawns": {
+  "default": [
+   9,
+   9
+  ],
+  "door": [
+   9,
+   9
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "capsule_corp_home",
+   "spawn": "from_capsule_corp_kitchen"
+  }
+ },
+ "props": [
+  {
+   "type": "fridge",
+   "at": [
+    2.6,
+    2.3
+   ],
+   "rot": 180
+  },
+  {
+   "type": "fridge",
+   "at": [
+    3.6,
+    2.3
+   ],
+   "rot": 180
+  },
+  {
+   "type": "counter",
+   "at": [
+    6.4,
+    2.3
+   ],
+   "rot": 180,
+   "params": {
+    "length": 3.5
+   }
+  },
+  {
+   "type": "stove",
+   "at": [
+    9,
+    2.3
+   ],
+   "rot": 180
+  },
+  {
+   "type": "stove",
+   "at": [
+    10.2,
+    2.3
+   ],
+   "rot": 180
+  },
+  {
+   "type": "counter",
+   "at": [
+    13,
+    2.3
+   ],
+   "rot": 180,
+   "params": {
+    "length": 3.5
+   }
+  },
+  {
+   "type": "food_pot",
+   "at": [
+    5.9,
+    2.3
+   ],
+   "y": 0.95
+  },
+  {
+   "type": "takeout_stack",
+   "at": [
+    13.8,
+    2.3
+   ],
+   "params": {
+    "n": 2
+   },
+   "y": 0.95
+  },
+  {
+   "type": "counter",
+   "at": [
+    8.5,
+    4.6
+   ],
+   "params": {
+    "length": 4.5
+   }
+  },
+  {
+   "type": "chair",
+   "at": [
+    7,
+    5.6
+   ],
+   "rot": 180
+  },
+  {
+   "type": "chair",
+   "at": [
+    8.5,
+    5.6
+   ],
+   "rot": 180
+  },
+  {
+   "type": "chair",
+   "at": [
+    10,
+    5.6
+   ],
+   "rot": 180
+  },
+  {
+   "type": "rug",
+   "at": [
+    8.5,
+    8
+   ],
+   "params": {
+    "w": 13,
+    "d": 3,
+    "color": [
+     0.85,
+     0.55,
+     0.3
+    ]
+   }
+  },
+  {
+   "type": "dinner_table",
+   "at": [
+    5,
+    8
+   ]
+  },
+  {
+   "type": "chair",
+   "at": [
+    4.1,
+    7.1
+   ]
+  },
+  {
+   "type": "chair",
+   "at": [
+    4.1,
+    8.9
+   ],
+   "rot": 180
+  },
+  {
+   "type": "chair",
+   "at": [
+    5.9,
+    7.1
+   ]
+  },
+  {
+   "type": "chair",
+   "at": [
+    5.9,
+    8.9
+   ],
+   "rot": 180
+  },
+  {
+   "type": "dinner_table",
+   "at": [
+    12,
+    8
+   ]
+  },
+  {
+   "type": "chair",
+   "at": [
+    11.1,
+    7.1
+   ]
+  },
+  {
+   "type": "chair",
+   "at": [
+    11.1,
+    8.9
+   ],
+   "rot": 180
+  },
+  {
+   "type": "chair",
+   "at": [
+    12.9,
+    7.1
+   ]
+  },
+  {
+   "type": "chair",
+   "at": [
+    12.9,
+    8.9
+   ],
+   "rot": 180
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    2,
+    9.2
+   ]
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    15,
+    9.2
+   ]
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Mrs. Briefs",
+   "at": [
+    7.8,
+    3.4
+   ],
+   "lines": [
+    "Mrs. Briefs|Oh, you're up! I made a cake. I always make a cake.",
+    "Mrs. Briefs|Bulma says you eat like a whole army. Isn't that wonderful? Nobody ever finishes my cakes.",
+    "Oto|I will finish it."
+   ],
+   "outfit": "mrs_briefs",
+   "rot": 180,
+   "dish": "briefs_shortcake"
+  },
+  {
+   "name": "Lottie",
+   "at": [
+    12,
+    3.4
+   ],
+   "lines": [
+    "Lottie|Mrs. Briefs hired me to keep up with you. They told me it was a full-time job.",
+    "Lottie|They undersold it."
+   ],
+   "outfit": "woman_lottie",
+   "rot": 180
+  }
+ ],
+ "grid": [
+  "                  ",
+  " ################ ",
+  " #FFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFF# ",
+  " #FFFFFFFFFFFFFF# ",
+  " ########1####### ",
+  "                  "
+ ]
+}

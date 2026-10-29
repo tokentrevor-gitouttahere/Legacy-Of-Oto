@@ -247,7 +247,13 @@ func build(spec: Dictionary) -> void:
 
 # --- torso --------------------------------------------------------------------
 
+## How much looser the box clothes are on this base mesh (landmarks "ease_k"): the male base's
+## muscles stand out past its measured radii, so its shells and legs are eased to cover them.
+func _ek() -> float:
+	return float(L.get("ease_k", 1.0))
+
 func _shell(c: Color, loose: float) -> void:
+	loose *= _ek()
 	var m := cloth(c)
 	var dr := f("chest_hd") / maxf(f("chest_hw"), 0.001)
 	var wr := f("waist_hd") / maxf(f("waist_hw"), 0.001)
@@ -271,7 +277,9 @@ func _sleeves(c: Color, length: String, loose: float) -> void:
 			limb(e, w.lerp(e, 0.08), f("forearm_r") * 1.35 * loose, f("forearm_r") * 1.45 * loose, m)
 
 func _hips(c: Color, loose: float) -> void:
-	tube(f("crotch_y") - 0.06 * H, f("waist_y"), f("hip_hw") * loose * 0.9, f("waist_hw") * loose * 1.05,
+	loose *= _ek()
+	# an eased base's hips reach lower, over its inner thighs
+	tube(f("crotch_y") - (0.06 + 0.3 * (_ek() - 1.0)) * H, f("waist_y"), f("hip_hw") * loose * 0.9, f("waist_hw") * loose * 1.05,
 		f("hip_hd") / maxf(f("hip_hw"), 0.001), cloth(c))
 
 func _top(t: Dictionary) -> void:
@@ -337,6 +345,8 @@ func _top(t: Dictionary) -> void:
 # --- legs ---------------------------------------------------------------------
 
 func _legs(c: Color, thigh_k: float, knee_k: float, ankle_k: float, to_y: float) -> void:
+	thigh_k *= _ek()
+	knee_k *= _ek()
 	var m := cloth(c)
 	for side: float in [1.0, -1.0]:
 		var x := f("leg_x") * side
@@ -360,8 +370,8 @@ func _bottom(b: Dictionary) -> void:
 			_hips(c, 1.25)
 			_legs(c, 1.45, 1.9, 1.3, f("ankle_y") + 0.03 * H)
 		"tights":
-			_hips(c, 1.05)
-			_legs(c, 1.06, 1.1, 1.15, f("ankle_y") + 0.01 * H)
+			_hips(c, 1.12)
+			_legs(c, 1.16, 1.18, 1.15, f("ankle_y") + 0.01 * H)
 		"shorts":
 			_hips(c, 1.12)
 			_legs(c, 1.2, 1.2, 1.2, f("knee_y") + 0.1 * H)

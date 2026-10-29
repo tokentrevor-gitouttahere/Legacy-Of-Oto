@@ -22,7 +22,7 @@ Open one with `python tools/run.py shot level:<id>` or `GameState.travel("<id>",
 | `spawns` | | `{"name": [col, row]}`; `@` in the grid also sets `default` |
 | `exits` | | `{"1": {"to": "world" or level id, "spawn": "name", "hidden": false}}` |
 | `props` | | `[{"type", "at": [col, row], "rot": deg, "scale", "y", "walkable", "params": {...}}]` |
-| `npcs` | | `[{"name", "outfit", "model", "at", "rot", "scale", "lines": ["Name|text", "|narration"]}]`, plus optional `dish` (a `Dishes` id: serves it once for the Menu), `talk` (a `Talks` script, e.g. `roshi_lesson`), `gives` (key item id), `flag` (set after talking) |
+| `npcs` | | `[{"name", "outfit", "model", "at", "rot", "scale", "lines": ["Name|text", "|narration"]}]`, plus optional `dish` (a `Dishes` id: serves it once for the Menu), `talk` (a `Talks` script, e.g. `roshi_lesson`), `gives` (key item id), `flag` (set after talking), `prompt` (the interact verb, e.g. `"Read"` for a note; `"model": ""` makes the NPC an invisible marker) |
 | `enemies` | | `[{"at", "name", "hp", "damage", "speed", "xp", "drop", "food", "behavior", "tier", "boss", "beast", "model", "outfit"}]`, see below |
 | `pickups` | | `[{"kind": "red3", "at": [c, r], "id"}]`: placed once; collected for good (flag `id`, default `pickup:<level>:<index>`) |
 | `player_outfit` | `oto` | Outfit preset for Oto here |

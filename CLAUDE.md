@@ -26,7 +26,8 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 | `scripts/world/` | `Props` library, `Mats` textures, `Skies`, `Level` tile maps, `Fixture` (gates, doors, lanterns...), `location.gd`, `world_map.gd` |
 | `scripts/tools/dev_tests.gd` | Headless rule checks, run by `python tools/run.py test` |
 | `scenes/` | title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests, body_editor, body_study, ui_preview |
-| `levels/*.json` | Tile-map locations; `levels/world.json` places them on the world map |
+| `levels/*.json` | Tile-map locations; `levels/world.json` places them on the world map. Capsule Corp home (where Oto lives): `capsule_corp_home` (hall and living room) leads to `capsule_corp_kitchen`, `_pantry`, `_garden`, `_gravity` and `oto_room`, and to the lab and West City |
+| `assets/fonts/` | EB Garamond (titles, names) and Nunito (text), SIL OFL; used through `UiKit` |
 | `assets/models/` | OBJ meshes and `landmarks.json` (body measurements for clothing) |
 | `docs/MECHANICS_REFERENCE.md` | Legacy of Goku II systems vs ours, gameplay backlog, open decisions. Read before building a gameplay system |
 | `tools/` | Python tools for building and checking (see below) |

@@ -29,6 +29,8 @@ func _ready() -> void:
 		add_child(l)
 	if prompt == "Talk":
 		prompt = "Talk to %s" % display_name if display_name != "" else "Talk"
+	elif display_name != "" and not prompt.contains(" "):
+		prompt = "%s %s" % [prompt, display_name.to_lower() if display_name.begins_with("Note") else display_name]
 
 func face(pos: Vector3) -> void:
 	if visual:

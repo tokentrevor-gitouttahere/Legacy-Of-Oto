@@ -13,6 +13,12 @@ const DB := {
 	"champion_hot_dog": {"name": "Champion hot dog", "place": "Hercule City"},
 	"champions_buffet": {"name": "The champion's buffet", "place": "Hercule's Mansion"},
 	"yajirobe_rice": {"name": "Yajirobe's rice", "place": "Korin's Holy Land"},
+	# Capsule Corp, where she lives now
+	"briefs_shortcake": {"name": "Mrs. Briefs' strawberry shortcake", "place": "Capsule Corp kitchen"},
+	"freezer_ice_cream": {"name": "Rescued freezer ice cream", "place": "Capsule Corp pantry"},
+	"dome_fruit": {"name": "Garden dome fruit platter", "place": "Capsule Corp garden"},
+	"gravity_shake": {"name": "Ten-gravity protein shake", "place": "Gravity chamber"},
+	"midnight_noodles": {"name": "Midnight cup noodles", "place": "Oto's room"},
 }
 ## Dish count -> reward. "hp" adds to max HP for good; "points" are stat points.
 const MILESTONES := {3: {"hp": 20}, 5: {"points": 3}, 8: {"hp": 30}, 12: {"points": 5}, 16: {"hp": 50}}
