@@ -213,6 +213,18 @@ SESSION 5, PART 4 (2026-10-29): REGION KIT, FOUR REGIONS, A FULLER WEST CITY. On
   - TOWNSWOMAN_LINES (six street lines), stall and street names, foe names (Sand Bandit, Frost
     Raider, Crystal Crawler, Lake Crab, The Lake Warden, Training Drone).
 
+SESSION 5, PART 5 (2026-10-29): CUTSCENES. Branch feature/cutscene-intro (from main d9acced).
+  NOTE: the three earlier feature branches were merged into main and deleted (owner: "I don't like
+  having so many branches"), and main d9acced is published to gh-pages.
+  Owner: "a test cutscene of Oto flying into the scene and shooting a beam before posing and the
+  title screen fades in." Picks: plays at startup, skippable; a void-violet beam.
+  - Cutscene director and CutFx effects (docs/CUTSCENES.md); scenes/intro.tscn is the main scene.
+  - The owner sent seven Mixamo ki animations (BEAM, Casting Spell, 1H/2H Magic Attacks, 2H Magic
+    Area Attacks; one duplicate dropped): registered as beam, cast_spell, ki_blast_1h, ki_blast_2h,
+    ki_blast_2h_b, ki_area, ki_area_b. All in place. The intro uses beam. Not in combat yet.
+  - pose_sheet scene for picking poses. Tests: 126 PASS, 0 FAIL.
+  - The Godot web export templates are installed on this laptop now (web_* only).
+
 THE LIKELY TASK (the owner's words, end of session 4)
   "likely GUI options, dialogue boxes, talking animations, a cutscene editor or director and
   several cutscenes to test proof of concepts." Wait for the owner to say which; then use the

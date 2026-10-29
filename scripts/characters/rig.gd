@@ -30,6 +30,14 @@ const RIGS := {
 			"taking_punch": DIR + "taking_punch.fbx",
 			"stunned": DIR + "stunned.fbx",
 			"defeated": DIR + "defeated.fbx",
+			# ki attacks (session 5): Mixamo's beam, spell and magic attacks
+			"beam": DIR + "beam.fbx",                   # [BEAM]
+			"cast_spell": DIR + "cast_spell.fbx",       # [Casting Spell]
+			"ki_blast_1h": DIR + "ki_blast_1h.fbx",     # [Standing 1H Magic Attack 01]
+			"ki_blast_2h": DIR + "ki_blast_2h.fbx",     # [Standing 2H Magic Attack 01]
+			"ki_blast_2h_b": DIR + "ki_blast_2h_b.fbx", # [Standing 2H Magic Attack 02]
+			"ki_area": DIR + "ki_area.fbx",             # [Standing 2H Magic Area Attack 01]
+			"ki_area_b": DIR + "ki_area_b.fbx",         # [Standing 2H Magic Area Attack 02]
 		},
 		"loop": ["walk", "hot_walk", "flying", "falling"],
 		# Downloaded without "In Place": the hips travel along the floor. Hold the spot (keep the

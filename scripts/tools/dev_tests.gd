@@ -24,6 +24,7 @@ func _ready() -> void:
 	_test_ui()
 	_test_home()
 	_test_regions()
+	await _test_cutscene()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -785,6 +786,18 @@ func _test_regions() -> void:
 	p.hurt(9999.0, p.position + Vector3(1, 0, 0))
 	_check(p.position.distance_to(Vector3(3, 0, 4)) < 0.01, "with no save, a fallen Oto gets up at the location's spawn")
 	p.queue_free()
+
+## The cutscene director and the intro: the ki animations exist and play in place, the game
+## opens on the intro, and it ends (or is skipped) on the title screen.
+func _test_cutscene() -> void:
+	var lib := Rig.library("oto")
+	var ok := true
+	for n: String in ["beam", "cast_spell", "ki_blast_1h", "ki_blast_2h", "ki_blast_2h_b", "ki_area", "ki_area_b"]:
+		ok = ok and lib.has_animation(n)
+	_check(ok, "the seven ki attack animations are in Oto's rig")
+	_check(ProjectSettings.get_setting("application/run/main_scene") == "res://scenes/intro.tscn", "the game opens on the intro cutscene")
+	var src := FileAccess.get_file_as_string("res://scripts/cutscene/intro.gd")
+	_check(src.contains("title.tscn") and src.contains("func finish"), "the intro ends on the title screen, and a skip goes there too")
 
 ## The body shaper (docs/BODY_STUDY.md): the shape itself, the skinned copy, and the outfit.
 func _test_body_shape() -> void:

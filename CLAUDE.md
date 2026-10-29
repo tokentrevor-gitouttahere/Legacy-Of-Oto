@@ -12,6 +12,7 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 | `project.godot` | Autoloads: GameState, Overlay, PauseMenu, Controls |
 | `scripts/game_state.gd` | Level, stats, forms, charge tier, ki techniques, gear, key items, flags, the Menu, saving, `travel()` / `travel_world()` |
 | `scripts/overlay.gd` | Dialogue (`await Overlay.say(["Name|line"])`) with talking portraits, fades, cards, toasts, prompts |
+| `scripts/cutscene/` | `Cutscene` director (sets, actors, poses, flight, camera, skip) and `CutFx` (trail, charge, beam, impact, debris, aura); the game opens on `scenes/intro.tscn`. See `docs/CUTSCENES.md` |
 | `scripts/ui/` | `UiKit` (colours, fonts, panels, bars, the logo), `Portrait` (talking dialogue portraits), `ItemIcons`; see `docs/UI.md` |
 | `scripts/characters/npc_women.gd` | `NpcWomen`: 31 designed townswomen (face + outfit) and three recolours of each, presets `woman_<id>[_2..4]` |
 | `scripts/player.gd` | Oto: movement, combat, forms, interaction, optional `blocker` for walls |
@@ -25,7 +26,7 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 | `scripts/characters/body_shape.gd` | `BodyShape`: reshape the female base (bust, waist, hips, butt, stomach) as a copy, with the skinned body moved to match; presets in `assets/models/body_presets.json`; the slider tool is `scenes/body_editor.tscn` (title menu). Not used by the game's characters yet (`docs/BODY_STUDY.md`) |
 | `scripts/world/` | `Props` library, `Mats` textures, `Skies`, `Level` tile maps, `Fixture` (gates, doors, lanterns...), `location.gd`, `world_map.gd` |
 | `scripts/tools/dev_tests.gd` | Headless rule checks, run by `python tools/run.py test` |
-| `scenes/` | title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests, body_editor, body_study, ui_preview |
+| `scenes/` | intro (the opening cutscene, the main scene), title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests, body_editor, body_study, ui_preview |
 | `levels/*.json` | Tile-map locations; `levels/world.json` places them on the world map. Capsule Corp home (where Oto lives): `capsule_corp_home` (hall and living room) leads to `capsule_corp_kitchen`, `_pantry`, `_garden`, `_gravity` and `oto_room`, and to the lab and West City |
 | Regions | `diablo_desert`, `granite_peaks`, `northern_ice_fields`, `crystal_cavern`, built with the region kit: tile letters, props, skies and generators in `docs/REGIONS.md` (read it before building a new outdoor or cave area). West City shops: `west_city_noodle_bar`, `_bakery`, `_capsule_shop` |
 | `assets/fonts/` | EB Garamond (titles, names) and Nunito (text), SIL OFL; used through `UiKit` |
