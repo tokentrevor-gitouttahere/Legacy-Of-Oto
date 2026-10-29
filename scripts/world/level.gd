@@ -10,6 +10,9 @@ const GROUND := {
 	"pavement": Color(0.58, 0.58, 0.57), "plaza": Color(0.72, 0.69, 0.62), "wood": Color(0.62, 0.44, 0.27),
 	"tile": Color(0.9, 0.9, 0.88), "carpet": Color(0.55, 0.22, 0.22), "water": Color(0.2, 0.45, 0.8),
 	"snow": Color(0.93, 0.95, 0.98), "metal": Color(0.75, 0.78, 0.82), "cloud": Color(0.97, 0.97, 1.0),
+	# regions: canyon floors, scree, sea ice, cave rock and the deep cave lake
+	"sandstone": Color(0.82, 0.52, 0.32), "gravel": Color(0.5, 0.48, 0.46), "ice": Color(0.74, 0.87, 0.95),
+	"cave": Color(0.4, 0.34, 0.32), "deep": Color(0.01, 0.04, 0.1),
 }
 
 ## Default legend. Levels may add or override characters in "legend".
@@ -32,6 +35,19 @@ const TILES := {
 	"L": {"ground": "pavement", "prop": "lamp_post"},
 	"D": {"ground": "$floor", "door": true},
 	"@": {"ground": "$base", "spawn": true},
+	# region kit (docs/REGIONS.md): cliffs and canyon walls, desert, ice, caves
+	"K": {"ground": "$base", "prop": "cliff", "block": true, "jitter": true},
+	"n": {"ground": "sandstone"}, "q": {"ground": "gravel"}, "i": {"ground": "ice"}, "v": {"ground": "cave"},
+	"w": {"ground": "deep", "block": true},
+	"k": {"ground": "sand", "prop": "cactus", "block": true, "jitter": true},
+	"h": {"ground": "sandstone", "prop": "hoodoo", "block": true, "jitter": true},
+	"I": {"ground": "ice", "prop": "ice_spike", "block": true, "jitter": true},
+	"g": {"ground": "snow", "prop": "snow_pine", "block": true, "jitter": true},
+	"d": {"ground": "snow", "prop": "snow_drift", "jitter": true},
+	"V": {"ground": "cave", "prop": "cave_column", "block": true, "jitter": true},
+	"X": {"ground": "cave", "prop": "crystal_cluster", "params": {"light": false}, "block": true, "jitter": true},
+	"u": {"ground": "cave", "prop": "glow_mushroom", "jitter": true},
+	"Z": {"ground": "cave", "prop": "stalagmite", "block": true, "jitter": true},
 }
 
 const BUILDING_STYLES := ["west", "modern", "village"]
@@ -172,6 +188,10 @@ func _build_ground() -> void:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	st.set_normal(Vector3.UP)
+	var wet := SurfaceTool.new()  # water and the deep lake: their own glossy surface
+	wet.begin(Mesh.PRIMITIVE_TRIANGLES)
+	wet.set_normal(Vector3.UP)
+	var any_wet := false
 	for r in rows:
 		for c in cols:
 			var def := tile_def(c, r)
@@ -180,18 +200,26 @@ func _build_ground() -> void:
 			var base: Color = GROUND.get(_ground_name(def), Color.MAGENTA)
 			var j := 0.04 * (float(hash(Vector2i(c, r)) % 100) / 100.0 - 0.5)
 			var col := Color(base.r + j, base.g + j, base.b + j)
-			var y := -0.08 if _ground_name(def) == "water" else 0.0
+			var y := -0.08 if _ground_name(def) in ["water", "deep"] else 0.0
 			var x0 := c * tile
 			var z0 := r * tile
 			var quad := [Vector3(x0, y, z0), Vector3(x0 + tile, y, z0), Vector3(x0 + tile, y, z0 + tile), Vector3(x0, y, z0 + tile)]
+			var target := wet if y < 0.0 else st
+			any_wet = any_wet or y < 0.0
 			for i in [0, 1, 2, 0, 2, 3]:
-				st.set_color(col)
-				st.add_vertex(quad[i])
+				target.set_color(col)
+				target.add_vertex(quad[i])
 	var mi := MeshInstance3D.new()
 	mi.name = "Ground"
 	mi.mesh = st.commit()
 	mi.material_override = Mats.get_mat(Color.WHITE, "noise", 0.5, {"vertex_color": true})
 	add_child(mi)
+	if any_wet:
+		var wi := MeshInstance3D.new()
+		wi.name = "Water"
+		wi.mesh = wet.commit()
+		wi.material_override = Mats.get_mat(Color.WHITE, "noise", 0.15, {"vertex_color": true, "rough": 0.06, "metal": 0.35})
+		add_child(wi)
 
 func _build_cells() -> void:
 	var wall_h: float = data.get("wall_height", 3.0)

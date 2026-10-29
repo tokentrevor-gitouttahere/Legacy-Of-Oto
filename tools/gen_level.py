@@ -276,6 +276,268 @@ def interior(cols, rows, floor="W"):
     return g
 
 
+# --- region kit (docs/REGIONS.md) -------------------------------------------------
+# Building blocks for big outdoor and underground regions, reusable for any new location:
+# value noise, winding paths, reachability, and four region builders. Tile letters are in
+# docs/LEVEL_FORMAT.md: K cliff, n sandstone, k cactus, h hoodoo, q gravel, i ice, I ice spikes,
+# g snowy pine, d drift, v cave floor, V cave wall, X crystals, u mushrooms, Z stalagmite, w deep water.
+
+import math as _math
+
+
+class Noise:
+    """Smooth 2D value noise in [0, 1]; `scale` is the feature size in cells."""
+
+    def __init__(self, seed, scale=8.0, octaves=3):
+        self.rng = random.Random(seed)
+        self.scale = scale
+        self.octaves = octaves
+        self.table = [self.rng.random() for _ in range(4096)]
+
+    def _v(self, x, y):
+        return self.table[(x * 73856093 ^ y * 19349663) & 4095]
+
+    def _smooth(self, x, y):
+        x0, y0 = _math.floor(x), _math.floor(y)
+        fx, fy = x - x0, y - y0
+        fx, fy = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy)
+        a = self._v(x0, y0) + (self._v(x0 + 1, y0) - self._v(x0, y0)) * fx
+        b = self._v(x0, y0 + 1) + (self._v(x0 + 1, y0 + 1) - self._v(x0, y0 + 1)) * fx
+        return a + (b - a) * fy
+
+    def __call__(self, c, r):
+        total, amp, norm, f = 0.0, 1.0, 0.0, 1.0 / self.scale
+        for _ in range(self.octaves):
+            total += self._smooth(c * f, r * f) * amp
+            norm += amp
+            amp *= 0.5
+            f *= 2.0
+        return total / norm
+
+
+def wander(g, a, b, ch, width, rng, wiggle=0.35, step=4):
+    """A winding path of `ch` from a to b, `width` cells wide (valleys, trails, rock bridges)."""
+    (c, r), (c1, r1) = a, b
+    pts = [(c, r)]
+    n = max(int(max(abs(c1 - c), abs(r1 - r)) / step), 1)
+    for i in range(1, n):
+        t = i / n
+        pc, pr = c + (c1 - c) * t, r + (r1 - r) * t
+        span = max(abs(c1 - c), abs(r1 - r)) * wiggle
+        pts.append((pc + rng.uniform(-span, span) * 0.25, pr + rng.uniform(-span, span) * 0.25))
+    pts.append((c1, r1))
+    rad = width / 2.0
+    for p, q in zip(pts, pts[1:]):  # a round brush along each segment, so bends are smooth
+        steps = max(int(max(abs(q[0] - p[0]), abs(q[1] - p[1])) * 2), 1)
+        for k in range(steps + 1):
+            x = p[0] + (q[0] - p[0]) * k / steps
+            y = p[1] + (q[1] - p[1]) * k / steps
+            for dr in range(-int(rad) - 1, int(rad) + 2):
+                for dc in range(-int(rad) - 1, int(rad) + 2):
+                    if dc * dc + dr * dr <= rad * rad + 0.25:
+                        cc, rr = int(round(x + dc)), int(round(y + dr))
+                        if g.inside(cc, rr):
+                            g.put(cc, rr, ch)
+
+
+def reachable(g, start, walkable):
+    """Cells reachable on foot from `start` through characters in `walkable` (and exits)."""
+    seen = {tuple(start)}
+    todo = [tuple(start)]
+    while todo:
+        c, r = todo.pop()
+        for dc, dr in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nb = (c + dc, r + dr)
+            if nb not in seen and g.inside(*nb) and (g.get(*nb) in walkable or g.get(*nb).isdigit()):
+                seen.add(nb)
+                todo.append(nb)
+    return seen
+
+
+def seal_unreachable(g, start, walkable, wall):
+    """Turn walkable pockets nobody can reach from `start` into `wall`, so nothing is placed
+    where Oto cannot go. Returns how many cells were sealed."""
+    ok = reachable(g, start, walkable)
+    n = 0
+    for r in range(g.rows):
+        for c in range(g.cols):
+            if g.get(c, r) in walkable and (c, r) not in ok:
+                g.put(c, r, wall)
+                n += 1
+    return n
+
+
+def cutaway(g, wall):
+    """The camera looks north from the south: solid `wall` with more wall to its north is
+    made void from the bottom up, leaving one row of wall along the floor's south edge, so
+    rock below the floor never stands between the camera and Oto."""
+    for c in range(g.cols):
+        r = g.rows - 1
+        while r > 0 and g.get(c, r) in (wall, "X") and g.get(c, r - 1) in (wall, "X"):
+            g.put(c, r, " ")
+            r -= 1
+
+
+def _edge_exit(g):
+    g.ring(0, 0, g.cols - 1, g.rows - 1, "1")
+    g.exits["1"] = {"to": "world"}
+
+
+def canyons(cols, rows, seed=1):
+    """Desert: mesas and canyon walls (K) over sand, sandstone valleys winding between them,
+    hoodoos, cacti, rocks and dead trees. Spawn in the middle; the map edge leads out."""
+    rng = random.Random(seed)
+    nz = Noise(seed, scale=9.0)
+    g = Grid(cols, rows, ":")
+    for r in range(rows):
+        for c in range(cols):
+            v = nz(c, r)
+            if v > 0.6:
+                g.put(c, r, "K")
+            elif v > 0.55:
+                g.put(c, r, "n")
+    cx, cy = cols // 2, rows // 2
+    for _ in range(5):  # valleys from the middle out to the edges
+        a = rng.uniform(0, _math.tau)
+        end = (int(cx + _math.cos(a) * cols * 0.48), int(cy + _math.sin(a) * rows * 0.48))
+        wander(g, (cx, cy), end, "n", 3, rng)
+    for _ in range(3):  # side canyons
+        wander(g, (rng.randint(4, cols - 5), rng.randint(4, rows - 5)), (rng.randint(4, cols - 5), rng.randint(4, rows - 5)), "n", 2, rng)
+    g.scatter("k", cols * rows // 70, rng, only=":")
+    g.scatter("h", cols * rows // 160, rng, only="n:")
+    g.scatter("r", cols * rows // 120, rng, only=":n")
+    g.fill(cx - 3, cy - 3, cx + 3, cy + 3, "n")
+    g.spawns["default"] = [cx, cy]
+    _edge_exit(g)
+    seal_unreachable(g, (cx, cy), set(":n"), "K")
+    return g
+
+
+def peaks(cols, rows, seed=1):
+    """Mountains: ridges of grey cliff (K) and crags, scree slopes (q), alpine meadows in the
+    valleys, pines, and snow toward the summit (north). A switchback trail climbs to the top."""
+    rng = random.Random(seed)
+    nz = Noise(seed, scale=7.0)
+    ridge = Noise(seed + 1, scale=14.0)
+    g = Grid(cols, rows, ".")
+    for r in range(rows):
+        for c in range(cols):
+            alt = 1.0 - r / rows  # higher to the north
+            v = nz(c, r) * 0.65 + abs(ridge(c, r) - 0.5) * 0.9 + alt * 0.25
+            snow = alt > 0.7
+            if v > 0.78:
+                g.put(c, r, "K")
+            elif v > 0.68:
+                g.put(c, r, "s" if snow else "q")
+            elif v > 0.6:
+                g.put(c, r, "s" if snow else ";")
+            elif snow:
+                g.put(c, r, "s")
+    cx, cy = cols // 2, rows - 6
+    sx, sy = cols // 2, 5
+    pts = [(cx, cy)]
+    for k in range(1, 6):  # switchbacks up the slope
+        pts.append((cols // 2 + (cols // 3 if k % 2 else -cols // 3), cy - (cy - sy) * k // 6))
+    pts.append((sx, sy))
+    for p, q in zip(pts, pts[1:]):
+        wander(g, p, q, ",", 2, rng, wiggle=0.15)
+    g.scatter("P", cols * rows // 50, rng, only=".")
+    g.scatter("g", cols * rows // 90, rng, only="s")
+    g.scatter("r", cols * rows // 90, rng, only=".;q")
+    g.fill(cx - 2, cy - 2, cx + 2, cy + 2, ",")
+    g.fill(sx - 2, sy - 2, sx + 2, sy + 2, "s")
+    g.spawns["default"] = [cx, cy]
+    g.spawns["summit"] = [sx, sy + 1]
+    _edge_exit(g)
+    seal_unreachable(g, (cx, cy), set(".,;qs"), "K")
+    return g
+
+
+def ice_fields(cols, rows, seed=1):
+    """Arctic: snowfields and sea ice (i) with leads of open water, ice cliffs (K), ice-spike
+    clusters, drifts and snowy pines along the landward (south) edge."""
+    rng = random.Random(seed)
+    nz = Noise(seed, scale=8.0)
+    cracks = Noise(seed + 7, scale=5.0)
+    g = Grid(cols, rows, "s")
+    for r in range(rows):
+        for c in range(cols):
+            sea = 1.0 - r / rows  # the sea ice lies north
+            v = nz(c, r)
+            if sea > 0.45 and v < 0.55:
+                g.put(c, r, "i")
+                if abs(cracks(c, r) - 0.5) < 0.03 and sea > 0.55:
+                    g.put(c, r, "~")
+            elif v > 0.72:
+                g.put(c, r, "K")
+    g.scatter("I", cols * rows // 80, rng, only="si")
+    g.scatter("d", cols * rows // 50, rng, only="s")
+    for _ in range(4):
+        g.blob(rng.randint(0, cols), rng.randint(int(rows * 0.7), rows), rng.randint(3, 5), "g", rng, only="s")
+    cx, cy = cols // 2, int(rows * 0.7)
+    g.fill(cx - 3, cy - 3, cx + 3, cy + 3, "s")
+    g.spawns["default"] = [cx, cy]
+    _edge_exit(g)
+    seal_unreachable(g, (cx, cy), set("sid"), "K")
+    return g
+
+
+def cavern(cols, rows, seed=1, lake=0.32):
+    """Underground: a cave grown by cellular automaton (V walls, v floor), a huge dark lake (w)
+    in the middle with an island reached by a winding rock bridge, crystals on the walls,
+    mushrooms and stalagmites. The entrance (exit "1") is on the south wall."""
+    rng = random.Random(seed)
+    g = Grid(cols, rows, "V")
+    cells = [[rng.random() < 0.5 for _ in range(cols)] for _ in range(rows)]
+    for _ in range(5):
+        nxt = [[False] * cols for _ in range(rows)]
+        for r in range(rows):
+            for c in range(cols):
+                n = sum(cells[rr][cc] for rr in range(r - 1, r + 2) for cc in range(c - 1, c + 2)
+                        if 0 <= rr < rows and 0 <= cc < cols and (rr, cc) != (r, c))
+                nxt[r][c] = n >= 5 or (cells[r][c] and n >= 4)
+        cells = nxt
+    for r in range(2, rows - 2):
+        for c in range(2, cols - 2):
+            if cells[r][c]:
+                g.put(c, r, "v")
+    cx, cy = cols // 2, rows // 2
+    # the lake: an oval, ragged at the shore, with an island
+    rx, ry = cols * lake, rows * lake
+    for r in range(rows):
+        for c in range(cols):
+            d = ((c - cx) / rx) ** 2 + ((r - cy) / ry) ** 2
+            if d < 1.0 + rng.uniform(-0.12, 0.12):
+                g.put(c, r, "w")
+            elif d < 1.6 and g.get(c, r) == "V" and 2 < c < cols - 3 and 2 < r < rows - 3:
+                g.put(c, r, "v")  # a walkable shore all the way round
+    g.blob(cx + rx * 0.25, cy - ry * 0.15, max(rx * 0.22, 3), "v", rng)
+    ex, ey = cx, rows - 3
+    wander(g, (ex, ey), (cx, int(cy + ry * 1.1)), "v", 3, rng, wiggle=0.2)
+    island = (int(cx + rx * 0.25), int(cy - ry * 0.15))
+    wander(g, (cx, int(cy + ry * 1.05)), island, "v", 2, rng, wiggle=0.4)  # the rock bridge
+    g.spawns["default"] = [ex, ey]
+    g.spawns["island"] = list(island)
+    seal_unreachable(g, (ex, ey), set("v"), "V")
+    # dress the walls: crystals where the floor meets them, mushrooms and stalagmites on the floor
+    for r in range(1, rows - 1):
+        for c in range(1, cols - 1):
+            if g.get(c, r) == "V" and any(g.get(c + dc, r + dr) == "v" for dc, dr in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                if rng.random() < 0.12:
+                    g.put(c, r, "X")
+    g.scatter("u", cols * rows // 45, rng, only="v")
+    g.scatter("Z", cols * rows // 110, rng, only="v")
+    for k in ("default", "island"):
+        c, r = g.spawns[k]
+        g.fill(c - 1, r - 1, c + 1, r + 1, "v")
+    cutaway(g, "V")
+    g.put(ex, rows - 2, "1")  # the way out, last so nothing paints over it
+    for c in range(ex - 2, ex + 3):
+        g.put(c, rows - 1, " ")
+    g.exits["1"] = {"to": "world"}
+    return g
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("kind", choices=["city", "town", "wild", "island", "interior"])

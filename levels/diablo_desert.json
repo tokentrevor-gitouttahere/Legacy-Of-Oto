@@ -1,0 +1,412 @@
+{
+ "id": "diablo_desert",
+ "name": "Diablo Desert",
+ "sky": "desert",
+ "base": "sand",
+ "backdrop": "mesas",
+ "legend": {
+  "K": {
+   "ground": "$base",
+   "prop": "cliff",
+   "params": {
+    "color": [
+     0.66,
+     0.36,
+     0.24
+    ],
+    "h": 7.0
+   },
+   "block": true,
+   "jitter": true
+  }
+ },
+ "spawns": {
+  "default": [
+   42,
+   32
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "world"
+  }
+ },
+ "props": [
+  {
+   "type": "campfire",
+   "at": [
+    44,
+    30
+   ]
+  },
+  {
+   "type": "tent",
+   "at": [
+    41.5,
+    28.5
+   ],
+   "rot": 30,
+   "params": {
+    "color": [
+     0.85,
+     0.72,
+     0.5
+    ]
+   }
+  },
+  {
+   "type": "tent",
+   "at": [
+    46.5,
+    28.5
+   ],
+   "rot": -30,
+   "params": {
+    "color": [
+     0.85,
+     0.72,
+     0.5
+    ]
+   }
+  },
+  {
+   "type": "tent",
+   "at": [
+    44,
+    27
+   ],
+   "params": {
+    "color": [
+     0.85,
+     0.72,
+     0.5
+    ]
+   }
+  },
+  {
+   "type": "save_lantern",
+   "at": [
+    41,
+    31
+   ]
+  },
+  {
+   "type": "bones",
+   "at": [
+    67,
+    14
+   ],
+   "rot": 40,
+   "params": {
+    "size": 1.6
+   }
+  },
+  {
+   "type": "dead_tree",
+   "at": [
+    63,
+    17
+   ]
+  },
+  {
+   "type": "dead_tree",
+   "at": [
+    67,
+    17
+   ]
+  },
+  {
+   "type": "dead_tree",
+   "at": [
+    71,
+    17
+   ]
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Nadia",
+   "at": [
+    45.5,
+    31.2
+   ],
+   "lines": [
+    "Nadia|You walked here? Nobody walks here. Sit. The bread is nearly done.",
+    "Oto|I can wait for bread.",
+    "Nadia|You say that like it costs you something."
+   ],
+   "outfit": "woman_nadia",
+   "rot": 200,
+   "dish": "desert_flatbread"
+  }
+ ],
+ "enemies": [
+  {
+   "at": [
+    72,
+    31
+   ],
+   "beast": "scorpion",
+   "tier": 2,
+   "name": "Scorpion",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    33,
+    49
+   ],
+   "beast": "scorpion",
+   "tier": 2,
+   "name": "Scorpion",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    23,
+    43
+   ],
+   "beast": "scorpion",
+   "tier": 2,
+   "name": "Scorpion",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    12,
+    40
+   ],
+   "beast": "scorpion",
+   "tier": 2,
+   "name": "Scorpion",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    69,
+    51
+   ],
+   "beast": "raptor",
+   "tier": 2,
+   "name": "Raptor",
+   "hp": 60,
+   "damage": 7,
+   "speed": 3.6,
+   "xp": 22,
+   "behavior": "chase",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    68,
+    33
+   ],
+   "beast": "raptor",
+   "tier": 2,
+   "name": "Raptor",
+   "hp": 60,
+   "damage": 7,
+   "speed": 3.6,
+   "xp": 22,
+   "behavior": "chase",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    59,
+    52
+   ],
+   "beast": "raptor",
+   "tier": 2,
+   "name": "Raptor",
+   "hp": 60,
+   "damage": 7,
+   "speed": 3.6,
+   "xp": 22,
+   "behavior": "chase",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    40,
+    9
+   ],
+   "name": "Sand Bandit",
+   "outfit": "civilian_m2",
+   "hp": 120,
+   "damage": 9,
+   "xp": 40,
+   "behavior": "chase",
+   "tier": 2,
+   "drop": "blue"
+  },
+  {
+   "at": [
+    16,
+    30
+   ],
+   "name": "Sand Bandit",
+   "outfit": "civilian_m2",
+   "hp": 120,
+   "damage": 9,
+   "xp": 40,
+   "behavior": "chase",
+   "tier": 2,
+   "drop": "red"
+  },
+  {
+   "at": [
+    7,
+    15
+   ],
+   "name": "Sand Bandit",
+   "outfit": "civilian_m2",
+   "hp": 120,
+   "damage": 9,
+   "xp": 40,
+   "behavior": "chase",
+   "tier": 2,
+   "drop": "green"
+  },
+  {
+   "at": [
+    29,
+    27
+   ],
+   "name": "Sand Bandit",
+   "outfit": "civilian_m2",
+   "hp": 120,
+   "damage": 9,
+   "xp": 40,
+   "behavior": "chase",
+   "tier": 2,
+   "drop": "red"
+  }
+ ],
+ "pickups": [
+  {
+   "kind": "red3",
+   "at": [
+    27,
+    31
+   ]
+  },
+  {
+   "kind": "blue3",
+   "at": [
+    16,
+    13
+   ]
+  },
+  {
+   "kind": "green3",
+   "at": [
+    2,
+    42
+   ]
+  },
+  {
+   "kind": "rice_ball",
+   "at": [
+    39,
+    16
+   ]
+  },
+  {
+   "kind": "haunch",
+   "at": [
+    53,
+    15
+   ]
+  },
+  {
+   "kind": "red5",
+   "at": [
+    67,
+    16
+   ]
+  }
+ ],
+ "grid": [
+  "111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+  "1:::::::::::::::KKKKK::::::::::::nKKKKKK:::::::::::::KKKn:n::::::::nnKKKnnnnn::::::1",
+  "1:k:::::::::::::nKKKKn:::::::::::nKKKKKK:::::::::::::nnn::nn::::::::nKKn:nnn:::::::1",
+  "1:::::::::::::r::nnnnn::::k::::::nKKKKKK::::::::::::::::::nn:::::::::nKn::nnnnn::::1",
+  "1:::::k::::::::::::::nn::::::::::nKKnnnnKnnnnnn::::::k:::::k:::::::::nnn::nnnnnn:::1",
+  "1:::::nn:::::::::::::h::::::::::k:n::::nKKKKKKKKnn::::k::::::::::::::nKnnnnKKKKn:::1",
+  "1nnn::k::::n::::::::k:nr:::::k::::::::::nKKKKKKKKKn:::::::::::::::n:nnnnKnnKKKKnnKn1",
+  "1KKn::::::nnnKn:::::::nk:::h:::::::::::::KKKKKKKKKn:::::::::::::nKKKKKnKKnnKKKnnKKK1",
+  "1KKKnnnKKKKKKKKnnnn::::::::::::::::::::::nKKKKKKKKn::::::::::nnnKKKKKKKKKn::nnKKKKK1",
+  "1KKKKKKKKKKKKKKKnnKn:::h::::::::::::::::::KKKKKKKK:::::::::::KKnKKKKKKKKnn::::KKKKK1",
+  "1KKKKKnnKKKKKKnn::n::::::::h::::::::::::::nKKKKKKK:n:h:::::::nKnKKKKKKKKKnnn::KKKKK1",
+  "1KKKKK:::nnnn:::::::::::::::::::::::::::::nKKKKKKKnnn:::k:::::KKKKKnnnnKKKKKnnKKKKK1",
+  "1nKKKK:::::::::::::::::::::::::::::::::::rnKKKKKKnnnn::::::::nKKKKK::::KKKKKnnKKKKK1",
+  "1:nnnnn:::h:::::::::::nnnn:::::::::::::::nKKKKKKn::nnn::::::rKKKKKn:::nKKKKKKKKKKKK1",
+  "1nnnnnn::::::::::::::nKKKKnnnn:::::::::::nKKKKKKn::nnn:::::::KKKKKn:::knKnnnnnKKnnn1",
+  "1KKKKKn::::::::nnnnnKKKKKKKKKn:::::::::::nKKKKKKn::nnn:::::::KKKKKn::::::::::::::nn1",
+  "1KKKKKn:::nnnnnKKKKKKKKKKKKKKnnnnnnnnn:::nnKKKKKn::nnnnk::::nKKKKKnn:::::::::::::::1",
+  "1KKKKKKn::nnKKKKKKKKKKKKKKKKKKnKKKKKKKnn::nKKKKKK:::nnn:::::nKKKKKKKn::::::k:::::::1",
+  "1KKKKKKnn::nKKKKKKKKKKKKKKKKKKKKKKKKKKKn::nKKKKKK:::nnnnn:::KKKKKKKKn::::::::::::::1",
+  "1KKKKKKnnnnnnKKKKKKKKKKKKKKKKKKKKKKKKKn::hnKKKKKK:::nnnnnnnnKKKKKKKKn::::::::::::::1",
+  "1KKKKKnnnnnnnnnnnnnnKKKKKKKKKKKnnnnnn::::nKKKKKKn::::nnnnnnnnKKKKKnn::::::::::r::::1",
+  "1:nnKnnnnnnnnnnnn::nnnnnnnnnn::::::k::k:::nKKKKn::::::::nnnnnnKKKn::::::::::h::::::1",
+  "1::::::nnn:::nnnnn:::::::::::k:::::::::::::rKKn::::::nn:::nnn:KKK::::::::::::::::::1",
+  "1::::::nnn:::::nnn:::::::::::::::::::::::::nKKn:::::nKKK::nnn:nKn::::::::::::::::::1",
+  "1::::::::::::::nnnn:::::::::::::::::::::::::nKn:nnnnKKKKKnnnn::::r::::::::::r::::::1",
+  "1:::::::::::::::nnnnn:::::::::::::::::::::::KKKnKKKKKKKKKKnnn::::::::::::::::::::::1",
+  "1::::::::::::::::nnnnn:::::::::::::::k:::::nKKKKKKKKKKKKKKnnnnn::::::nnn::::::::nnn1",
+  "1:::::::::::n::::::nnnnn:::::::::::::::::nnnnnnnKKKKKKnnnnnnnnnnnnn:nnnnnnnnnnnnnnn1",
+  "1:::::::::::::::::::nnnnnk:::::::::::::::nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn1",
+  "1:::::::::::::::::::r:nnnnn::::::::::::nnnnnnnnnnnnnnnnnnnnhnnnnnnnnnnnnnnnnnnnnnnn1",
+  "1::::::::::n:::::::::::nnnnn:::::::::::nnnnnnnnnnnnnnnhnnnnnnnnnnnnnnnn:nnnnnnnnnnn1",
+  "1::::::::nnn:h::::::::nnrnnnn::nnnnnnnnnnnnnnnnnnnhnnnnnnnnnnnnnnnnnnnnnnnnnnnn:nnn1",
+  "1::::::::nnKn:::n::rrKKKKKnnnnKKKKKnnnnnnnnnnnnnnnnnnnnnnhnnnnnnhnnnnnnnnnnnnnn::::1",
+  "1::rk::::nnnnnnnnnnnKKKKKKKnnnnnKKnnnnnnnnnnnnnnnnnrnnnnnnnnnnnnnnnnnnnnnnnnnnn:nnn1",
+  "1::::::::nnnnKKKKnnnKKKKKKKKnnnnnnnnnnnnnnnnnnnnnnnn:nnnnnnnnnnnnnnnnnnnnnnnnnnnnnn1",
+  "1:nn:::::nnnKKKKKnnnnKKKKKKKKKnnnnnnnnKnnnnnnnnnnnnKKKnnnnnnn:nnnnnnnnnnnKnnnnnnnnn1",
+  "1:nn::::nnnKKKKKKnnr:KKKKKnnnnnnnnnnnKKKKKKKKKnnnnKKKKKnnnrn:::::nnnnnnnnnnnnnnnnnn1",
+  "1::::nnnnnnnnKKKnnnnnKKKKKnnnnnrhnnnnnKKKKKKKKKKKKKKKKKKn::::n:::nnnKnnnnnnnnnnnnnn1",
+  "1::::nnKn::::KKn:::nKKKKKnnnnnnnnnnnnnnKKKKKKKKKKKKnnKKKKn::nn::nnnnnKnnnnnnnnnnnnn1",
+  "1:::::nnnn:::nnnnnnnnKKKKnnnnnnnnnnnnnnnKKKKKKKKKnnnnKKKKn::nr:::nnrnKKKKnnnnnnnnnn1",
+  "1::::::nn:::::nnnnKnnnnnnnnnn::nnnr:hnnnnKKnKKKKn::rnKKnn:::nn::::nnnnKKKKnnnnnnnn:1",
+  "1:::::::::::::nnnKKn::n:nnnn::::::::::nnnnnnKKKn:::::nnn:::::nk:::nnn::nn:::::nnn::1",
+  "1::::::::nn:::nnnnnn:::nnnnn:::::::::::nnnnnnn:::::nnn::::::::::::nnn::::::::::::::1",
+  "1::::::::::r::nnnnnnnnnnnnn::::::::::::nKnnnn:::::nnnnnnnnnnnnnnnnnnn::::::::::::::1",
+  "1::::::::::::nnnnnnnnnnnnn:::::::::::knKKKnnnn:::r:nnnnnnnnnnnnnnnnnn::::::::::::::1",
+  "1::::::::k:::nnnnnnnnnnnnn::::::::::nnnKKKnnnn:::::::nnnnnnnnnnnnnnnn::::::::::r:::1",
+  "1::::::::::::nnnnnnn:rnnn::::::::::nnnKKKKnnnn::::::::::::::::::::nnn::::::::::::k:1",
+  "1:::::::::::~Ynhn:n:::::::::r:::n::nKKKKKnnnnnn::n::::::::::::::::nnn::::::k:::::::1",
+  "1::::::nnnnn~~~~n:::::::::r:::::::nKKKKKKKKnnnnnKKKn::::::nn::::::nnn:r::::::::::::1",
+  "1::::::nnnn~~~r~n:::::::::::::::::nKKKKKKKKKKnnnnKKnnnnnnnnnn:::::nnn::::::::::::::1",
+  "1::::::nnnnr~~~~~::::::::::::::::nnKKKKKKKKKKnKnnnnnnnnnnnnnn:::k:nnn:::n::::::::::1",
+  "1::::::::r~~~~~~~::::::::::::nnKKnKKKKKKKKKKKKKKnnnnnnnhnnnnnn::::nnn::nKKn:r::::::1",
+  "1:::::::::~~~~~k:::r::::::nKKKKKKKKKKKKKKKKKKKKKKnnnn::::::nnn:::nnnn::KKKKn::::nn:1",
+  "1:::::::::::~~~~~Y::::::KKKKKKKKKKKKKKKKKKKKKKKnnnnnnnKn::::nnn::nnnnnnKKKKKn:nnnn:1",
+  "1::::::::::::~~~:::::::nKKKKKKKKKKKKKKKKKKKKKKKn::::nnKn:kh:nnn:::nnnnnnKKKKnnnnrn:1",
+  "1::::::::::::::::::::::nKKKKKKKKKKKKKKKKKKKKKKKnnn:::KKK:::::nnn::::nnnKKKKKnn::nn:1",
+  "1::::::::::::::::::::::nnKn::nnKKKKKKKKKKKKKKKKnnKn::KKK:::::nnnnnnn::nKKKKKKn::::n1",
+  "1::::::::::::::::::::::::::::::nnnKKKKKKKKKKKKKKKKn::nKn::::::nnnnnnn:kKKKKKKKn:nnn1",
+  "1:::::::::::::::::::::::::::::::nKKKKKKKKKKKKKKKKn::::n::::::::nnnnn::nnKKKKKKKnKKK1",
+  "1:k:::::::::::::::::::::::::::h:nKKKKKKKKKKKKKKKK:::::::::::::::::::::nnnKKKKKKKKKK1",
+  "1:::::::::::::::::::::::::::::::nnKKKKKKKKKKKKKKKn::::::::::::::nnn:h:n::nKKKKKKKKK1",
+  "1::::::k:::::::::::::nn::::::::nKKKKKKKKKKKKKKKKKKn::::::::::nKKKKKKnnnnnnKKKKKKKKK1",
+  "1::::::::::::::::::::nnn:::::::nKKKKKKKKKKKKKKKKKKK:::::::::nKKKKKKKKKKKKKKKKKKKKKK1",
+  "111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+ ]
+}

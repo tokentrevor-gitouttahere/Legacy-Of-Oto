@@ -1,0 +1,394 @@
+{
+ "id": "crystal_cavern",
+ "name": "Crystal Cavern",
+ "sky": "cavern",
+ "base": "cave",
+ "floor": "cave",
+ "legend": {
+  "V": {
+   "ground": "cave",
+   "prop": "cave_column",
+   "params": {
+    "h": 4.0
+   },
+   "block": true,
+   "jitter": true
+  }
+ },
+ "spawns": {
+  "default": [
+   35,
+   53
+  ],
+  "island": [
+   40,
+   25
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "world"
+  }
+ },
+ "props": [
+  {
+   "type": "save_lantern",
+   "at": [
+    37,
+    51
+   ]
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    40,
+    46
+   ],
+   "params": {
+    "size": 1.4,
+    "color": [
+     0.45,
+     0.8,
+     1.0
+    ]
+   }
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    56,
+    33
+   ],
+   "params": {
+    "size": 1.4,
+    "color": [
+     0.75,
+     0.5,
+     1.0
+    ]
+   }
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    39,
+    21
+   ],
+   "params": {
+    "size": 1.4,
+    "color": [
+     0.4,
+     1.0,
+     0.75
+    ]
+   }
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    26,
+    11
+   ],
+   "params": {
+    "size": 1.4,
+    "color": [
+     0.45,
+     0.8,
+     1.0
+    ]
+   }
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    21,
+    13
+   ],
+   "params": {
+    "size": 1.4,
+    "color": [
+     0.75,
+     0.5,
+     1.0
+    ]
+   }
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    14,
+    37
+   ],
+   "params": {
+    "size": 1.4,
+    "color": [
+     0.4,
+     1.0,
+     0.75
+    ]
+   }
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    35,
+    33
+   ],
+   "params": {
+    "size": 1.4,
+    "color": [
+     0.45,
+     0.8,
+     1.0
+    ]
+   }
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    12,
+    27
+   ],
+   "params": {
+    "size": 1.4,
+    "color": [
+     0.75,
+     0.5,
+     1.0
+    ]
+   }
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    24,
+    12
+   ],
+   "params": {
+    "size": 1.4,
+    "color": [
+     0.4,
+     1.0,
+     0.75
+    ]
+   }
+  },
+  {
+   "type": "crystal_cluster",
+   "at": [
+    42,
+    24
+   ],
+   "params": {
+    "size": 2.0,
+    "color": [
+     0.75,
+     0.5,
+     1.0
+    ]
+   }
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Kaia",
+   "at": [
+    33,
+    49
+   ],
+   "lines": [
+    "Kaia|I came down to dive the lake. It's the deepest water I've ever seen, and something lives on the island.",
+    "Kaia|Want some glowcaps? They taste like mushrooms that are proud of themselves."
+   ],
+   "outfit": "woman_kaia",
+   "rot": 160,
+   "dish": "glowcap_skewers"
+  }
+ ],
+ "enemies": [
+  {
+   "at": [
+    6,
+    37
+   ],
+   "beast": "scorpion",
+   "tier": 3,
+   "name": "Crystal Crawler",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    30,
+    7
+   ],
+   "beast": "scorpion",
+   "tier": 3,
+   "name": "Crystal Crawler",
+   "hp": 70,
+   "damage": 8,
+   "speed": 2.0,
+   "xp": 25,
+   "behavior": "chase"
+  },
+  {
+   "at": [
+    11,
+    6
+   ],
+   "beast": "crab",
+   "tier": 3,
+   "name": "Lake Crab",
+   "hp": 80,
+   "damage": 5,
+   "speed": 1.6,
+   "xp": 18,
+   "behavior": "chase",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    50,
+    51
+   ],
+   "beast": "crab",
+   "tier": 3,
+   "name": "Lake Crab",
+   "hp": 80,
+   "damage": 5,
+   "speed": 1.6,
+   "xp": 18,
+   "behavior": "chase",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    40,
+    25
+   ],
+   "name": "The Lake Warden",
+   "beast": "crab",
+   "tier": 4,
+   "hp": 900,
+   "damage": 18,
+   "speed": 1.8,
+   "xp": 400,
+   "behavior": "charger",
+   "drop": "blue5",
+   "boss": {
+    "phases": [
+     0.5,
+     0.25
+    ],
+    "heal_on_phase": 0.0,
+    "absorbs_ki": false,
+    "drain": 0.0
+   }
+  }
+ ],
+ "pickups": [
+  {
+   "kind": "red3",
+   "at": [
+    63,
+    32
+   ]
+  },
+  {
+   "kind": "blue3",
+   "at": [
+    59,
+    23
+   ]
+  },
+  {
+   "kind": "green3",
+   "at": [
+    7,
+    35
+   ]
+  },
+  {
+   "kind": "rice_ball",
+   "at": [
+    9,
+    9
+   ]
+  },
+  {
+   "kind": "red5",
+   "at": [
+    39,
+    26
+   ]
+  },
+  {
+   "kind": "green5",
+   "at": [
+    41,
+    26
+   ]
+  }
+ ],
+ "grid": [
+  "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
+  "  VVVVVVVVVVVVVVXVVVVVVVVVVVVVVVVVVVVVVVXVVVVVVVXVVVVVVVVVVVVVVVVVVV  ",
+  "  VVVXvvvVVvvvvvvvVVVVVVVVVVVVVVVVVVVVVvvvvvvvvvvVVVVVVVVVVVVVVVVVVV  ",
+  "  VVVVvvvvvvvvvvvvvVVVVVVVVVVVVVVVVVVVvvvvvvvvuvvVVVVVVVVVVvXVVVVVVV  ",
+  "  VVVVvuvvvvvvvvvvvvVVVVVVVVVVVVVVVVVVvvvvvvvvvvvVVVVVVVVXvvvVVVVVVV  ",
+  "  VVVVvvvvvvvvvvvvvvVVVVVVVVVVVVVVVVVVvvvvvvvvvuvVVVVVVVVVvvvVVVVVVV  ",
+  "  VVVVvvvvvvvvvvvvvvVVVVVVXVVvvvvvvvvvvvvvvvvVXVVVVVVVVVVVvvvuVVVVVV  ",
+  "  VVVVVuvvvvvvvvvvvvVVVVVvvvvvvvvvvvvvvvvvvvvvVVVVVVVVVVVVvvvvvVVVVV  ",
+  "  VVVVVvuvvvvvvvvvvvVVvvvvvvvvvvvvvvvvvvvvvvvvvvvVVVVVVVVVvvvvvvVVVV  ",
+  "  VVVVVvvvvvvvVVvvvvvvuvvvvvvvvvvvvvvvvvvvvvvvvuvvvVVVVVVVvvvvvvVVVV  ",
+  "  VVVXvvuvvvvVVVVvvvvvvvvvvvvvvvvwvwvZwvvvuvvvvvvvvvvVVVVvvvvvuvVVVV  ",
+  "  VVVvvvVVvvVVVVVvvvvvvvvvvvvvwwwwwwwwwvwvvwvvvvvvvvvvVVvvvvvvvvVVVV  ",
+  "  VVvvvVVVVVVVVvvvvvvvvvvwwwvwwwwwwwwwwwwwwvvvvvvvvvvvvvvvvvvvvvVVVV  ",
+  "  vvvvXVVVVVVVvvvvvvvvwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvvvvvvvvvvvVVV  ",
+  "  vvvVVVVVVVVvvvvvvvvvwwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvvvvvvvvvvvZv  ",
+  "  vvVVVVVVVVvvvvvvvwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvvVVVvvvvvv  ",
+  "  vvVVVVVVVvvvvvvwvwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvVVVvvvvv  ",
+  "  vvVVVVVVVvvvvvvvwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvVVVVvvvv  ",
+  "  vvvVVVVVvvvvvvwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvVVVVvvv  ",
+  "  vvvvvVXvvvvvvvvwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvVVVvvv  ",
+  "  vvvvvvVvvvvvvvwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvVVXvvv  ",
+  "  vvvvvvVvvvvvvwwwwwwwwwwwwwwwwwwwwwwwvvvvvwwwwwwwwwwwwwvvvvvvVVvvvv  ",
+  "  vvvvvVvvvvvwwwwwwwwwwwwwwwwwwwwwwwwvwvvvvvvwwwwwwwwwwwwvvvvvvVvvvv  ",
+  "  vvvvVVvuvvvwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvwwwwwwwwwwwwvvvvvvVVvvv  ",
+  "  vvuvVVuvvvwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvwwwwwwwwwwwwwvvvvvVVVVV  ",
+  "  vuvvXvvvvvvwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvvwwwwwwwwwwwwwvvvvvVVV   ",
+  "  vvvvvvuvvvvwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvvwwwwwwwwwwwVwvvvvvVVV   ",
+  "  vvvvvvvvvvvwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvvvwwwwwwwwwwwwvvvvvvvVV   ",
+  "  vvvvvvvvvvvwwwwwwwwwwwwwwwwwwwwwwwvvvvvvvvvwwwwwwwwwwwwwwvvvvuvVV   ",
+  "  vvvvvvvvvvvwwwwwwwwwwwwwwwwwwwwwwwwwvvvvwvvwwwwwwwwwwwwwvvvvvvvvV   ",
+  "  vvvvZvvvvuwwwwwwwwwwwwwwwwwwwwwwwwwvvvvvvwwwwwwwwwwwwwwwvvvvvvvvv   ",
+  "  vvvVVvvvZvwwwwwwwwwwwwwwwwwwwwwwwwvvvvwwwwwwwwwwwwwwwwwvvvvvvvvuv   ",
+  "  VVVVVVvvvvvvwwwwwwwwwwwwwwwwwwwwwvvvvwwwwwwwwwwwwwwwwwwvvvvZvvvuV   ",
+  "  VVVVVVZvvvvwVwwwwwwwwwwwwwwwwwwwwvvvwwwwwwwwwwwwwwwwwwvvvvvvvuvVV   ",
+  "  VVVVvvvvvvvwwwwwwwwwwwwwwwwwwwwwwvvvwwwwwwwwwwwwwwwwwwwvvvvvvvvVV   ",
+  "  VVVvvvvvvvvvwwwwwwwwwwwwwwwwwwwwwvvvwwwwwwwwwwwwwwwwwvwvvvvvvvvvV   ",
+  "  VVVvvvvvvvvvvwVwwwwwwwwwwwwwwwwwwvvvwwwwwwwwwwwwwwwwwvvvvvvvvvvvv   ",
+  "  VVVvvvvvvvvvvwwwwwwwwwwwwwwwwwwwwvZvvwwwwwwwwwwwwwwwvvZvvvvvvvvvv   ",
+  "  VVVvvvvvvvvvvvvwwwwwwwwwwwwwwwwwwwvvvwwwwwwwwwwwwwwwvvvvvvvvvvvvv   ",
+  "  VVXvvvuvvvvvvvvwwwwwwwwwwwwwwwwwwwvvvwwwwwwwwwwwwwwwvvvvvvvvvvvvV   ",
+  "  VVvvvvvvvvvvvvuvvvwwwwwwwwwwwwwwwwvvvwwwwwwwwwwwwwvvvvvvvvvvvvXV    ",
+  "  vvvvvvvvvvvvvvvvvwwwwwwwwwwwwwwwwwvvvwwwwwwwwwwvvvvvvvvvvvvvVV      ",
+  "  vvvvvvvvvVVvvvvvvvvvwwwwwwwwwwwwwwvvvwwwwwwwwwwvvvvuvvvvvvXV        ",
+  "  vvvvvvvvVVVVvvvvvvvwwwwwwwwwwwwwwvvuvwwwwwwVwwvvvvvvvvvVVV          ",
+  "  vvvvvvvVVVVVVvvvvvvvvvwwwwwwwwwwwvvvwwwwwwwwvvvuvvvvvuVVV           ",
+  "  vvvvvVVVVVVVVVVZvvvvuvvZvvwwwvwwvvvvwwwvZvvvvvvvvvvvvvVVV           ",
+  "  vvvvVVVVVXVXVXvvvvvvvvvvvvvvvvvvvvvvwvvvvvvvvvvvvvvvvvVVV           ",
+  "  vvVVVVVVvvvvvvvvvvvvvvvvvvuvvvvvvvvuvvvvvvvvvvvvvvvvvvVVV           ",
+  "  XVVVVVvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvuvvvvvvvvvvvvvVVVV           ",
+  "  VVVVvvvvvuvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvVvvvvvvvvVVVV           ",
+  "  VvvvvuvvvvvvvvvvvvvvvvvvvuVvvvvvvvvvuvvvVVVV vvvvvvvvvXVV           ",
+  "  uvvvvvvvvvvvvvvvvvvvXVvvvX XVVVVvvvvvvvv     vvvuvvvvvvXV           ",
+  "  vvvvvvvvvvvvvvvVVVvV  VVV       vvvvvvvV     vvvvvvvvvvvv           ",
+  "  Vvvvvvvvvvvvuvvv  V             vvvvvXX      vvvvvvvZvvvv           ",
+  "   VVVVXXVVVVVVXVX                v1vVV        VVVXXXVXVVVV           ",
+  "                                                                      "
+ ]
+}

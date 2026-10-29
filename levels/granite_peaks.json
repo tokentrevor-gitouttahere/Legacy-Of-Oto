@@ -1,0 +1,437 @@
+{
+ "id": "granite_peaks",
+ "name": "Granite Peaks",
+ "sky": "alpine",
+ "base": "grass",
+ "backdrop": "mountains",
+ "legend": {
+  "K": {
+   "ground": "$base",
+   "prop": "cliff",
+   "params": {
+    "color": [
+     0.55,
+     0.55,
+     0.58
+    ],
+    "h": 8.0
+   },
+   "block": true,
+   "jitter": true
+  }
+ },
+ "spawns": {
+  "default": [
+   32,
+   74
+  ],
+  "summit": [
+   32,
+   6
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "world"
+  }
+ },
+ "props": [
+  {
+   "type": "save_lantern",
+   "at": [
+    34,
+    73
+   ]
+  },
+  {
+   "type": "hut",
+   "at": [
+    32,
+    8
+   ]
+  },
+  {
+   "type": "campfire",
+   "at": [
+    34,
+    10
+   ]
+  },
+  {
+   "type": "save_lantern",
+   "at": [
+    35,
+    11
+   ]
+  },
+  {
+   "type": "crag",
+   "at": [
+    19,
+    39
+   ],
+   "params": {
+    "size": 0.7121607956299206,
+    "color": [
+     0.55,
+     0.54,
+     0.56
+    ]
+   }
+  },
+  {
+   "type": "crag",
+   "at": [
+    24,
+    40
+   ],
+   "params": {
+    "size": 0.8651705497617755,
+    "color": [
+     0.55,
+     0.54,
+     0.56
+    ]
+   }
+  },
+  {
+   "type": "crag",
+   "at": [
+    48,
+    68
+   ],
+   "params": {
+    "size": 1.196330301768333,
+    "color": [
+     0.55,
+     0.54,
+     0.56
+    ]
+   }
+  },
+  {
+   "type": "rock_arch",
+   "at": [
+    32,
+    40
+   ],
+   "params": {
+    "span": 4.0,
+    "color": [
+     0.55,
+     0.54,
+     0.56
+    ]
+   }
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Vesna",
+   "at": [
+    30.5,
+    10.2
+   ],
+   "lines": [
+    "Vesna|Four hours up the switchbacks, and you're not even breathing hard.",
+    "Vesna|The goats think you're one of them. Have some of their cheese. They won't mind."
+   ],
+   "outfit": "woman_vesna",
+   "rot": 200,
+   "dish": "herder_cheese"
+  }
+ ],
+ "enemies": [
+  {
+   "at": [
+    12,
+    53
+   ],
+   "beast": "wolf",
+   "tier": 2,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    11,
+    55
+   ],
+   "beast": "wolf",
+   "tier": 2,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    12,
+    53
+   ],
+   "beast": "wolf",
+   "tier": 2,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    12,
+    51
+   ],
+   "beast": "wolf",
+   "tier": 2,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    11,
+    53
+   ],
+   "beast": "wolf",
+   "tier": 2,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    59,
+    66
+   ],
+   "beast": "boar",
+   "tier": 2,
+   "name": "Boar",
+   "hp": 90,
+   "damage": 8,
+   "speed": 2.6,
+   "xp": 30,
+   "behavior": "charger",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    13,
+    44
+   ],
+   "beast": "boar",
+   "tier": 2,
+   "name": "Boar",
+   "hp": 90,
+   "damage": 8,
+   "speed": 2.6,
+   "xp": 30,
+   "behavior": "charger",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    19,
+    58
+   ],
+   "beast": "boar",
+   "tier": 2,
+   "name": "Boar",
+   "hp": 90,
+   "damage": 8,
+   "speed": 2.6,
+   "xp": 30,
+   "behavior": "charger",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    50,
+    27
+   ],
+   "beast": "pterodactyl",
+   "tier": 2,
+   "name": "Pterodactyl",
+   "hp": 50,
+   "damage": 6,
+   "speed": 2.8,
+   "xp": 28,
+   "behavior": "shooter",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    11,
+    8
+   ],
+   "beast": "pterodactyl",
+   "tier": 2,
+   "name": "Pterodactyl",
+   "hp": 50,
+   "damage": 6,
+   "speed": 2.8,
+   "xp": 28,
+   "behavior": "shooter",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    43,
+    13
+   ],
+   "beast": "pterodactyl",
+   "tier": 2,
+   "name": "Pterodactyl",
+   "hp": 50,
+   "damage": 6,
+   "speed": 2.8,
+   "xp": 28,
+   "behavior": "shooter",
+   "food": "haunch"
+  }
+ ],
+ "pickups": [
+  {
+   "kind": "red3",
+   "at": [
+    39,
+    23
+   ]
+  },
+  {
+   "kind": "blue3",
+   "at": [
+    47,
+    62
+   ]
+  },
+  {
+   "kind": "green3",
+   "at": [
+    7,
+    70
+   ]
+  },
+  {
+   "kind": "haunch",
+   "at": [
+    29,
+    45
+   ]
+  },
+  {
+   "kind": "rice_ball",
+   "at": [
+    6,
+    2
+   ]
+  },
+  {
+   "kind": "blue5",
+   "at": [
+    34,
+    6
+   ]
+  }
+ ],
+ "grid": [
+  "1111111111111111111111111111111111111111111111111111111111111111",
+  "1sssssssssssssssssssssssssKKKKKKsssssssssssssssssssssssKKKKsssK1",
+  "1sssssssssssssssssssssssssssssKsssssssssssssssssssssssssssssssK1",
+  "1sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssK1",
+  "1ssssssssssssssssssssssssssssssssssssssssgsssssssssssssssssssss1",
+  "1ssssssgsssssssssssssssssssssssssss,sssssssssssssssssssssgsssss1",
+  "1sKssssssssssssssssssssssssssssssss,,,sssKKssssssssssssssssssss1",
+  "1KKKKsssssssssssssgsssssssssssssssss,,,sKKKKgssssssssssgsssssss1",
+  "1KKKKsssssssssssssssssssssssssssssss,,,,sKKKsssssssssssssssssss1",
+  "1KKKKssssssssssssssssssssssssssssssss,,,,sKsssgssssssssssssssss1",
+  "1KKKKKKsssssssssssssssssssssssssssssss,,,,,ssssssssssssssssssss1",
+  "1KKKKKKKsgssssssssssssssssKKsssssssssss,,,,,sssssssssssssssssss1",
+  "1KKKKKKKKKssssssssssssssssKKKKsgsssssssss,,,,,,ssssssssssssssss1",
+  "1KKKKKKKKKssssssssssssssssKKKKssssssssssss,,,,,,,,sssssssssssss1",
+  "1sKKKKKKKKssssssssssssssssKKKKsssssssssssss,,,,,,,,ssssssssssss1",
+  "1sKKKKKKKsssssssssssssssssssKssssssssssssssssss,,,,,,ssssssssss1",
+  "1KKKKKKKKssssssssssssssssssssssssssssssssssssssss,,,,,sssssssss1",
+  "1KKKKKKKsssssssssssssssgssssssssssssssssssssssss,,,,,,,ssssssss1",
+  "1KKKKKKssssssgssssssssssssssssssssssssssssssss,,,,,,,,sssssssss1",
+  "1KKKKKsssssssssssssssssssssssssgsssss,,,,,,,,,,,,ssssssssssssss1",
+  "1KKKKKssssssssssgssssssssssKKKKss,,,,,,,,,,,,,,,sssssssssssssss1",
+  "1KKKKssssssssssssssssssssssKKK,,,,,,,,,,,,,,,,sssKKssssssssssss1",
+  "1KKKKssssssssssssssssssssssK,,,,,,,,,KsssssssssggKKssssssssssss1",
+  "1KKKKssssKssssssssssssssss,,,,,,,ssssssssgsssssssssssssssssssss1",
+  "1KKqqqqqKKKKKqqqqq;;....,,,,,,,q;;;qqqqqqqqqqqqq;;;qq;;....;;.;1",
+  "1qqqqqqKKKKKKKqqqq;..,,,,,,,KKqq;;.;;;;qqqqqqq;;;.;q;;;.r..r;.;1",
+  "1qq;qqKKKKKKKKrqq;,,,,,,,,rqqqqq;;....;;qq;;q;;..;;;qq;;;;.....1",
+  "1;;;;qKKKK,,,,,,,,,,,,,,..qqqKqq;......;;;;;;;;.;qq;qq;;;;.....1",
+  "1;;.;KKKK,,,,,,,,,,,,.r..rqqqKKq;......;;;;;;;;;qqq;q;;;;;.....1",
+  "1...;qKKKK,,,,,,,,,,,,....;qqqq;;......;;;;;;;;;;;;;;;;;;;.....1",
+  "1...;qKKKqq,,,,,,,,,,,,,,,,,,;;;..P........;;;;...P............1",
+  "1..;qqKKKKqq,,,,;..,,,,,,,,,,,,.........r...;.............r....1",
+  "1;;qqqKKKqq;;,;.....P,,,,,,,,,,,...............................1",
+  "1qqqqqKKKq;;...............;,,,,,,;;;..........;;;.............1",
+  "1KKKKqqKqq;................;;;,,,,,,;...........;;;....P.......1",
+  "1KKKKKqqq;..............;;;;qq;;,,,,,,......,r..;q;............1",
+  "1KKKKqrq;;...............;qq;;r..,,,,,,,,,,,,,..;;;............1",
+  "1KKKqqq;;................;;;..P...;,,,,,,,,,,,,.;;..........;;.1",
+  "1KKKqq;;;................;...r....;q;;,,,,,,.,,,;;.........qqq;1",
+  "1KKKqq;;..;;;......;;;;;;;.........;;.........,,,,,,,,....;qKqq1",
+  "1KKqqq;;..;;....;;qq;;;;;;...r.....;;.....r..,,,,,,,,,,..;qqKKq1",
+  "1KKqq;;.........;qKqq;;;;..................,,,,,,,,,,,..;;qqqqq1",
+  "1Kqq;..P........qKKqq;;....;;;;..........,,,,,,,.......;;;;qqqq1",
+  "1KKqq;......;..;qqKq;;................,,,,,,,......P...;;;;;qqq1",
+  "1KKKqq;..;;;;;;;qqqq;.............,,,,,,,,,,................;;;1",
+  "1KKKqq;;;;;qq;;;qq;;...;;;;....,,,,,,,,,,,...P................;1",
+  "1KKKq;;;;;;qq;;;q,,,,,,,,,;.,,,,,,,,,,......................P..1",
+  "1KKKq;...;;;;,,,,,,,,,,,,,,,,,,,,,.............................1",
+  "1qKKq;......,,,,,,,,,,,,,,,,,,,...;;.....P..PP.....r...........1",
+  "1qKKq;.....,,,,,,;;;..;;qq,,,.....;;;..........................1",
+  "1qKKq.....,,,,,,,;;..P;;;;........;;;..........................1",
+  "1qqq;....,,,,,,,,,,,;..;;;;.......;;;................;.........1",
+  "1;qq;.....,,,,,,,,,,,,,,....................PP.......;;......P;1",
+  "1;;;;..r.P....;..,,,,,,,,,.....P....;;...............;;......;;1",
+  "1;;;...............,,,,,,,,,.....;;...;.............;q;;;..;;;;1",
+  "1;;.................P...,,,,,r...;;;;;;;............;;;;;;;;;;;1",
+  "1;;......................,,,,,..,,,,,,,;.............;;;;;qq;;;1",
+  "1;.........................,,,,,,,,,,,,,,,...........;;;.;;;;;;1",
+  "1.......r.....r.P...........,,,,,,,,,,,,,,,..r....P.......;;...1",
+  "1.P..P..........P.....P.......,,,.r;;;;,,,,,,..................1",
+  "1..................................;...;;,,,,,...........r.....1",
+  "1.P......................r...............r;,,,,,,,,,...........1",
+  "1..............P.........P...............;..,,,,,,,,,,.........1",
+  "1.................P.........;;.........r......,,,,,,,,,........1",
+  "1...........................;......P............,,,,,,.r.......1",
+  "1.....................................P........,,,,,...........1",
+  "1......P......;;.........P...................,,,,,.............1",
+  "1;....;;;.....;;.....................P......,,,,,..............1",
+  "1q;;;;qq;....r;;.......;..................,,,,,................1",
+  "1qqqqqqq;.....;;.......;;..............,,,,,,,;;;..............1",
+  "1KKqqqq;;;....r......P.;;...........,,,,,,,,.;;;;;;............1",
+  "1qqqqq;;;.........................,,,,,,,,...;;;;;;............1",
+  "1qqqq;........................,,,,,,,,,,...........;...........1",
+  "1qq;;.........................,,,,,,...........................1",
+  "1qq;......................P...,,,,,..................P.........1",
+  "1qr;.....................;;...,,,,,....................P.......1",
+  "1qq.......P..............;;...,,,,,...P........................1",
+  "1q;..................P.........................;;..............1",
+  "1q;.............................................;..............1",
+  "1111111111111111111111111111111111111111111111111111111111111111"
+ ]
+}

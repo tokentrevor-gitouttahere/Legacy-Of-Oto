@@ -1,0 +1,119 @@
+{
+ "id": "west_city_bakery",
+ "name": "West City Bakery",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "floor": "tile",
+ "wall_color": [
+  0.98,
+  0.93,
+  0.85
+ ],
+ "wall_tex": "bricks",
+ "spawns": {
+  "default": [
+   7,
+   7
+  ],
+  "door": [
+   7,
+   7
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "west_city",
+   "spawn": "bakery_door"
+  }
+ },
+ "props": [
+  {
+   "type": "counter",
+   "at": [
+    6.5,
+    3
+   ],
+   "params": {
+    "length": 7
+   }
+  },
+  {
+   "type": "pantry_rack",
+   "at": [
+    3,
+    2.2
+   ]
+  },
+  {
+   "type": "pantry_rack",
+   "at": [
+    10,
+    2.2
+   ]
+  },
+  {
+   "type": "cafe_table",
+   "at": [
+    3.5,
+    6.2
+   ],
+   "params": {
+    "color": [
+     0.95,
+     0.7,
+     0.8
+    ]
+   }
+  },
+  {
+   "type": "cafe_table",
+   "at": [
+    9.5,
+    6.2
+   ],
+   "params": {
+    "color": [
+     0.7,
+     0.85,
+     0.95
+    ]
+   }
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    1.8,
+    7.4
+   ]
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Clementine",
+   "at": [
+    6.5,
+    2.2
+   ],
+   "lines": [
+    "Clementine|My sister bakes for Capsule Corp now. I got the shop. I think I got the better deal.",
+    "Oto|You got the shop with the bread in it.",
+    "Clementine|Exactly."
+   ],
+   "outfit": "woman_lottie_2",
+   "rot": 180
+  }
+ ],
+ "grid": [
+  "              ",
+  " ############ ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " ######1##### ",
+  "              "
+ ]
+}

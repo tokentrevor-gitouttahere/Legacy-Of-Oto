@@ -27,6 +27,7 @@ func _ready() -> void:
 	player = Player.new()
 	player.arena = level.rect
 	player.blocker = level.is_blocked
+	player.respawn_at = level.spawn_point("default")
 	player.position = level.spawn_point(GameState.pending_spawn)
 	if GameState.pending_pos != Vector3.INF:  # loading a save
 		player.position = GameState.pending_pos

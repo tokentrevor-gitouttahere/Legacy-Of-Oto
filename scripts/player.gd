@@ -45,6 +45,7 @@ var max_stamina := 100.0
 var form := 0
 var cinematic := false  # scripted control: no input, no physics
 var blocker := Callable()  # optional (pos: Vector3) -> bool, e.g. Level.is_blocked
+var respawn_at := Vector3.INF  # where she gets up when she falls with no save (a location sets its spawn)
 var outfit := "oto"  # Outfits preset applied in _ready ("" for none)
 
 var facing := Vector3(0, 0, 1)
@@ -486,7 +487,8 @@ func hurt(amount: float, from_pos: Vector3) -> void:
 		else:
 			hp = max_hp
 			ki = max_ki
-			position = Vector3(arena.get_center().x, 0, arena.get_center().y)
+			# the location's spawn: the arena's centre can be a wall or a lake
+			position = respawn_at if respawn_at != Vector3.INF else Vector3(arena.get_center().x, 0, arena.get_center().y)
 
 func _clamp() -> void:
 	position.x = clampf(position.x, arena.position.x + 0.5, arena.end.x - 0.5)

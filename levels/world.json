@@ -100,6 +100,62 @@
     1.0
    ],
    "altitude": 260
+  },
+  {
+   "id": "diablo_desert",
+   "name": "Diablo Desert",
+   "pos": [
+    -1200,
+    900
+   ],
+   "icon": "canyon",
+   "color": [
+    1.0,
+    0.6,
+    0.35
+   ]
+  },
+  {
+   "id": "granite_peaks",
+   "name": "Granite Peaks",
+   "pos": [
+    450,
+    -1000
+   ],
+   "icon": "peaks",
+   "color": [
+    0.8,
+    0.85,
+    0.95
+   ]
+  },
+  {
+   "id": "northern_ice_fields",
+   "name": "Northern Ice Fields",
+   "pos": [
+    -650,
+    -1000
+   ],
+   "icon": "ice",
+   "color": [
+    0.7,
+    0.9,
+    1.0
+   ]
+  },
+  {
+   "id": "crystal_cavern",
+   "name": "Crystal Cavern",
+   "pos": [
+    1150,
+    350
+   ],
+   "icon": "cave",
+   "color": [
+    0.7,
+    0.55,
+    1.0
+   ]
   }
  ]
 }

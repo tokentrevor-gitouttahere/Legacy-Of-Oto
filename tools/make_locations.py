@@ -27,7 +27,7 @@ def write(d):
     print("wrote", os.path.relpath(path, ROOT))
 
 
-WALKABLE = set(".,:;osmc=_+WFC")
+WALKABLE = set(".,:;osmc=_+WFCnqivud")
 
 
 def lantern(g, c, r):
@@ -137,6 +137,148 @@ def scatter_civilians(g, count, rng, allowed="_+"):
             placed += 1
 
 
+def _taken(g):
+    used = {(round(p["at"][0]), round(p["at"][1])) for p in g.props}
+    used |= {(round(n["at"][0]), round(n["at"][1])) for n in g.npcs}
+    used |= {(int(v[0]), int(v[1])) for v in g.spawns.values()}
+    return used
+
+
+def street_furniture(g, rng, rate=0.05):
+    """Bins, hydrants, vending machines, phone booths, bike racks and street signs on the
+    sidewalk cells that face a road, never next to an exit or on top of something else."""
+    kinds = ["trash_bin", "trash_bin", "hydrant", "vending_machine", "phone_booth", "bike_rack", "street_sign"]
+    streets = ["ROSE ST", "CAPSULE AVE", "PAN ROAD", "SATAN BLVD", "BRIEF ST", "NORTH 9TH", "DRAGON WAY"]
+    used = _taken(g)
+    for r in range(1, g.rows - 1):
+        for c in range(1, g.cols - 1):
+            if g.get(c, r) != "_" or rng.random() > rate or (c, r) in used:
+                continue
+            road = [(dc, dr) for dc, dr in ((1, 0), (-1, 0), (0, 1), (0, -1)) if g.get(c + dc, r + dr) == "="]
+            near_exit = any(g.get(c + dc, r + dr).isdigit() for dc in (-2, -1, 0, 1, 2) for dr in (-2, -1, 0, 1, 2))
+            if not road or near_exit:
+                continue
+            dc, dr = road[0]
+            rot = {(0, 1): 0, (0, -1): 180, (1, 0): 90, (-1, 0): 270}[(dc, dr)]  # face the road
+            kind = rng.choice(kinds)
+            spec = g.prop(kind, c, r, rot=rot, **({"text": rng.choice(streets)} if kind == "street_sign" else
+                                                 {"color": [rng.random() * 0.6 + 0.3, 0.2, 0.25]} if kind == "vending_machine" else {}))
+            spec["walkable"] = kind in ("hydrant", "street_sign", "bike_rack")
+            used.add((c, r))
+
+
+def dress_parks(g, rng):
+    """Hedges round the edge of every park block, benches facing in, and flowers."""
+    for (x0, y0, x1, y1) in g.blocks:
+        inner = [(c, r) for r in range(y0 + 1, y1) for c in range(x0 + 1, x1)]
+        if not inner or sum(g.get(c, r) in ".T" for c, r in inner) < len(inner) * 0.8:
+            continue
+        w = x1 - x0 - 2
+        g.prop("hedge", (x0 + x1) / 2, y0 + 1, length=w * 2 * 0.8)
+        g.prop("hedge", (x0 + x1) / 2, y1 - 1, length=w * 2 * 0.8)
+        for k in range(2):
+            g.prop("bench", x0 + 2 + k * (w - 2), (y0 + y1) / 2, rot=90 if k == 0 else 270)
+        for _ in range(3):
+            c, r = rng.randint(x0 + 2, x1 - 2), rng.randint(y0 + 2, y1 - 2)
+            if g.get(c, r) == ".":
+                g.prop("flowers", c, r)
+
+
+TOWNSWOMAN_LINES = [
+    ["{n}|Lovely day for it. Don't tell anyone, but I skipped work."],
+    ["{n}|The noodle bar does a second bowl free if you finish the first in under a minute.", "Oto|Fifty seconds."],
+    ["{n}|Have you seen Capsule Corp's new fridge? It holds a week of groceries in one capsule."],
+    ["{n}|West City at night is all lights. You should see it from a hover car."],
+    ["{n}|If you're looking for the bakery, follow the smell."],
+    ["|She waves, and goes back to her phone."],
+]
+
+
+def _women_designs():
+    """(design id, name) for every townswoman design in scripts/characters/npc_women.gd."""
+    import re
+    text = open(os.path.join(ROOT, "scripts", "characters", "npc_women.gd"), encoding="utf-8").read()
+    return re.findall(r'^\t"([a-z_]+)": \{"name": "([^"]+)"', text, re.M)
+
+
+def scatter_townswomen(g, count, rng, allowed="_+", skip=("mei", "lottie", "marisol", "kesi", "ayame", "bryn", "hana", "jun",
+                                                         "nadia", "vesna", "yuki", "kaia")):
+    """Townswomen out in the city (npc_women.gd), each with her own name and face; the ones
+    who work somewhere in particular are left out."""
+    pool = [(d, n) for d, n in _women_designs() if d not in skip]
+    rng.shuffle(pool)
+    used = _taken(g)
+    placed = 0
+    for _ in range(count * 40):
+        if placed >= min(count, len(pool)):
+            break
+        c, r = rng.randint(2, g.cols - 3), rng.randint(2, g.rows - 3)
+        if g.get(c, r) in allowed and (c, r) not in used:
+            d, n = pool[placed]
+            g.npc(n, "woman_" + d, c, r, [line.format(n=n) for line in rng.choice(TOWNSWOMAN_LINES)],
+                  rot=rng.choice([0, 90, 180, 270]))
+            used.add((c, r))
+            placed += 1
+
+
+def shop_room(level_id, name, cols, rows, floor, wall_color, back_spawn):
+    g = gl.interior(cols, rows, floor=floor)
+    g.exits["1"] = {"to": "west_city", "spawn": back_spawn}
+    return g
+
+
+def west_city_noodle_bar():
+    g = shop_room("west_city_noodle_bar", "Noodle Bar", 12, 8, "W", [0.95, 0.88, 0.75], "noodle_door")
+    g.prop("counter", 6.5, 3.2, length=6)
+    for c in (4.5, 6, 7.5, 9):
+        g.prop("chair", c, 4.4, rot=180)
+    g.prop("stove", 4, 2.2, rot=180)
+    g.prop("stove", 5.2, 2.2, rot=180)
+    g.prop("snack_shelf", 9.5, 2.2, rot=180)
+    g.prop("table", 3, 6.4, w=1.4, d=1.0)
+    g.prop("table", 10, 6.4, w=1.4, d=1.0)
+    g.prop("plant_pot", 11.2, 7.3)
+    g.npc("Mei", "woman_mei", 6.5, 2.3, [
+        "Mei|Sit anywhere. The counter's best: you can watch me cook.",
+        "Mei|Pork buns, fresh. I make forty a day. You may be the first person to eat forty.",
+    ], rot=180, dish="mei_pork_buns")
+    write(gl.level_json(g, "west_city_noodle_bar", "Mei's Noodle Bar", interior=True, tile=1.5, sky="interior",
+                        floor="wood", wall_color=[0.95, 0.88, 0.75], wall_tex="planks"))
+
+
+def west_city_bakery():
+    g = shop_room("west_city_bakery", "Bakery", 12, 8, "F", [0.98, 0.93, 0.85], "bakery_door")
+    g.prop("counter", 6.5, 3, length=7)
+    for c in (3, 10):
+        g.prop("pantry_rack", c, 2.2)
+    g.prop("cafe_table", 3.5, 6.2, color=[0.95, 0.7, 0.8])
+    g.prop("cafe_table", 9.5, 6.2, color=[0.7, 0.85, 0.95])
+    g.prop("plant_pot", 1.8, 7.4)
+    g.npc("Clementine", "woman_lottie_2", 6.5, 2.2, [
+        "Clementine|My sister bakes for Capsule Corp now. I got the shop. I think I got the better deal.",
+        "Oto|You got the shop with the bread in it.",
+        "Clementine|Exactly.",
+    ], rot=180)
+    write(gl.level_json(g, "west_city_bakery", "West City Bakery", interior=True, tile=1.5, sky="interior",
+                        floor="tile", wall_color=[0.98, 0.93, 0.85], wall_tex="bricks"))
+
+
+def west_city_capsule_shop():
+    g = shop_room("west_city_capsule_shop", "Capsule Shop", 12, 8, "F", [0.9, 0.93, 0.98], "capsule_door")
+    for c, r, rot in [(2.6, 3, 90), (10.4, 3, 270), (2.6, 6, 90), (10.4, 6, 270)]:
+        g.prop("capsule_rack", c, r, rot=rot)
+    g.prop("counter", 6.5, 2.6, length=4)
+    g.prop("computer", 6.5, 1.9, rot=180)
+    g.prop("vending_machine", 9, 1.9, rot=180, color=[0.2, 0.45, 0.85])
+    g.npc("Rei", "woman_riko_3", 6.5, 3.6, [
+        "Rei|House capsules, car capsules, fridge capsules. The fridge capsules sell out first. I wonder why.",
+        "Oto|...",
+        "Rei|You've bought four this week.",
+    ], rot=180)
+    write(gl.level_json(g, "west_city_capsule_shop", "Capsule Shop", interior=True, tile=1.5, sky="interior",
+                        floor="tile", wall_color=[0.9, 0.93, 0.98], wall_tex="panels"))
+
+
 # --- locations --------------------------------------------------------------------
 
 def west_city():
@@ -168,28 +310,60 @@ def west_city():
         "Bulma|Oh! You must be the one Goku found in a hole.",
         "Bulma|Welcome to Capsule Corporation. Don't touch anything that beeps.",
     ], rot=180)
-    # Shopping street south of the campus.
+    # Shopping street south of the campus: two blocks joined into one, six shops (three you can
+    # walk into), and a market row of food stalls and cafe tables along the south side.
     shop_blk = block_at(g, cx, y1 + 10)
-    sx0, sy0, sx1, sy1 = shop_blk
-    g.fill(sx0 + 1, sy0 + 1, sx1 - 1, sy1 - 1, "_")
-    names = ["NOODLES", "CAPSULES", "BAKERY", "ARCADE", "BOOKS"]
+    east_blk = block_at(g, shop_blk[2] + 8, (shop_blk[1] + shop_blk[3]) / 2)
+    sx0, sy0, sx1, sy1 = merge_blocks(g, [shop_blk, east_blk], "_")
+    names = ["NOODLES", "BAKERY", "CAPSULES", "ARCADE", "BOOKS", "FLOWERS"]
+    doors = {"NOODLES": ("4", "west_city_noodle_bar", "noodle_door"), "BAKERY": ("5", "west_city_bakery", "bakery_door"),
+             "CAPSULES": ("6", "west_city_capsule_shop", "capsule_door")}
+    shop_at = {}
     for i, c in enumerate(range(sx0 + 3, sx1 - 1, 4)):
-        g.prop("shop", c, sy0 + 3, text=names[i % len(names)], awning=[0.85, 0.2 + 0.15 * i, 0.3])
-    for c in range(sx0 + 2, sx1, 5):
-        g.prop("bench", c, sy1 - 1, rot=180)
-    g.prop("billboard", sx1 - 2, sy1 - 3, text="CAPSULE CORP: LIFE IN A CAPSULE", color=[0.95, 0.95, 1.0])
-    g.npc("Noodle Vendor", "shopkeeper", sx0 + 3, sy0 + 5, ["Noodle Vendor|First bowl's on the house. You look like you need it."], rot=180,
+        if i >= len(names):
+            break
+        g.prop("shop", c, sy0 + 2, text=names[i], awning=[0.85, 0.2 + 0.12 * i, 0.3 + 0.08 * i])
+        shop_at[names[i]] = c
+        if names[i] in doors:
+            ch, to, sp = doors[names[i]]
+            g.put(c, sy0 + 3, ch)
+            g.exits[ch] = {"to": to, "spawn": "door"}
+            g.spawns[sp] = [c, sy0 + 4]
+    stalls = [("TAKOYAKI", [0.9, 0.3, 0.2]), ("DUMPLINGS", [0.25, 0.55, 0.85]), ("KEBABS", [0.95, 0.6, 0.15]),
+              ("ICE CREAM", [0.95, 0.5, 0.7])]
+    for i, (text, col) in enumerate(stalls):
+        g.prop("food_stall", sx0 + 4 + i * 5, sy1 - 2, text=text, color=col)  # facing the street, south
+        g.prop("market_crates", sx0 + 6.4 + i * 5, sy1 - 1.4)
+    for k in range(3):
+        g.prop("cafe_table", sx1 - 9 + k * 3, sy0 + 7, color=[0.95, 0.55 - k * 0.1, 0.3 + k * 0.15])
+    for c in range(sx0 + 2, sx1, 6):
+        g.prop("bench", c, sy0 + 9, rot=180)
+    g.prop("billboard", sx1 - 2, sy1 - 4, text="CAPSULE CORP: LIFE IN A CAPSULE", color=[0.95, 0.95, 1.0])
+    g.npc("Noodle Vendor", "shopkeeper", shop_at["NOODLES"] - 1.5, sy0 + 5, ["Noodle Vendor|First bowl's on the house. You look like you need it."], rot=180,
           dish="noodle_bowl")
-    bakery = next((p for p in g.props if p["type"] == "shop" and p.get("params", {}).get("text") == "BAKERY"), None)
-    g.npc("Baker", "shopkeeper", bakery["at"][0] if bakery else sx0 + 7, sy0 + 5,
+    g.npc("Baker", "shopkeeper", shop_at["BAKERY"] + 1.5, sy0 + 5,
           ["Baker|Melon bread, fresh out. Take one before the lunch rush."], rot=180, dish="melon_bread")
+    g.npc("Marisol", "woman_marisol", sx1 - 6, sy0 + 8.4, [
+        "Marisol|Table for one? You look like a table for four.",
+        "Marisol|Our coffee comes with a cake. The cake is not optional.",
+    ], rot=200, dish="cafe_cake")
+    for i, (text, _) in enumerate(stalls):
+        if text == "TAKOYAKI":
+            g.npc("Kesi", "woman_kesi", sx0 + 2.2 + i * 5, sy1 - 1.2, [
+                "Kesi|I deliver all day and eat here all night. Try the takoyaki. Blow on it first.",
+                "Oto|Why?",
+                "Kesi|...You'll see.",
+            ], rot=0, dish="takoyaki")
     # Hover cars over the roads.
     for _ in range(14):
         c, r = rng.randint(3, g.cols - 4), rng.randint(3, g.rows - 4)
         if g.get(c, r) == "=":
             spec = g.prop("hover_car", c, r, rot=rng.choice([0, 90]), color=[rng.random(), rng.random(), rng.random()])
             spec["walkable"] = True
+    street_furniture(g, random.Random(71))
+    dress_parks(g, random.Random(72))
     scatter_civilians(g, 14, rng)
+    scatter_townswomen(g, 14, random.Random(73))
     lantern(g, g.spawns["default"][0] + 2, g.spawns["default"][1])
     write(gl.level_json(g, "west_city", "West City", sky="day", base="grass", city_style="west", backdrop="skyline"))
 
@@ -673,6 +847,186 @@ def oto_room():
                         wall_tex="panels", **CC_WALLS))
 
 
+
+# --- the regions (docs/REGIONS.md): desert canyons, mountains, ice fields, crystal cavern ---------
+
+def cliff_legend(color, h=6.0):
+    """Recolour the K cliff tile for one level (red rock, grey granite, blue ice, ...)."""
+    return {"K": {"ground": "$base", "prop": "cliff", "params": {"color": color, "h": h}, "block": True, "jitter": True}}
+
+
+def open_spot(g, c, r, radius=12):
+    """The walkable cell nearest (c, r) whose 3x3 block is all walkable (room for a prop or a camp)."""
+    for rad in range(radius + 1):
+        for dr in range(-rad, rad + 1):
+            for dc in range(-rad, rad + 1):
+                cc, rr = c + dc, r + dr
+                if max(abs(dc), abs(dr)) == rad and all(g.get(cc + x, rr + y) in WALKABLE for x in (-1, 0, 1) for y in (-1, 0, 1)):
+                    return cc, rr
+    raise ValueError("no open spot near %s" % ((c, r),))
+
+
+def scatter_pickups(g, kinds, seed, area=None, keep_away=8):
+    """One pickup of each kind on open ground, away from the default spawn."""
+    rng = random.Random(seed)
+    c0, r0, c1, r1 = area or (2, 2, g.cols - 3, g.rows - 3)
+    sc, sr = g.spawns["default"]
+    for kind in kinds:
+        for _ in range(500):
+            c, r = rng.randint(c0, c1), rng.randint(r0, r1)
+            if open_ground(g, c, r) and max(abs(c - sc), abs(r - sr)) >= keep_away:
+                g.pickups.append({"kind": kind, "at": [c, r]})
+                break
+
+
+def foes(g, name, count, area, seed, outfit, hp, damage, xp, behavior="chase", tier=1, drop="", keep_away=9):
+    """People who fight: bandits and the like, on open ground in `area`."""
+    rng = random.Random(seed)
+    sc, sr = g.spawns["default"]
+    c0, r0, c1, r1 = area
+    placed = 0
+    for _ in range(500):
+        if placed == count:
+            return
+        c, r = rng.randint(c0, c1), rng.randint(r0, r1)
+        if open_ground(g, c, r) and max(abs(c - sc), abs(r - sr)) >= keep_away:
+            g.enemies.append({"at": [c, r], "name": name, "outfit": outfit, "hp": hp, "damage": damage, "xp": xp,
+                              "behavior": behavior, "tier": tier, "drop": drop or rng.choice(["", "red", "green", "blue"])})
+            placed += 1
+    raise ValueError("only placed %d of %d %s" % (placed, count, name))
+
+
+def diablo_desert():
+    g = gl.canyons(84, 64, seed=31)
+    rng = random.Random(31)
+    cx, cy = g.spawns["default"]
+    # a nomad camp by the spawn: tents round a fire, and Nadia cooking
+    camp = open_spot(g, cx + 4, cy - 3)
+    g.fill(camp[0] - 3, camp[1] - 3, camp[0] + 3, camp[1] + 3, "n")
+    g.prop("campfire", camp[0], camp[1])
+    for dc, dr, rot in [(-2.5, -1.5, 30), (2.5, -1.5, -30), (0, -3, 0)]:
+        g.prop("tent", camp[0] + dc, camp[1] + dr, rot=rot, color=[0.85, 0.72, 0.5])
+    g.npc("Nadia", "woman_nadia", camp[0] + 1.5, camp[1] + 1.2, [
+        "Nadia|You walked here? Nobody walks here. Sit. The bread is nearly done.",
+        "Oto|I can wait for bread.",
+        "Nadia|You say that like it costs you something.",
+    ], rot=200, dish="desert_flatbread")
+    lantern(g, camp[0] - 2, camp[1] + 2)
+    # an oasis, and the bones of something enormous in a far valley
+    oasis = open_spot(g, 14, 50)
+    g.blob(oasis[0], oasis[1], 3, "~", rng, only=":n")
+    for k in range(5):
+        c, r = oasis[0] + rng.randint(-5, 5), oasis[1] + rng.randint(-5, 5)
+        if g.get(c, r) == ":":
+            g.put(c, r, "Y")
+    bones = open_spot(g, 66, 14)
+    g.prop("bones", bones[0], bones[1], rot=40, size=1.6)
+    for k in range(3):
+        g.prop("dead_tree", bones[0] - 4 + k * 4, bones[1] + 3)
+    beasts(g, "scorpion", 4, (4, 4, 80, 60), seed=311, tier=2)
+    beasts(g, "raptor", 3, (40, 30, 80, 60), seed=312, tier=2)
+    foes(g, "Sand Bandit", 4, (4, 4, 40, 30), seed=313, outfit="civilian_m2", hp=120, damage=9, xp=40, behavior="chase", tier=2)
+    scatter_pickups(g, ["red3", "blue3", "green3", "rice_ball", "haunch"], seed=314)
+    g.pickups.append({"kind": "red5", "at": [bones[0], bones[1] + 2]})
+    write(gl.level_json(g, "diablo_desert", "Diablo Desert", sky="desert", base="sand", backdrop="mesas",
+                        legend=cliff_legend([0.66, 0.36, 0.24], 7.0)))
+
+
+def granite_peaks():
+    g = gl.peaks(64, 80, seed=32)
+    rng = random.Random(32)
+    cx, cy = g.spawns["default"]
+    sx, sy = g.spawns["summit"]
+    lantern(g, cx + 2, cy - 1)
+    # the herder's hut at the summit, with the best view and the worst wind
+    hut = open_spot(g, sx, sy + 3)
+    g.fill(hut[0] - 3, hut[1] - 2, hut[0] + 3, hut[1] + 2, "s")
+    g.prop("hut", hut[0], hut[1] - 1)
+    g.prop("campfire", hut[0] + 2, hut[1] + 1)
+    g.npc("Vesna", "woman_vesna", hut[0] - 1.5, hut[1] + 1.2, [
+        "Vesna|Four hours up the switchbacks, and you're not even breathing hard.",
+        "Vesna|The goats think you're one of them. Have some of their cheese. They won't mind.",
+    ], rot=200, dish="herder_cheese")
+    lantern(g, hut[0] + 3, hut[1] + 2)
+    for k in range(10):  # crags and rock arches along the trail
+        c, r = rng.randint(4, g.cols - 5), rng.randint(8, g.rows - 10)
+        if open_ground(g, c, r) and g.get(c, r) in ".;q":
+            g.prop("crag", c, r, size=rng.uniform(0.7, 1.2), color=[0.55, 0.54, 0.56])
+    arch = open_spot(g, g.cols // 2, g.rows // 2)
+    g.prop("rock_arch", arch[0], arch[1], span=4.0, color=[0.55, 0.54, 0.56])
+    beasts(g, "wolf", 5, (4, 30, 60, 70), seed=321, tier=2)
+    beasts(g, "boar", 3, (4, 40, 60, 74), seed=322, tier=2)
+    beasts(g, "pterodactyl", 3, (4, 4, 60, 28), seed=323, tier=2)
+    scatter_pickups(g, ["red3", "blue3", "green3", "haunch", "rice_ball"], seed=324)
+    g.pickups.append({"kind": "blue5", "at": [sx + 2, sy]})
+    write(gl.level_json(g, "granite_peaks", "Granite Peaks", sky="alpine", base="grass", backdrop="mountains",
+                        legend=cliff_legend([0.55, 0.55, 0.58], 8.0)))
+
+
+def northern_ice_fields():
+    g = gl.ice_fields(80, 64, seed=33)
+    rng = random.Random(33)
+    cx, cy = g.spawns["default"]
+    # an igloo camp on the snow, by a fire, with a skater who knows where the fish are
+    camp = open_spot(g, cx - 6, cy + 3)
+    g.fill(camp[0] - 4, camp[1] - 3, camp[0] + 4, camp[1] + 3, "s")
+    for dc, dr in [(-3, -1), (3, -1)]:
+        g.prop("igloo", camp[0] + dc, camp[1] + dr, rot=180)
+    g.prop("campfire", camp[0], camp[1] + 1.5)
+    g.npc("Yuki", "woman_yuki", camp[0] + 1.6, camp[1] + 2.2, [
+        "Yuki|Careful out on the sea ice. The dark lines are open water, and it's very cold water.",
+        "Yuki|We cut a hole this morning. The soup is mostly fish. The rest is also fish.",
+    ], rot=200, dish="ice_fish_soup")
+    lantern(g, camp[0] - 2, camp[1] + 3)
+    for k in range(8):
+        c, r = rng.randint(4, g.cols - 5), rng.randint(4, g.rows - 5)
+        if open_ground(g, c, r) and g.get(c, r) in "si":
+            g.prop("ice_block", c, r, size=rng.uniform(0.8, 1.3))
+    beasts(g, "wolf", 6, (4, 30, 76, 60), seed=331, tier=3)
+    beasts(g, "crab", 4, (4, 4, 76, 30), seed=332, tier=3)
+    foes(g, "Frost Raider", 3, (4, 4, 76, 40), seed=333, outfit="saiyan_soldier", hp=160, damage=12, xp=60, behavior="shooter", tier=2)
+    scatter_pickups(g, ["red3", "blue3", "green3", "red5", "fresh_fish"], seed=334)
+    write(gl.level_json(g, "northern_ice_fields", "Northern Ice Fields", sky="arctic", base="snow", backdrop="mountains",
+                        legend=cliff_legend([0.72, 0.86, 0.96], 5.0)))
+
+
+def crystal_cavern():
+    g = gl.cavern(70, 56, seed=34)
+    rng = random.Random(34)
+    ex, ey = g.spawns["default"]
+    ix, iy = g.spawns["island"]
+    lantern(g, ex + 2, ey - 2)
+    # a few real lights in big crystals round the lake (most crystals only glow)
+    shore = [(c, r) for r in range(2, g.rows - 2) for c in range(2, g.cols - 2)
+             if g.get(c, r) == "v" and any(g.get(c + dc, r + dr) == "w" for dc, dr in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+    rng.shuffle(shore)
+    colors = [[0.45, 0.8, 1.0], [0.75, 0.5, 1.0], [0.4, 1.0, 0.75]]
+    for k, (c, r) in enumerate(shore[:9]):
+        g.prop("crystal_cluster", c, r, size=1.4, color=colors[k % 3])
+    g.prop("crystal_cluster", ix + 2, iy - 1, size=2.0, color=[0.75, 0.5, 1.0])
+    g.npc("Kaia", "woman_kaia", ex - 2, ey - 4, [
+        "Kaia|I came down to dive the lake. It's the deepest water I've ever seen, and something lives on the island.",
+        "Kaia|Want some glowcaps? They taste like mushrooms that are proud of themselves.",
+    ], rot=160, dish="glowcap_skewers")
+    beasts(g, "scorpion", 4, (2, 2, 68, 54), seed=341, tier=3)
+    beasts(g, "crab", 3, (2, 2, 68, 54), seed=342, tier=3)
+    # the island is the Warden's alone: no other beast starts on it
+    g.enemies = [e for e in g.enemies if max(abs(e["at"][0] - ix), abs(e["at"][1] - iy)) > 9]
+    for e in g.enemies:
+        if e.get("beast") == "scorpion":
+            e["name"] = "Crystal Crawler"
+        elif e.get("beast") == "crab":
+            e["name"] = "Lake Crab"
+    # the island's keeper, an optional fight
+    g.enemies.append({"at": [ix, iy], "name": "The Lake Warden", "beast": "crab", "tier": 4, "hp": 900, "damage": 18,
+                      "speed": 1.8, "xp": 400, "behavior": "charger", "drop": "blue5",
+                      "boss": {"phases": [0.5, 0.25], "heal_on_phase": 0.0, "absorbs_ki": False, "drain": 0.0}})
+    scatter_pickups(g, ["red3", "blue3", "green3", "rice_ball"], seed=343)
+    g.pickups += [{"kind": "red5", "at": [ix - 1, iy + 1]}, {"kind": "green5", "at": [ix + 1, iy + 1]}]
+    legend = {"V": {"ground": "cave", "prop": "cave_column", "params": {"h": 4.0}, "block": True, "jitter": True}}
+    write(gl.level_json(g, "crystal_cavern", "Crystal Cavern", sky="cavern", base="cave", floor="cave", legend=legend))
+
+
 LOCATIONS = {
     "west_city": west_city, "capsule_corp_lab": capsule_corp_lab, "hercule_city": hercule_city,
     "hercule_mansion_hall": hercule_mansion_hall, "mt_paozu": mt_paozu, "goku_house_interior": goku_house_interior,
@@ -681,6 +1035,10 @@ LOCATIONS = {
     "capsule_corp_home": capsule_corp_home, "capsule_corp_kitchen": capsule_corp_kitchen,
     "capsule_corp_pantry": capsule_corp_pantry, "capsule_corp_garden": capsule_corp_garden,
     "capsule_corp_gravity": capsule_corp_gravity, "oto_room": oto_room,
+    "diablo_desert": diablo_desert, "granite_peaks": granite_peaks, "northern_ice_fields": northern_ice_fields,
+    "crystal_cavern": crystal_cavern,
+    "west_city_noodle_bar": west_city_noodle_bar, "west_city_bakery": west_city_bakery,
+    "west_city_capsule_shop": west_city_capsule_shop,
 }
 
 # World map placement (metres on a 3000 x 3000 map, origin at the centre).
@@ -692,6 +1050,10 @@ WORLD = [
     {"id": "wasteland", "name": "The Wasteland", "pos": [-700, 800], "icon": "desert", "color": [1.0, 0.55, 0.3]},
     {"id": "korin_forest", "name": "Korin Tower", "pos": [-100, -350], "icon": "tower", "color": [0.95, 0.95, 0.8]},
     {"id": "kami_lookout", "name": "Kami's Lookout", "pos": [-100, -420], "icon": "lookout", "color": [1.0, 1.0, 1.0], "altitude": 260},
+    {"id": "diablo_desert", "name": "Diablo Desert", "pos": [-1200, 900], "icon": "canyon", "color": [1.0, 0.6, 0.35]},
+    {"id": "granite_peaks", "name": "Granite Peaks", "pos": [450, -1000], "icon": "peaks", "color": [0.8, 0.85, 0.95]},
+    {"id": "northern_ice_fields", "name": "Northern Ice Fields", "pos": [-650, -1000], "icon": "ice", "color": [0.7, 0.9, 1.0]},
+    {"id": "crystal_cavern", "name": "Crystal Cavern", "pos": [1150, 350], "icon": "cave", "color": [0.7, 0.55, 1.0]},
 ]
 
 

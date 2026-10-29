@@ -17,6 +17,18 @@
   "cc_front": [
    47,
    38
+  ],
+  "noodle_door": [
+   34,
+   48
+  ],
+  "bakery_door": [
+   38,
+   48
+  ],
+  "capsule_door": [
+   42,
+   48
   ]
  },
  "exits": {
@@ -30,6 +42,18 @@
   "3": {
    "to": "capsule_corp_home",
    "spawn": "front"
+  },
+  "4": {
+   "to": "west_city_noodle_bar",
+   "spawn": "door"
+  },
+  "5": {
+   "to": "west_city_bakery",
+   "spawn": "door"
+  },
+  "6": {
+   "to": "west_city_capsule_shop",
+   "spawn": "door"
   }
  },
  "props": [
@@ -131,7 +155,7 @@
    "type": "shop",
    "at": [
     34,
-    47
+    46
    ],
    "params": {
     "text": "NOODLES",
@@ -146,14 +170,189 @@
    "type": "shop",
    "at": [
     38,
-    47
+    46
+   ],
+   "params": {
+    "text": "BAKERY",
+    "awning": [
+     0.85,
+     0.32,
+     0.38
+    ]
+   }
+  },
+  {
+   "type": "shop",
+   "at": [
+    42,
+    46
    ],
    "params": {
     "text": "CAPSULES",
     "awning": [
      0.85,
-     0.35,
+     0.44,
+     0.45999999999999996
+    ]
+   }
+  },
+  {
+   "type": "shop",
+   "at": [
+    46,
+    46
+   ],
+   "params": {
+    "text": "ARCADE",
+    "awning": [
+     0.85,
+     0.56,
+     0.54
+    ]
+   }
+  },
+  {
+   "type": "shop",
+   "at": [
+    50,
+    46
+   ],
+   "params": {
+    "text": "BOOKS",
+    "awning": [
+     0.85,
+     0.6799999999999999,
+     0.62
+    ]
+   }
+  },
+  {
+   "type": "food_stall",
+   "at": [
+    35,
+    52
+   ],
+   "params": {
+    "text": "TAKOYAKI",
+    "color": [
+     0.9,
+     0.3,
+     0.2
+    ]
+   }
+  },
+  {
+   "type": "market_crates",
+   "at": [
+    37.4,
+    52.6
+   ]
+  },
+  {
+   "type": "food_stall",
+   "at": [
+    40,
+    52
+   ],
+   "params": {
+    "text": "DUMPLINGS",
+    "color": [
+     0.25,
+     0.55,
+     0.85
+    ]
+   }
+  },
+  {
+   "type": "market_crates",
+   "at": [
+    42.4,
+    52.6
+   ]
+  },
+  {
+   "type": "food_stall",
+   "at": [
+    45,
+    52
+   ],
+   "params": {
+    "text": "KEBABS",
+    "color": [
+     0.95,
+     0.6,
+     0.15
+    ]
+   }
+  },
+  {
+   "type": "market_crates",
+   "at": [
+    47.4,
+    52.6
+   ]
+  },
+  {
+   "type": "food_stall",
+   "at": [
+    50,
+    52
+   ],
+   "params": {
+    "text": "ICE CREAM",
+    "color": [
+     0.95,
+     0.5,
+     0.7
+    ]
+   }
+  },
+  {
+   "type": "market_crates",
+   "at": [
+    52.4,
+    52.6
+   ]
+  },
+  {
+   "type": "cafe_table",
+   "at": [
+    45,
+    51
+   ],
+   "params": {
+    "color": [
+     0.95,
+     0.55,
      0.3
+    ]
+   }
+  },
+  {
+   "type": "cafe_table",
+   "at": [
+    48,
+    51
+   ],
+   "params": {
+    "color": [
+     0.95,
+     0.45000000000000007,
+     0.44999999999999996
+    ]
+   }
+  },
+  {
+   "type": "cafe_table",
+   "at": [
+    51,
+    51
+   ],
+   "params": {
+    "color": [
+     0.95,
+     0.35000000000000003,
+     0.6
     ]
    }
   },
@@ -168,7 +367,23 @@
   {
    "type": "bench",
    "at": [
-    38,
+    39,
+    53
+   ],
+   "rot": 180
+  },
+  {
+   "type": "bench",
+   "at": [
+    45,
+    53
+   ],
+   "rot": 180
+  },
+  {
+   "type": "bench",
+   "at": [
+    51,
     53
    ],
    "rot": 180
@@ -176,8 +391,8 @@
   {
    "type": "billboard",
    "at": [
-    39,
-    51
+    52,
+    50
    ],
    "params": {
     "text": "CAPSULE CORP: LIFE IN A CAPSULE",
@@ -235,10 +450,1245 @@
    "walkable": true
   },
   {
+   "type": "trash_bin",
+   "at": [
+    8,
+    5
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    19,
+    5
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "phone_booth",
+   "at": [
+    25,
+    5
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    26,
+    5
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "phone_booth",
+   "at": [
+    38,
+    5
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    48,
+    5
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    50,
+    5
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    78,
+    5
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "street_sign",
+   "at": [
+    70,
+    7
+   ],
+   "rot": 270,
+   "params": {
+    "text": "SATAN BLVD"
+   },
+   "walkable": true
+  },
+  {
+   "type": "vending_machine",
+   "at": [
+    28,
+    9
+   ],
+   "rot": 90,
+   "params": {
+    "color": [
+     0.36151313141378466,
+     0.2,
+     0.25
+    ]
+   },
+   "walkable": false
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    80,
+    9
+   ],
+   "rot": 90,
+   "walkable": true
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    41,
+    12
+   ],
+   "rot": 90,
+   "walkable": true
+  },
+  {
+   "type": "vending_machine",
+   "at": [
+    70,
+    12
+   ],
+   "rot": 270,
+   "params": {
+    "color": [
+     0.6023196414328864,
+     0.2,
+     0.25
+    ]
+   },
+   "walkable": false
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    80,
+    12
+   ],
+   "rot": 90,
+   "walkable": true
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    67,
+    13
+   ],
+   "rot": 90,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    78,
+    15
+   ],
+   "walkable": false
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    39,
+    18
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    51,
+    18
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    61,
+    18
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    63,
+    18
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    18,
+    19
+   ],
+   "rot": 270,
+   "walkable": false
+  },
+  {
+   "type": "phone_booth",
+   "at": [
+    54,
+    20
+   ],
+   "rot": 90,
+   "walkable": false
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    31,
+    26
+   ],
+   "rot": 270,
+   "walkable": true
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    70,
+    26
+   ],
+   "rot": 270,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    6,
+    28
+   ],
+   "walkable": false
+  },
+  {
+   "type": "street_sign",
+   "at": [
+    8,
+    28
+   ],
+   "params": {
+    "text": "NORTH 9TH"
+   },
+   "walkable": true
+  },
+  {
+   "type": "street_sign",
+   "at": [
+    59,
+    28
+   ],
+   "params": {
+    "text": "NORTH 9TH"
+   },
+   "walkable": true
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    7,
+    31
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    62,
+    31
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    73,
+    31
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "phone_booth",
+   "at": [
+    75,
+    31
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "street_sign",
+   "at": [
+    70,
+    33
+   ],
+   "rot": 270,
+   "params": {
+    "text": "BRIEF ST"
+   },
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    15,
+    36
+   ],
+   "rot": 90,
+   "walkable": false
+  },
+  {
+   "type": "street_sign",
+   "at": [
+    31,
+    40
+   ],
+   "rot": 270,
+   "params": {
+    "text": "ROSE ST"
+   },
+   "walkable": true
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    67,
+    40
+   ],
+   "rot": 90,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    39,
+    41
+   ],
+   "walkable": false
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    45,
+    41
+   ],
+   "walkable": false
+  },
+  {
+   "type": "vending_machine",
+   "at": [
+    46,
+    41
+   ],
+   "params": {
+    "color": [
+     0.5684185863830544,
+     0.2,
+     0.25
+    ]
+   },
+   "walkable": false
+  },
+  {
+   "type": "street_sign",
+   "at": [
+    7,
+    44
+   ],
+   "rot": 180,
+   "params": {
+    "text": "DRAGON WAY"
+   },
+   "walkable": true
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    11,
+    44
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    31,
+    44
+   ],
+   "rot": 270,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    44,
+    44
+   ],
+   "rot": 180,
+   "walkable": false
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    51,
+    44
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    57,
+    47
+   ],
+   "rot": 270,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    15,
+    49
+   ],
+   "rot": 90,
+   "walkable": false
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    31,
+    49
+   ],
+   "rot": 270,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    70,
+    49
+   ],
+   "rot": 270,
+   "walkable": false
+  },
+  {
+   "type": "vending_machine",
+   "at": [
+    31,
+    50
+   ],
+   "rot": 270,
+   "params": {
+    "color": [
+     0.6649155277403678,
+     0.2,
+     0.25
+    ]
+   },
+   "walkable": false
+  },
+  {
+   "type": "street_sign",
+   "at": [
+    57,
+    51
+   ],
+   "rot": 270,
+   "params": {
+    "text": "DRAGON WAY"
+   },
+   "walkable": true
+  },
+  {
+   "type": "vending_machine",
+   "at": [
+    40,
+    54
+   ],
+   "params": {
+    "color": [
+     0.5621903810044742,
+     0.2,
+     0.25
+    ]
+   },
+   "walkable": false
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    46,
+    54
+   ],
+   "walkable": true
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    47,
+    54
+   ],
+   "walkable": true
+  },
+  {
+   "type": "street_sign",
+   "at": [
+    64,
+    54
+   ],
+   "params": {
+    "text": "SATAN BLVD"
+   },
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    74,
+    54
+   ],
+   "walkable": false
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    27,
+    57
+   ],
+   "rot": 180,
+   "walkable": true
+  },
+  {
+   "type": "vending_machine",
+   "at": [
+    49,
+    57
+   ],
+   "rot": 180,
+   "params": {
+    "color": [
+     0.482894745789893,
+     0.2,
+     0.25
+    ]
+   },
+   "walkable": false
+  },
+  {
+   "type": "phone_booth",
+   "at": [
+    80,
+    58
+   ],
+   "rot": 90,
+   "walkable": false
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    5,
+    59
+   ],
+   "rot": 270,
+   "walkable": true
+  },
+  {
+   "type": "phone_booth",
+   "at": [
+    18,
+    59
+   ],
+   "rot": 270,
+   "walkable": false
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    44,
+    59
+   ],
+   "rot": 270,
+   "walkable": true
+  },
+  {
+   "type": "hydrant",
+   "at": [
+    5,
+    63
+   ],
+   "rot": 270,
+   "walkable": true
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    28,
+    63
+   ],
+   "rot": 90,
+   "walkable": true
+  },
+  {
+   "type": "vending_machine",
+   "at": [
+    41,
+    64
+   ],
+   "rot": 90,
+   "params": {
+    "color": [
+     0.4055635159532351,
+     0.2,
+     0.25
+    ]
+   },
+   "walkable": false
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    41,
+    65
+   ],
+   "rot": 90,
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    24,
+    67
+   ],
+   "walkable": false
+  },
+  {
+   "type": "street_sign",
+   "at": [
+    51,
+    67
+   ],
+   "params": {
+    "text": "NORTH 9TH"
+   },
+   "walkable": true
+  },
+  {
+   "type": "bike_rack",
+   "at": [
+    64,
+    67
+   ],
+   "walkable": true
+  },
+  {
+   "type": "trash_bin",
+   "at": [
+    73,
+    67
+   ],
+   "walkable": false
+  },
+  {
+   "type": "hedge",
+   "at": [
+    10.0,
+    19
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    10.0,
+    27
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    7,
+    23.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    13,
+    23.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    7,
+    26
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    11,
+    25
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    8,
+    22
+   ]
+  },
+  {
+   "type": "hedge",
+   "at": [
+    10.0,
+    32
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    10.0,
+    40
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    7,
+    36.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    13,
+    36.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    12,
+    37
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    11,
+    35
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    9,
+    38
+   ]
+  },
+  {
+   "type": "hedge",
+   "at": [
+    23.0,
+    32
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    23.0,
+    40
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    20,
+    36.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    26,
+    36.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    25,
+    38
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    24,
+    34
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    25,
+    38
+   ]
+  },
+  {
+   "type": "hedge",
+   "at": [
+    23.0,
+    58
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    23.0,
+    66
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    20,
+    62.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    26,
+    62.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    22,
+    60
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    23,
+    60
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    25,
+    59
+   ]
+  },
+  {
+   "type": "hedge",
+   "at": [
+    36.0,
+    19
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    36.0,
+    27
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    33,
+    23.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    39,
+    23.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    38,
+    26
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    34,
+    23
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    39,
+    20
+   ]
+  },
+  {
+   "type": "hedge",
+   "at": [
+    36.0,
+    32
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    36.0,
+    40
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    33,
+    36.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    39,
+    36.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    36,
+    33
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    39,
+    35
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    33,
+    37
+   ]
+  },
+  {
+   "type": "hedge",
+   "at": [
+    49.0,
+    19
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    49.0,
+    27
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    46,
+    23.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    52,
+    23.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    48,
+    25
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    46,
+    26
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    49,
+    22
+   ]
+  },
+  {
+   "type": "hedge",
+   "at": [
+    49.0,
+    32
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    49.0,
+    40
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    46,
+    36.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    52,
+    36.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    48,
+    35
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    48,
+    34
+   ]
+  },
+  {
+   "type": "hedge",
+   "at": [
+    62.0,
+    19
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    62.0,
+    27
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    59,
+    23.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    65,
+    23.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    62,
+    25
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    60,
+    22
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    63,
+    23
+   ]
+  },
+  {
+   "type": "hedge",
+   "at": [
+    75.0,
+    32
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "hedge",
+   "at": [
+    75.0,
+    40
+   ],
+   "params": {
+    "length": 12.8
+   }
+  },
+  {
+   "type": "bench",
+   "at": [
+    72,
+    36.0
+   ],
+   "rot": 90
+  },
+  {
+   "type": "bench",
+   "at": [
+    78,
+    36.0
+   ],
+   "rot": 270
+  },
+  {
+   "type": "flowers",
+   "at": [
+    77,
+    34
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    74,
+    36
+   ]
+  },
+  {
+   "type": "flowers",
+   "at": [
+    78,
+    37
+   ]
+  },
+  {
    "type": "save_lantern",
    "at": [
-    43,
-    42
+    44,
+    43
    ]
   }
  ],
@@ -259,7 +1709,7 @@
   {
    "name": "Noodle Vendor",
    "at": [
-    34,
+    32.5,
     49
    ],
    "lines": [
@@ -272,7 +1722,7 @@
   {
    "name": "Baker",
    "at": [
-    38,
+    39.5,
     49
    ],
    "lines": [
@@ -281,6 +1731,46 @@
    "outfit": "shopkeeper",
    "rot": 180,
    "dish": "melon_bread"
+  },
+  {
+   "name": "Marisol",
+   "at": [
+    48,
+    52.4
+   ],
+   "lines": [
+    "Marisol|Table for one? You look like a table for four.",
+    "Marisol|Our coffee comes with a cake. The cake is not optional."
+   ],
+   "outfit": "woman_marisol",
+   "rot": 200,
+   "dish": "cafe_cake"
+  },
+  {
+   "name": "Kesi",
+   "at": [
+    33.2,
+    52.8
+   ],
+   "lines": [
+    "Kesi|I deliver all day and eat here all night. Try the takoyaki. Blow on it first.",
+    "Oto|Why?",
+    "Kesi|...You'll see."
+   ],
+   "outfit": "woman_kesi",
+   "dish": "takoyaki"
+  },
+  {
+   "name": "Citizen",
+   "at": [
+    45,
+    46
+   ],
+   "lines": [
+    "Civilian|Careful crossing. The hover cars never stop."
+   ],
+   "outfit": "shopkeeper",
+   "rot": 270
   },
   {
    "name": "Citizen",
@@ -321,14 +1811,13 @@
   {
    "name": "Citizen",
    "at": [
-    31,
-    21
+    47,
+    50
    ],
    "lines": [
     "Civilian|Did you see the news? Hercule did it again!"
    ],
-   "outfit": "civilian_m",
-   "rot": 90
+   "outfit": "civilian_m2"
   },
   {
    "name": "Citizen",
@@ -346,25 +1835,25 @@
    "name": "Citizen",
    "at": [
     52,
-    15
-   ],
-   "lines": [
-    "Civilian|Careful crossing. The hover cars never stop."
-   ],
-   "outfit": "civilian_f2"
-  },
-  {
-   "name": "Citizen",
-   "at": [
-    28,
-    58
+    53
    ],
    "lines": [
     "|They wave.",
     "Civilian|Lovely day for it."
    ],
-   "outfit": "civilian_m2",
-   "rot": 180
+   "outfit": "civilian_f2",
+   "rot": 270
+  },
+  {
+   "name": "Citizen",
+   "at": [
+    10,
+    28
+   ],
+   "lines": [
+    "Civilian|Did you see the news? Hercule did it again!"
+   ],
+   "outfit": "civilian_f2"
   },
   {
    "name": "Citizen",
@@ -392,13 +1881,27 @@
   {
    "name": "Citizen",
    "at": [
-    63,
-    41
+    46,
+    48
    ],
    "lines": [
-    "Civilian|Did you see the news? Hercule did it again!"
+    "|They wave.",
+    "Civilian|Lovely day for it."
    ],
-   "outfit": "civilian_m"
+   "outfit": "civilian_f2"
+  },
+  {
+   "name": "Citizen",
+   "at": [
+    41,
+    12
+   ],
+   "lines": [
+    "|They wave.",
+    "Civilian|Lovely day for it."
+   ],
+   "outfit": "civilian_m2",
+   "rot": 180
   },
   {
    "name": "Citizen",
@@ -425,28 +1928,170 @@
    "rot": 90
   },
   {
-   "name": "Citizen",
+   "name": "Lune",
    "at": [
-    23,
-    18
+    34,
+    54
    ],
    "lines": [
-    "Civilian|Did you see the news? Hercule did it again!"
+    "Lune|Lovely day for it. Don't tell anyone, but I skipped work."
    ],
-   "outfit": "civilian_m",
+   "outfit": "woman_lune",
    "rot": 270
   },
   {
-   "name": "Citizen",
+   "name": "Elodie",
    "at": [
-    80,
-    62
+    65,
+    57
    ],
    "lines": [
-    "Civilian|Did you see the news? Hercule did it again!"
+    "Elodie|The noodle bar does a second bowl free if you finish the first in under a minute.",
+    "Oto|Fifty seconds."
    ],
-   "outfit": "civilian_f",
+   "outfit": "woman_elodie"
+  },
+  {
+   "name": "Riko",
+   "at": [
+    23,
+    57
+   ],
+   "lines": [
+    "Riko|Lovely day for it. Don't tell anyone, but I skipped work."
+   ],
+   "outfit": "woman_riko"
+  },
+  {
+   "name": "Ingrid",
+   "at": [
+    18,
+    20
+   ],
+   "lines": [
+    "Ingrid|West City at night is all lights. You should see it from a hover car."
+   ],
+   "outfit": "woman_ingrid",
+   "rot": 270
+  },
+  {
+   "name": "Saphira",
+   "at": [
+    48,
+    54
+   ],
+   "lines": [
+    "Saphira|The noodle bar does a second bowl free if you finish the first in under a minute.",
+    "Oto|Fifty seconds."
+   ],
+   "outfit": "woman_saphira",
+   "rot": 180
+  },
+  {
+   "name": "Celeste",
+   "at": [
+    51,
+    54
+   ],
+   "lines": [
+    "Celeste|Have you seen Capsule Corp's new fridge? It holds a week of groceries in one capsule."
+   ],
+   "outfit": "woman_celeste",
+   "rot": 270
+  },
+  {
+   "name": "Talia",
+   "at": [
+    15,
+    35
+   ],
+   "lines": [
+    "Talia|If you're looking for the bakery, follow the smell."
+   ],
+   "outfit": "woman_talia",
+   "rot": 270
+  },
+  {
+   "name": "Sora",
+   "at": [
+    32,
+    51
+   ],
+   "lines": [
+    "Sora|The noodle bar does a second bowl free if you finish the first in under a minute.",
+    "Oto|Fifty seconds."
+   ],
+   "outfit": "woman_sora",
+   "rot": 270
+  },
+  {
+   "name": "Noor",
+   "at": [
+    34,
+    50
+   ],
+   "lines": [
+    "Noor|Have you seen Capsule Corp's new fridge? It holds a week of groceries in one capsule."
+   ],
+   "outfit": "woman_noor",
    "rot": 90
+  },
+  {
+   "name": "Tamsin",
+   "at": [
+    58,
+    54
+   ],
+   "lines": [
+    "Tamsin|West City at night is all lights. You should see it from a hover car."
+   ],
+   "outfit": "woman_tamsin",
+   "rot": 270
+  },
+  {
+   "name": "Ama",
+   "at": [
+    40,
+    48
+   ],
+   "lines": [
+    "Ama|If you're looking for the bakery, follow the smell."
+   ],
+   "outfit": "woman_ama"
+  },
+  {
+   "name": "Grandma Suki",
+   "at": [
+    36,
+    49
+   ],
+   "lines": [
+    "|She waves, and goes back to her phone."
+   ],
+   "outfit": "woman_grandma_suki"
+  },
+  {
+   "name": "Zara",
+   "at": [
+    13,
+    67
+   ],
+   "lines": [
+    "Zara|West City at night is all lights. You should see it from a hover car."
+   ],
+   "outfit": "woman_zara",
+   "rot": 180
+  },
+  {
+   "name": "Pia",
+   "at": [
+    61,
+    54
+   ],
+   "lines": [
+    "Pia|Lovely day for it. Don't tell anyone, but I skipped work."
+   ],
+   "outfit": "woman_pia"
   }
  ],
  "grid": [
@@ -494,17 +2139,17 @@
   "...==L_________L==L_________L==__________+++___________==L_________L==L_________L==.............",
   "1==============================================================================================1",
   "1==============================================================================================1",
-  "...==L_________L==L_________L==L_________L==L_________L==L_________L==L_________L==.............",
-  "...==_BBBBB.BBB_==_BBBB.BBBB_==___________==_BBBB.BBBB_==_BBBBB.BBB_==_BBBB.BBBB_==.............",
-  "...==_BBBBB.BBB_==_BBBB.BBBB_==___________==_BBBB.BBBB_==_BBBBB.BBB_==_BBBB.BBBB_==.............",
-  "...==_BBBBB.BBB_==_BBBB.BBBB_==___________==_BBBB.BBBB_==_BBBBB.BBB_==_BBBB.BBBB_==.............",
-  "...==_BBBBB.BBB_==_........._==___________==_BBBB....._==_......BBB_==_BBBB.BBBB_==.............",
-  "...==_......BBB_==_BBBB.BBBB_==___________==_BBBB.BBBB_==_BBBBB...._==_BBBB.BBBB_==.............",
-  "...==_BBBBBT..._==_BBBB.BBBB_==___________==_.....BBBB_==_BBBBB.BBB_==_..T......_==.............",
-  "...==_BBBBB.BBB_==_BBBB.BBBB_==___________==_BBBB.BBBB_==_BBBBB.BBB_==_BBBB.BBBB_==.............",
-  "...==_BBBBB.BBB_==_BBBB.BBBB_==___________==_BBBB....._==_......BBB_==_BBBB.BBBB_==.............",
-  "...==_BBBBB.BBB_==_.....BBBB_==___________==_BBBB....._==_........._==_BBBB.BBBB_==.............",
-  "...==L_________L==L_________L==L_________L==L_________L==L_________L==L_________L==.............",
+  "...==L_________L==L_________L==________________________==L_________L==L_________L==.............",
+  "...==_BBBBB.BBB_==_BBBB.BBBB_==________________________==_BBBBB.BBB_==_BBBB.BBBB_==.............",
+  "...==_BBBBB.BBB_==_BBBB.BBBB_==________________________==_BBBBB.BBB_==_BBBB.BBBB_==.............",
+  "...==_BBBBB.BBB_==_BBBB.BBBB_==___4___5___6____________==_BBBBB.BBB_==_BBBB.BBBB_==.............",
+  "...==_BBBBB.BBB_==_........._==________________________==_......BBB_==_BBBB.BBBB_==.............",
+  "...==_......BBB_==_BBBB.BBBB_==________________________==_BBBBB...._==_BBBB.BBBB_==.............",
+  "...==_BBBBBT..._==_BBBB.BBBB_==________________________==_BBBBB.BBB_==_..T......_==.............",
+  "...==_BBBBB.BBB_==_BBBB.BBBB_==________________________==_BBBBB.BBB_==_BBBB.BBBB_==.............",
+  "...==_BBBBB.BBB_==_BBBB.BBBB_==________________________==_......BBB_==_BBBB.BBBB_==.............",
+  "...==_BBBBB.BBB_==_.....BBBB_==________________________==_........._==_BBBB.BBBB_==.............",
+  "...==L_________L==L_________L==________________________==L_________L==L_________L==.............",
   "1==============================================================================================1",
   "1==============================================================================================1",
   "...==L_________L==L_________L==L_________L==L_________L==L_________L==L_________L==.............",

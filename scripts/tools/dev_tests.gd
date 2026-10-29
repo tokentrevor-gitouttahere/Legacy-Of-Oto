@@ -23,6 +23,7 @@ func _ready() -> void:
 	await _test_women()
 	_test_ui()
 	_test_home()
+	_test_regions()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -726,6 +727,64 @@ func _test_home() -> void:
 			den += 1
 		_check(Props.DOCS.has(pr["type"]), "Oto's room prop %s exists" % pr["type"]) if not Props.DOCS.has(pr["type"]) else null
 	_check(den >= 8, "her room is a food lover's den (%d snack, fridge and takeout props)" % den)
+
+## The regions and the city (docs/REGIONS.md): each region is on the world map, has a save
+## lantern, foes, pickups and a cook whose dish is on the Menu; every tile letter of the kit is
+## known; the city's shops lead in and back out; nobody respawns in a wall.
+func _test_regions() -> void:
+	var world: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://levels/world.json"))
+	var on_map := {}
+	for loc: Dictionary in world["locations"]:
+		on_map[loc["id"]] = loc
+	var bad: Array = []
+	for id: String in ["diablo_desert", "granite_peaks", "northern_ice_fields", "crystal_cavern"]:
+		var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://levels/%s.json" % id))
+		var lantern := false
+		for pr: Dictionary in d.get("props", []):
+			lantern = lantern or pr["type"] == "save_lantern"
+		var cook := false
+		for n: Dictionary in d.get("npcs", []):
+			cook = cook or (n.has("dish") and Dishes.DB.has(n["dish"]))
+		if not on_map.has(id) or not lantern or not cook or d.get("enemies", []).size() < 5 or d.get("pickups", []).size() < 4:
+			bad.append(id)
+		var lv := Level.new()
+		lv.id = id
+		lv.setup(d)
+		for k: String in ["default"] + (["island"] if id == "crystal_cavern" else []):
+			if lv.is_blocked(lv.spawn_point(k)):
+				bad.append("%s:%s spawn blocked" % [id, k])
+		for e: Dictionary in d.get("enemies", []):
+			if lv.is_blocked(lv.cell_pos(e["at"][0], e["at"][1])):
+				bad.append("%s: %s in a wall" % [id, e["name"]])
+		lv.free()
+	_check(bad.is_empty(), "the four regions are on the map, with a lantern, foes, pickups and a cook, and nothing starts in a wall %s" % [bad])
+	var kit := true
+	for ch: String in "KnqivwkhIgdVXuZ":
+		kit = kit and Level.TILES.has(ch)
+		if Level.TILES.has(ch) and Level.TILES[ch].has("prop"):
+			kit = kit and Props.DOCS.has(Level.TILES[ch]["prop"])
+	_check(kit, "every region-kit tile letter is in the legend, with a real prop")
+	var wc: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://levels/west_city.json"))
+	var shops_ok := true
+	for key: String in ["4", "5", "6"]:
+		var ex: Dictionary = wc["exits"][key]
+		var shop: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://levels/%s.json" % ex["to"]))
+		var back: Dictionary = shop["exits"]["1"]
+		shops_ok = shops_ok and back["to"] == "west_city" and (wc["spawns"] as Dictionary).has(back["spawn"])
+	var furniture := 0
+	for pr: Dictionary in wc["props"]:
+		if pr["type"] in ["trash_bin", "hydrant", "vending_machine", "phone_booth", "bike_rack", "street_sign", "food_stall", "cafe_table", "hedge"]:
+			furniture += 1
+	_check(shops_ok and furniture >= 30, "West City's three shops lead in and back out, and its streets are furnished (%d pieces)" % furniture)
+	var p := Player.new()
+	add_child(p)
+	p.respawn_at = Vector3(3, 0, 4)
+	p.hp = 1.0
+	p.iframes = 0.0
+	GameState.in_location = false
+	p.hurt(9999.0, p.position + Vector3(1, 0, 0))
+	_check(p.position.distance_to(Vector3(3, 0, 4)) < 0.01, "with no save, a fallen Oto gets up at the location's spawn")
+	p.queue_free()
 
 ## The body shaper (docs/BODY_STUDY.md): the shape itself, the skinned copy, and the outfit.
 func _test_body_shape() -> void:

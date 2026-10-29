@@ -12,7 +12,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_CHARS = set(" .,:;osmc~=_+WFC#BTPYbrML D@") | set("123456789")
+DEFAULT_CHARS = set(" .,:;osmc~=_+WFC#BTPYbrML D@") | set("123456789") | set("KnqivwkhIgdVXuZ")  # + the region kit (docs/REGIONS.md)
 
 
 def _keys_from_gd(path, const):

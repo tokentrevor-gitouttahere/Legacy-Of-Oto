@@ -1,0 +1,429 @@
+{
+ "id": "northern_ice_fields",
+ "name": "Northern Ice Fields",
+ "sky": "arctic",
+ "base": "snow",
+ "backdrop": "mountains",
+ "legend": {
+  "K": {
+   "ground": "$base",
+   "prop": "cliff",
+   "params": {
+    "color": [
+     0.72,
+     0.86,
+     0.96
+    ],
+    "h": 5.0
+   },
+   "block": true,
+   "jitter": true
+  }
+ },
+ "spawns": {
+  "default": [
+   40,
+   44
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "world"
+  }
+ },
+ "props": [
+  {
+   "type": "igloo",
+   "at": [
+    31,
+    46
+   ],
+   "rot": 180
+  },
+  {
+   "type": "igloo",
+   "at": [
+    37,
+    46
+   ],
+   "rot": 180
+  },
+  {
+   "type": "campfire",
+   "at": [
+    34,
+    48.5
+   ]
+  },
+  {
+   "type": "save_lantern",
+   "at": [
+    32,
+    50
+   ]
+  },
+  {
+   "type": "ice_block",
+   "at": [
+    33,
+    56
+   ],
+   "params": {
+    "size": 1.2203816625374961
+   }
+  },
+  {
+   "type": "ice_block",
+   "at": [
+    65,
+    45
+   ],
+   "params": {
+    "size": 1.2401320028707794
+   }
+  },
+  {
+   "type": "ice_block",
+   "at": [
+    72,
+    37
+   ],
+   "params": {
+    "size": 0.8932562797487923
+   }
+  },
+  {
+   "type": "ice_block",
+   "at": [
+    71,
+    34
+   ],
+   "params": {
+    "size": 1.0226270485006443
+   }
+  },
+  {
+   "type": "ice_block",
+   "at": [
+    56,
+    23
+   ],
+   "params": {
+    "size": 1.0591208461526802
+   }
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Yuki",
+   "at": [
+    35.6,
+    49.2
+   ],
+   "lines": [
+    "Yuki|Careful out on the sea ice. The dark lines are open water, and it's very cold water.",
+    "Yuki|We cut a hole this morning. The soup is mostly fish. The rest is also fish."
+   ],
+   "outfit": "woman_yuki",
+   "rot": 200,
+   "dish": "ice_fish_soup"
+  }
+ ],
+ "enemies": [
+  {
+   "at": [
+    45,
+    57
+   ],
+   "beast": "wolf",
+   "tier": 3,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    48,
+    60
+   ],
+   "beast": "wolf",
+   "tier": 3,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    45,
+    57
+   ],
+   "beast": "wolf",
+   "tier": 3,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    47,
+    60
+   ],
+   "beast": "wolf",
+   "tier": 3,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    47,
+    60
+   ],
+   "beast": "wolf",
+   "tier": 3,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    48,
+    59
+   ],
+   "beast": "wolf",
+   "tier": 3,
+   "name": "Wolf",
+   "hp": 45,
+   "damage": 5,
+   "speed": 3.2,
+   "xp": 15,
+   "behavior": "pack",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    35,
+    20
+   ],
+   "beast": "crab",
+   "tier": 3,
+   "name": "Crab",
+   "hp": 80,
+   "damage": 5,
+   "speed": 1.6,
+   "xp": 18,
+   "behavior": "chase",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    57,
+    26
+   ],
+   "beast": "crab",
+   "tier": 3,
+   "name": "Crab",
+   "hp": 80,
+   "damage": 5,
+   "speed": 1.6,
+   "xp": 18,
+   "behavior": "chase",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    54,
+    9
+   ],
+   "beast": "crab",
+   "tier": 3,
+   "name": "Crab",
+   "hp": 80,
+   "damage": 5,
+   "speed": 1.6,
+   "xp": 18,
+   "behavior": "chase",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    4,
+    11
+   ],
+   "beast": "crab",
+   "tier": 3,
+   "name": "Crab",
+   "hp": 80,
+   "damage": 5,
+   "speed": 1.6,
+   "xp": 18,
+   "behavior": "chase",
+   "food": "haunch"
+  },
+  {
+   "at": [
+    75,
+    26
+   ],
+   "name": "Frost Raider",
+   "outfit": "saiyan_soldier",
+   "hp": 160,
+   "damage": 12,
+   "xp": 60,
+   "behavior": "shooter",
+   "tier": 2,
+   "drop": "green"
+  },
+  {
+   "at": [
+    31,
+    29
+   ],
+   "name": "Frost Raider",
+   "outfit": "saiyan_soldier",
+   "hp": 160,
+   "damage": 12,
+   "xp": 60,
+   "behavior": "shooter",
+   "tier": 2,
+   "drop": ""
+  },
+  {
+   "at": [
+    72,
+    25
+   ],
+   "name": "Frost Raider",
+   "outfit": "saiyan_soldier",
+   "hp": 160,
+   "damage": 12,
+   "xp": 60,
+   "behavior": "shooter",
+   "tier": 2,
+   "drop": "blue"
+  }
+ ],
+ "pickups": [
+  {
+   "kind": "red3",
+   "at": [
+    50,
+    28
+   ]
+  },
+  {
+   "kind": "blue3",
+   "at": [
+    19,
+    25
+   ]
+  },
+  {
+   "kind": "green3",
+   "at": [
+    46,
+    25
+   ]
+  },
+  {
+   "kind": "red5",
+   "at": [
+    9,
+    36
+   ]
+  },
+  {
+   "kind": "fresh_fish",
+   "at": [
+    29,
+    2
+   ]
+  }
+ ],
+ "grid": [
+  "11111111111111111111111111111111111111111111111111111111111111111111111111111111",
+  "1isssss~iiiiii~~~~~iiiiiiii~iiiiiiiiiiiiiiiissssssssssssssssssssssiiiisssssssss1",
+  "1iiissssssIiii~~~i~iiiiiiiiiiiiiiIiiiiiiiiIssssssds~~iisssissssssssssiiissssss~1",
+  "1iiiiiisssiii~iiii~i~~iiiiiiiiiiiiiiiiiiiiiiss~iii~iiiiisssssssssssssssiii~iiii1",
+  "1iiiiiisssiiiiiiii~~~~iiiii~~~~sssiii~~iiiii~iii~iiiiiiiisssKssIsssdsssiiii~~~i1",
+  "1iiiiiiisiiiiiissiii~~iiiiiiiiisssiii~~~iiiiiiii~iiiiiiiiissKKsssssssssii~~~iii1",
+  "1iiiiiiiiii~iisssI~iiiiiiiiiiiisssii~~iiiiiiiiii~iiiiiiiiisssKKKsssssssii~~~~~i1",
+  "1iiiiiiii~iiiissssiiiIii~ii~~ssssssii~i~~~iiiii~iiiiiiiiiisssKKKsssssssii~iiii~1",
+  "1iiiiiiisi~iiissssiiiiiiiiii~sssdssii~~iiiiiiii~iiiiiiisss~sssKKsKKsssiii~iiii~1",
+  "1iiiiiiiiiiiiissssiiiii~iiiiisssKIsi~~~i~ii~iiiiIiiiiiiiii~~sssssKKsssiiiiiiiii1",
+  "1iiiiiiiiiiiii~sss~iiiiiiiii~~ssKs~i~~iiiiiiiiiiiiiiiiii~~iiisssssKsiiiiiiiiiii1",
+  "1iiiiiiiiii~iiisssiiii~iiiiissssKsiiiiiiiiiiiiiiiiiiiii~iiiiiissssssiiiiiii~ii~1",
+  "1iiiiiiiii~iiissssiiii~iiiiisssssssiiiiiiiiIiiiiiiii~i~iii~iiiisssii~iii~i~Iiii1",
+  "1iiiiiiii~i~iiddssiiii~iiiiiissssssiiiiiiiiiiii~iiii~~ii~~iiii~sssiii~~~iiiiiii1",
+  "1iiiiii~iiiiiissKssiiiiiiii~issssssiiiii~iiiiiiiiiiiiiiisssssssssdsiiiiiiiii~~i1",
+  "1iiiiiiiiiiiiisKKKssii~iiiiisssssssiiiIii~i~iiiiiiiiiiiiisssssssssssiiiiii~iiii1",
+  "1iiiiiii~i~iiisKKssssi~iiiiissssssiiiii~~i~iiii~iiiiiii~~issssKKsssssiiiiiiii~~1",
+  "1iiii~~ii~i~iissKsssiiii~~~issssssiiiiiiiiiiiiiiiiiiiiiiii~sssKKKKsssiiiiiiii~~1",
+  "1iiiiiiiiiiiiiisssiiiiiiiiiiiiss~i~~~~iiiiiiiiiiiiiiiiiiii~ssssKKKss~~iiiiiiiii1",
+  "1iii~iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii~iiiiiiiiiiiiiii~iiii~isssKKKsiiiiiiiiiiii1",
+  "1ii~ii~iiiii~iiiiiiiiiiiiiiiiiii~iiiiiiiiiiiii~iiiiii~iiii~iissKKKsiiiiiiiiiiii1",
+  "1ii~iii~iiiIi~iiiiiiiiiiiiiiiiii~iiii~iiiiii~isiiissssIisssiissKKKsiiiiiiiiiiii1",
+  "1ii~iisssIssiiiiiiiiiiiiii~ii~i~ii~~I~iiii~iiissssssIssssssiisssKsI~~iiiii~~iii1",
+  "1iiiiissssKssi~i~iiiiiii~iiiiiiiiiii~iiiii~iissssssdsssssssiissssssii~~~~iiiiii1",
+  "1iIiidssKKKssiiiiiiiiii~iiiiiiii~i~~KIiiii~iisssssiisssssssiiissssiiiiiiiiiiiii1",
+  "1ii~isIssKsss~~iiiiiiiiiiiiiiiii~ii~~iiiii~iissssssssssssssisssssssiiiiiiiiiiii1",
+  "1iiiisssssssi~iii~iiiiiiiiiiiiiss~~~~~~iii~isdssssssIsssssissssIssssiiiiiiiiiii1",
+  "1iiiissssssi~iiiiiiiiii~iiiissssss~iiii~ii~issssssssssssssiissssssssiii~iiiiiii1",
+  "1iiiiisssIiiiiiiiiiiiiii~i~sssssssssssi~i~~isssssssssssssssiisssssIsi~ii~iiiiii1",
+  "1iiiiiisssiiiiiiiiiiiiiiiiiisssssssssIsiiiiissssssssssssdsssssssssssiiiiiiiiiii1",
+  "1iiiiiiisiiiiiiiiiiiiiiiiiiisssssssssssssiiissssssssssssssssdssssssiiiiiiiiiiii1",
+  "1iiiiiiiiisiiiiiiiiiiiiiiiiissssssssssIssssiiiiiiisIsssKKKKKsdsssssiiiIiiiiiiii1",
+  "1iiiissiiissiiiiiiiiiiiiiiiissKssssIsIsssssiiiiiiisssssKKKKKKssssssiiIiiiiiiiii1",
+  "1iiiiiiiiisiiiiiiiiiiiiiiiiisssssssssssssIsiiiiissssssKKKKKKssssssiiIiiiiiiiiii1",
+  "1iiiiiiiiiiiiiiiiiiiiiiiiiiisssssIsssiisssssssssssssKKKKsssssssssiiiiiiiiiiiiii1",
+  "1iiiiiiiiiiiiiiiiiiiiiiiiiiiisssssssiiiisssssssssssKKKsdsdsssssiiiiiiiiiiiiiiii1",
+  "1sssssssssssssssssssssssssssssssssssssssssssssssssKKKssssssssssdsssssssssssssss1",
+  "1sssssssssssssssssssssssssssssssssssssssIsIssssKKKKKsssssssssssssssssssssssssss1",
+  "1ssdsssssssssssssssssssssssssssssssssssssssssssKKKKKsssssssssssssssssssssssssss1",
+  "1sssdssssssssssssssssssssssssssssssssssssssssssKKKKssssssssssssssssssssssssssss1",
+  "1ssssssssssssssssssssssssssssssssssssssssssssssKKKsssssssssdsssssssssssssssssss1",
+  "1sssssssssssssssssssssssssssssssssssssssssssssssKssKsssssssssssssssssssssssssss1",
+  "1ssssssssssssssssssssssssssssssssssssssssssssssssssKKssssssssssssssssssIsssssss1",
+  "1sssssssssssssssssssssssssdssssssssssssssssssssssssKKssssssssssssssssssssssssss1",
+  "1ssssssssssssssssssssssssssssssssssssssssssssssssssKKssssssssssssssssIsssssssds1",
+  "1ssssssssssssssssssssssssIIsssssssssssssssssssssssKKKssssssssssssssssssssssssss1",
+  "1ssssssssssssssssssKsKKssssssssssssssssssssssssssKKKsssssssssssssssssssssssssss1",
+  "1sssssssssssssssssKKKKKssssssssssssssssssssssssKKKKKKKsssssssssssssssssssssssss1",
+  "1sssssssssssssssssKKKKKsssssKsssssssssssssssssKKKKKKKKKsssIssssssIsssssssssssss1",
+  "1sssssssIsIssssssssKKKssssssssssssssssssssssssKKKKKKKKsssssssssssssssssssssssss1",
+  "1sssIsssgsssssssssssssssdsssssssssssssssssssssKKsdIssssssssssssssdsssssssssssss1",
+  "1ssssgsdgsgssssssssssssssssssssssssssssssssIsssKsdsssssssssssssssssssssssssssss1",
+  "1sssggggggKKKKssssssssdsssssdsssssssssssssssssssssssssssssssssIKKKsssssssssssss1",
+  "1sssdgggggggggsssIssssssssssssssdsssssssssssssssssdssssssssssssKKKsssssssssssss1",
+  "1sssgggggggggdsssssssssssssssssIsssssssssssssssssssssssKKsssssssKKsssssssssssss1",
+  "1sssssgsgggggggsssssssssdssdssssssssssgggssssssdssssssKKKKssssssKKsssssssssssss1",
+  "1ssssgssgggKggsgssssssssssssssssssssdggggssssssssssssKKKKKsssssKKKsssssssIsssss1",
+  "1ssssssssgggggsssssssssssssIsssssssssgggggIssssssssssKKKKKsssssssdssssssssssssg1",
+  "1ssssssssgsggIgsIsssssssssssssssssssggggggssssssssssssssssssssssssssssssssssssg1",
+  "1ssssssssssgsssssssssssssssssssssssssggggggssssssssssssdssssssssssssssssssssggg1",
+  "1sssdsssssssssssssssdsIssssssssssssssgdgggsssssssssdsssssssssssdssssssIsssggggg1",
+  "1ssssssssssssssssssssssssssssssssssssIsggsssdsssssssssssssssssssssssssssssggggg1",
+  "1ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssgggg1",
+  "11111111111111111111111111111111111111111111111111111111111111111111111111111111"
+ ]
+}

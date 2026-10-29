@@ -42,6 +42,20 @@ const DOCS := {
 	"bean_bag": "Floor cushion seat. color", "sigil_banner": "Hanging banner with the Wall sigil. color",
 	"pantry_rack": "Steel pantry shelving: rice sacks, capsule cans, jars", "freezer": "Chest freezer, frosted",
 	"weight_rack": "Rack of heavy dumbbells", "punching_bag": "Hanging punching bag. color",
+	# region kit (docs/REGIONS.md): also the tile letters K h k I g d V X u Z
+	"cliff": "Tile-filling strata rock column; a row makes a canyon wall. color, h", "cave_column": "Dark cave wall column. color, h",
+	"cactus": "Saguaro cactus", "hoodoo": "Sandstone spire with a cap rock", "dead_tree": "Bare dead tree",
+	"bones": "Giant bleached ribs and skull", "tent": "Nomad tent. color", "campfire": "Campfire with light",
+	"crag": "Jagged mountain boulder pile. color", "snow_cap": "Flat snow mound (walkable)", "snow_drift": "Snow drift (walkable)",
+	"snow_pine": "Pine tree under snow", "ice_spike": "Cluster of ice spikes", "ice_block": "Stacked blocks of clear ice",
+	"igloo": "Snow-brick igloo", "stalagmite": "Cave stalagmite. color", "crystal_cluster": "Glowing crystals. color, light (bool)",
+	"glow_mushroom": "Glowing cave mushrooms. color", "rock_arch": "Natural stone arch along +X (walk under). span, color",
+	"cave_mouth": "Dark cave opening in a rock face",
+	# city kit
+	"vending_machine": "Drinks vending machine. color", "food_stall": "Street food stall with awning. text, color",
+	"cafe_table": "Cafe table with umbrella and two chairs. color", "phone_booth": "Glass phone booth. color",
+	"trash_bin": "Street bin. color", "hydrant": "Fire hydrant", "hedge": "Clipped hedge along +X. length",
+	"street_sign": "Street name sign. text", "bike_rack": "Bike rack", "market_crates": "Stacked produce crates",
 	# fixtures: interactive in locations (behaviour in scripts/world/fixture.gd)
 	"level_gate": "Barrier of hard light between posts; opens at a level. level, w",
 	"memory_gate": "Void seal between dark posts; opens with a form or flag. form or flag, w",
@@ -635,6 +649,256 @@ static func make(type: String, p: Dictionary = {}) -> Node3D:
 			_cyl(n, Vector3(0, 0.9, 0), 0.28, 0.28, 1.3, _m(c, "noise", 2.0), 14)
 			_cyl(n, Vector3(0, 2.15, 0), 0.24, 0.28, 0.08, _m(c.darkened(0.3)), 14)
 			_block(n, 0.3, 0.3)
+		# --- region kit: cliffs, desert, mountains, ice, caves ---------------------------
+		"cliff":
+			# a tile-filling rock column with strata; neighbouring cliffs overlap into one wall
+			var c: Color = p.get("color", Color(0.62, 0.42, 0.3))
+			var h: float = float(p.get("h", 6.0)) * s
+			var m := _m(c, "strata", 0.6)
+			_cyl(n, Vector3.ZERO, 1.25, 1.5, h, m, 7)
+			_cyl(n, Vector3(0.2, h, -0.1), 0.6, 1.2, 0.8 * s, _m(c.darkened(0.12), "strata", 0.6), 6)
+			_block(n, 1.0, 1.0)
+		"cave_column":
+			var c: Color = p.get("color", Color(0.24, 0.22, 0.28))
+			var h: float = float(p.get("h", 7.0)) * s
+			_cyl(n, Vector3.ZERO, 1.2, 1.55, h, _m(c, "strata", 0.5), 7)
+			_cyl(n, Vector3(0, h, 0), 0.0, 1.2, 1.6 * s, _m(c.darkened(0.1), "noise", 1.0), 7)
+			_block(n, 1.0, 1.0)
+		"cactus":
+			var g := _m(Color(0.3, 0.55, 0.28), "noise", 3.0)
+			_cyl(n, Vector3.ZERO, 0.2 * s, 0.24 * s, 2.4 * s, g, 10)
+			_ball(n, Vector3(0, 2.4 * s, 0), 0.2 * s, g)
+			for side: float in [1.0, -1.0]:
+				var y := (1.0 + (0.3 if side > 0 else 0.0)) * s
+				var arm := _cyl(n, Vector3.ZERO, 0.13 * s, 0.13 * s, 0.45 * s, g, 8)
+				arm.rotation.z = -side * PI / 2
+				arm.position = Vector3(0, y, 0)
+				_cyl(n, Vector3(side * 0.45 * s, y - 0.05 * s, 0), 0.12 * s, 0.13 * s, 0.75 * s, g, 8)
+				_ball(n, Vector3(side * 0.45 * s, y + 0.7 * s, 0), 0.12 * s, g)
+			_block(n, 0.3, 0.3)
+		"hoodoo":
+			# a weathered sandstone spire with a harder cap rock
+			var rock := _m(Color(0.8, 0.5, 0.32), "strata", 0.8)
+			var y := 0.0
+			for k in 4:
+				var r := (0.9 - k * 0.16) * s
+				var hh := (1.3 - k * 0.1) * s
+				_cyl(n, Vector3(0, y, 0), r * 0.82, r, hh, rock, 8)
+				y += hh
+			_cyl(n, Vector3(0.05, y, 0), 0.5 * s, 0.35 * s, 0.35 * s, _m(Color(0.55, 0.38, 0.28), "noise", 1.0), 8)
+			_block(n, 0.8, 0.8)
+		"dead_tree":
+			var wood := _m(Color(0.42, 0.34, 0.28), "planks", 2.0)
+			_cyl(n, Vector3.ZERO, 0.12 * s, 0.22 * s, 2.2 * s, wood, 7)
+			for k in 4:
+				var b := _cyl(n, Vector3.ZERO, 0.03 * s, 0.08 * s, 1.0 * s, wood, 5)
+				b.rotation = Vector3(0.9, k * 1.7, 0)
+				b.position = Vector3(0, (1.3 + k * 0.25) * s, 0)
+			_block(n, 0.25, 0.25)
+		"bones":
+			# the bleached ribs and skull of something very large
+			var bone := _m(Color(0.93, 0.9, 0.82))
+			for k in 5:
+				var rib := _torus(n, Vector3(0, 0.2, (k - 2) * 0.55 * s), 0.9 * s, 1.0 * s, bone)
+				rib.rotation.x = PI / 2
+				rib.rotation.z = 0.2
+				rib.scale = Vector3(1.0, 1.0, 0.25)
+			var skull := _ball(n, Vector3(0.0, 0.45 * s, 1.9 * s), 0.55 * s, bone)
+			skull.scale = Vector3(1.0, 0.8, 1.3)
+			_cyl(n, Vector3(0, 0.1, 0), 0.06 * s, 0.06 * s, 3.0 * s, bone).rotation.x = PI / 2
+		"tent":
+			var c: Color = p.get("color", Color(0.85, 0.75, 0.55))
+			var t := _cyl(n, Vector3.ZERO, 0.0, 1.6, 2.2, _m(c, "noise", 2.0), 6)
+			t.rotation.y = 0.3
+			_box(n, Vector3(0, 0.55, 1.15), Vector3(0.7, 1.1, 0.05), _m(c.darkened(0.45)))
+			_block(n, 1.3, 1.3)
+		"campfire":
+			var wood := _m(Color(0.4, 0.26, 0.15), "planks", 2.0)
+			for k in 3:
+				var lg := _cyl(n, Vector3.ZERO, 0.07, 0.07, 0.8, wood, 6)
+				lg.rotation = Vector3(PI / 2, k * PI / 3, 0)
+				lg.position = Vector3(0, 0.08, 0)
+			for k in 8:
+				var a := TAU * k / 8.0
+				_ball(n, Vector3(cos(a) * 0.45, 0.06, sin(a) * 0.45), 0.1, _m(Color(0.45, 0.43, 0.4)))
+			_cyl(n, Vector3(0, 0.1, 0), 0.0, 0.25, 0.6, Mats.glow(Color(1.0, 0.55, 0.15), 2.0), 6)
+			var fl := OmniLight3D.new()
+			fl.position.y = 0.6
+			fl.omni_range = 7.0
+			fl.light_energy = 1.4
+			fl.light_color = Color(1.0, 0.65, 0.35)
+			n.add_child(fl)
+		"crag":
+			# a jagged mountain boulder pile, for slopes and passes
+			var rock := _m(p.get("color", Color(0.52, 0.5, 0.5)), "strata", 0.8)
+			for k in 4:
+				var b := _cyl(n, Vector3(sin(k * 2.1) * 0.6 * s, 0, cos(k * 1.7) * 0.6 * s), 0.0, (0.9 - k * 0.12) * s, (2.6 - k * 0.4) * s, rock, 5)
+				b.rotation.z = 0.15 * (k - 1.5)
+			_block(n, 1.0, 1.0)
+		"snow_cap":
+			# snow lying on whatever is under it: a flattened white mound, walkable
+			var cap := _ball(n, Vector3(0, 0.05, 0), 1.0 * s, _m(Color(0.96, 0.97, 1.0), "noise", 4.0))
+			cap.scale = Vector3(1.0, 0.18, 1.0)
+		"snow_drift":
+			var dr := _ball(n, Vector3(0, 0.0, 0), 0.8 * s, _m(Color(0.95, 0.97, 1.0), "noise", 4.0))
+			dr.scale = Vector3(1.3, 0.35, 0.9)
+		"snow_pine":
+			n.add_child(make("tree_pine", {"size": s}))
+			var white := _m(Color(0.96, 0.97, 1.0), "noise", 3.0)
+			for k in 3:  # snow lying on each tier of branches
+				var y := (1.15 + k * 0.85) * s
+				_cyl(n, Vector3(0, y, 0), (0.55 - k * 0.15) * s, (1.25 - k * 0.3) * s, 0.28 * s, white, 8)
+			_cyl(n, Vector3(0, 3.3 * s, 0), 0.0, 0.3 * s, 0.45 * s, white, 8)
+			_block(n, 0.5 * s, 0.5 * s)
+		"ice_spike":
+			var ice := _m(Color(0.7, 0.88, 1.0), "", 1.0, {"alpha": 0.82, "rough": 0.1, "metal": 0.2})
+			for k in 4:
+				var sp := _cyl(n, Vector3(sin(k * 2.4) * 0.45 * s, 0, cos(k * 2.4) * 0.45 * s), 0.0, (0.55 - k * 0.08) * s, (3.0 - k * 0.55) * s, ice, 6)
+				sp.rotation = Vector3(0.12 * cos(k * 1.3), 0, 0.12 * sin(k * 2.0))
+			_block(n, 0.8, 0.8)
+		"ice_block":
+			var ice := _m(Color(0.72, 0.88, 1.0), "", 1.0, {"alpha": 0.78, "rough": 0.08})
+			var b := _box(n, Vector3(0, 0.6 * s, 0), Vector3(1.3, 1.2, 1.3) * s, ice)
+			b.rotation.y = 0.4
+			_box(n, Vector3(0.3, 1.45 * s, 0.1), Vector3(0.7, 0.5, 0.7) * s, ice).rotation.y = 1.1
+			_block(n, 0.7, 0.7)
+		"igloo":
+			var snow := _m(Color(0.95, 0.97, 1.0), "bricks", 1.5)
+			var dome := _ball(n, Vector3.ZERO, 2.0, snow)
+			dome.scale = Vector3(1.0, 0.8, 1.0)
+			var tunnel := _cyl(n, Vector3(0, 0.55, 2.0), 0.6, 0.6, 1.4, snow, 10)
+			tunnel.rotation.x = PI / 2
+			tunnel.position = Vector3(0, 0.55, 1.6)
+			_box(n, Vector3(0, 0.45, 2.3), Vector3(0.75, 0.9, 0.05), _m(Color(0.1, 0.12, 0.18)))
+			_block(n, 2.0, 2.0)
+		"stalagmite":
+			var rock := _m(p.get("color", Color(0.38, 0.35, 0.4)), "strata", 0.8)
+			_cyl(n, Vector3.ZERO, 0.0, 0.55 * s, 2.4 * s, rock, 7)
+			_cyl(n, Vector3(0.5 * s, 0, 0.2 * s), 0.0, 0.3 * s, 1.3 * s, rock, 6)
+			_block(n, 0.5, 0.5)
+		"crystal_cluster":
+			# glowing crystals in a rough star; "light" adds a real light (keep them few)
+			var c: Color = p.get("color", Color(0.45, 0.8, 1.0))
+			var glow := Mats.glow(c, 1.6)
+			for k in 6:
+				var a := TAU * k / 6.0 + 0.3
+				var cr := _cyl(n, Vector3.ZERO, 0.0, (0.32 - k * 0.02) * s, (2.4 - k * 0.22) * s, glow, 6)
+				cr.rotation = Vector3(cos(a) * 0.45, 0, sin(a) * 0.45)
+				cr.position = Vector3(cos(a) * 0.25, 0, sin(a) * 0.25) * s
+			_cyl(n, Vector3.ZERO, 0.0, 0.42 * s, 3.2 * s, glow, 6)
+			_ball(n, Vector3(0, 0.05, 0), 0.75 * s, _m(Color(0.25, 0.23, 0.3), "noise", 1.0)).scale = Vector3(1, 0.3, 1)
+			if p.get("light", true):
+				var l := OmniLight3D.new()
+				l.position.y = 1.4
+				l.omni_range = 9.0
+				l.light_energy = 1.2
+				l.light_color = c
+				n.add_child(l)
+			_block(n, 0.6, 0.6)
+		"glow_mushroom":
+			var c: Color = p.get("color", Color(0.4, 1.0, 0.75))
+			for k in 3:
+				var off := Vector3(sin(k * 2.2), 0, cos(k * 2.2)) * 0.3 * s
+				var hh := (0.5 - k * 0.12) * s
+				_cyl(n, off, 0.05 * s, 0.06 * s, hh, _m(Color(0.85, 0.85, 0.8)), 6)
+				var cap := _ball(n, off + Vector3(0, hh, 0), (0.22 - k * 0.04) * s, Mats.glow(c, 1.2))
+				cap.scale = Vector3(1.0, 0.45, 1.0)
+		"rock_arch":
+			# a natural stone arch along +X; walk under it
+			var rock := _m(p.get("color", Color(0.45, 0.42, 0.46)), "strata", 0.7)
+			var span: float = float(p.get("span", 4.0))
+			for side: float in [-1.0, 1.0]:
+				_cyl(n, Vector3(side * span * 0.5, 0, 0), 0.6, 0.9, 3.4, rock, 7)
+			var top := _box(n, Vector3(0, 3.6, 0), Vector3(span + 1.6, 0.9, 1.4), rock)
+			top.rotation.z = 0.04
+			n.set_meta("footprint", Vector2(span * 0.5 + 0.9, 0.7))
+		"cave_mouth":
+			# a dark opening in a rock face (an exit marker usually stands in it)
+			var rock := _m(Color(0.4, 0.37, 0.4), "strata", 0.7)
+			_cyl(n, Vector3(0, 0, -0.5), 2.4, 3.0, 4.2, rock, 9)
+			var hole := _ball(n, Vector3(0, 1.1, 2.55), 1.35, _m(Color(0.02, 0.02, 0.03)))
+			hole.scale = Vector3(1.0, 1.3, 0.35)
+			_block(n, 2.2, 1.4)
+		# --- city kit ------------------------------------------------------------------
+		"vending_machine":
+			var c: Color = p.get("color", Color(0.85, 0.15, 0.2))
+			_box(n, Vector3(0, 0.95, 0), Vector3(0.9, 1.9, 0.7), _m(c, "", 1.0, {"rough": 0.4}))
+			_box(n, Vector3(-0.12, 1.15, 0.36), Vector3(0.55, 1.0, 0.02), Mats.glow(Color(0.85, 0.95, 1.0), 0.7))
+			for k in 4:
+				_box(n, Vector3(-0.12 + (k % 2) * 0.24 - 0.12, 1.4 - (k / 2) * 0.4, 0.37), Vector3(0.16, 0.3, 0.02), _m(Color.from_hsv(k * 0.23, 0.7, 0.95)))
+			_box(n, Vector3(0.3, 0.3, 0.36), Vector3(0.22, 0.12, 0.02), _m(Color(0.1, 0.1, 0.1)))
+			_block(n, 0.45, 0.35)
+		"food_stall":
+			# a street-food stall: counter, striped awning on poles, a sign; text, color
+			var c: Color = p.get("color", Color(0.85, 0.25, 0.2))
+			var wood := _m(Color(0.6, 0.42, 0.26), "planks", 2.0)
+			_box(n, Vector3(0, 0.5, 0), Vector3(2.4, 1.0, 1.0), wood)
+			_box(n, Vector3(0, 1.02, 0.05), Vector3(2.5, 0.06, 1.1), _m(Color(0.92, 0.9, 0.86)))
+			for x in [-1.15, 1.15]:
+				_box(n, Vector3(x, 1.4, -0.45), Vector3(0.08, 2.8, 0.08), wood)
+			var aw := _box(n, Vector3(0, 2.75, 0.15), Vector3(2.8, 0.06, 1.6), _m(c, "stripes", 1.0))
+			aw.rotation.x = 0.25
+			for k in 3:
+				_cyl(n, Vector3(-0.7 + k * 0.7, 1.05, 0.2), 0.16, 0.12, 0.14, _m(Color(0.95, 0.95, 0.93)))
+				_cyl(n, Vector3(-0.7 + k * 0.7, 1.19, 0.2), 0.13, 0.13, 0.02, _m(Color(0.9, 0.6, 0.25)))
+			if p.has("text"):
+				_label(n, str(p["text"]), Vector3(0, 3.15, 0.8), 64, Color.WHITE)
+			_block(n, 1.25, 0.55)
+		"cafe_table":
+			var metal := _m(Color(0.85, 0.85, 0.88), "", 1.0, {"metal": 0.5})
+			_cyl(n, Vector3.ZERO, 0.04, 0.25, 0.75, metal, 10)
+			_cyl(n, Vector3(0, 0.74, 0), 0.45, 0.45, 0.04, metal, 16)
+			_cyl(n, Vector3.ZERO, 0.025, 0.025, 2.3, metal, 6)
+			_cyl(n, Vector3(0, 2.0, 0), 0.0, 1.2, 0.4, _m(p.get("color", Color(0.95, 0.55, 0.3)), "stripes", 1.0), 8)
+			for side: float in [1.0, -1.0]:
+				var chair := make("chair", {"color": Color(0.82, 0.82, 0.85)})
+				chair.position = Vector3(side * 0.75, 0, 0)
+				chair.rotation.y = -side * PI / 2
+				n.add_child(chair)
+			_block(n, 0.5, 0.5)
+		"phone_booth":
+			var c: Color = p.get("color", Color(0.25, 0.55, 0.85))
+			for x in [-0.5, 0.5]:
+				for z in [-0.5, 0.5]:
+					_box(n, Vector3(x, 1.15, z), Vector3(0.08, 2.3, 0.08), _m(c))
+			_box(n, Vector3(0, 2.35, 0), Vector3(1.15, 0.12, 1.15), _m(c))
+			_box(n, Vector3(0, 1.2, 0), Vector3(1.0, 2.1, 1.0), _m(Color(0.75, 0.9, 1.0), "", 1.0, {"alpha": 0.3}))
+			_box(n, Vector3(0, 1.3, -0.4), Vector3(0.3, 0.4, 0.1), _m(Color(0.2, 0.2, 0.22)))
+			_block(n, 0.55, 0.55)
+		"trash_bin":
+			_cyl(n, Vector3.ZERO, 0.3, 0.26, 0.9, _m(p.get("color", Color(0.3, 0.55, 0.35)), "panels", 2.0), 12)
+			_cyl(n, Vector3(0, 0.9, 0), 0.32, 0.32, 0.06, _m(Color(0.25, 0.25, 0.27)), 12)
+			_block(n, 0.3, 0.3)
+		"hydrant":
+			var red := _m(Color(0.85, 0.15, 0.15), "", 1.0, {"rough": 0.4})
+			_cyl(n, Vector3.ZERO, 0.16, 0.2, 0.7, red, 10)
+			_ball(n, Vector3(0, 0.72, 0), 0.17, red)
+			_cyl(n, Vector3(0, 0.45, 0), 0.07, 0.07, 0.5, red, 8).rotation.z = PI / 2
+		"hedge":
+			var length: float = float(p.get("length", 3.0))
+			var hd := _box(n, Vector3(0, 0.55, 0), Vector3(length, 1.1, 0.8), _m(Color(0.22, 0.45, 0.2), "noise", 2.0))
+			hd.scale = Vector3(1, 1, 1)
+			_block(n, length * 0.5, 0.4)
+		"street_sign":
+			_cyl(n, Vector3.ZERO, 0.04, 0.04, 2.6, _m(Color(0.55, 0.55, 0.58), "", 1.0, {"metal": 0.5}), 6)
+			_box(n, Vector3(0, 2.4, 0), Vector3(1.3, 0.32, 0.04), _m(Color(0.15, 0.45, 0.3)))
+			if p.has("text"):
+				_label(n, str(p["text"]), Vector3(0, 2.4, 0.04), 40, Color.WHITE)
+		"bike_rack":
+			var metal := _m(Color(0.6, 0.6, 0.65), "", 1.0, {"metal": 0.6})
+			for k in 4:
+				var loop := _torus(n, Vector3((k - 1.5) * 0.4, 0.4, 0), 0.32, 0.38, metal)
+				loop.rotation.y = PI / 2
+				loop.rotation.z = PI / 2
+		"market_crates":
+			# stacked produce crates, a market-street filler
+			var wood := _m(Color(0.66, 0.5, 0.3), "planks", 2.0)
+			for k in 3:
+				var off := Vector3((k - 1) * 0.65, 0, (k % 2) * 0.2)
+				_box(n, off + Vector3(0, 0.25, 0), Vector3(0.6, 0.5, 0.45), wood)
+				for f in 3:
+					_ball(n, off + Vector3((f - 1) * 0.16, 0.52, 0), 0.09, _m(Color.from_hsv([0.0, 0.08, 0.25][k], 0.8, 0.9)))
+			_block(n, 1.0, 0.3)
 		"trophy":
 			_box(n, Vector3(0, 0.5, 0), Vector3(0.7, 1.0, 0.7), _m(Color(0.3, 0.2, 0.25), "planks", 2.0))
 			var gold := _m(Color(0.95, 0.75, 0.2), "", 1.0, {"metal": 0.8, "rough": 0.25})

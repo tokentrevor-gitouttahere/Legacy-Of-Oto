@@ -1,0 +1,155 @@
+{
+ "id": "west_city_noodle_bar",
+ "name": "Mei's Noodle Bar",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "floor": "wood",
+ "wall_color": [
+  0.95,
+  0.88,
+  0.75
+ ],
+ "wall_tex": "planks",
+ "spawns": {
+  "default": [
+   7,
+   7
+  ],
+  "door": [
+   7,
+   7
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "west_city",
+   "spawn": "noodle_door"
+  }
+ },
+ "props": [
+  {
+   "type": "counter",
+   "at": [
+    6.5,
+    3.2
+   ],
+   "params": {
+    "length": 6
+   }
+  },
+  {
+   "type": "chair",
+   "at": [
+    4.5,
+    4.4
+   ],
+   "rot": 180
+  },
+  {
+   "type": "chair",
+   "at": [
+    6,
+    4.4
+   ],
+   "rot": 180
+  },
+  {
+   "type": "chair",
+   "at": [
+    7.5,
+    4.4
+   ],
+   "rot": 180
+  },
+  {
+   "type": "chair",
+   "at": [
+    9,
+    4.4
+   ],
+   "rot": 180
+  },
+  {
+   "type": "stove",
+   "at": [
+    4,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "stove",
+   "at": [
+    5.2,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "snack_shelf",
+   "at": [
+    9.5,
+    2.2
+   ],
+   "rot": 180
+  },
+  {
+   "type": "table",
+   "at": [
+    3,
+    6.4
+   ],
+   "params": {
+    "w": 1.4,
+    "d": 1.0
+   }
+  },
+  {
+   "type": "table",
+   "at": [
+    10,
+    6.4
+   ],
+   "params": {
+    "w": 1.4,
+    "d": 1.0
+   }
+  },
+  {
+   "type": "plant_pot",
+   "at": [
+    11.2,
+    7.3
+   ]
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Mei",
+   "at": [
+    6.5,
+    2.3
+   ],
+   "lines": [
+    "Mei|Sit anywhere. The counter's best: you can watch me cook.",
+    "Mei|Pork buns, fresh. I make forty a day. You may be the first person to eat forty."
+   ],
+   "outfit": "woman_mei",
+   "rot": 180,
+   "dish": "mei_pork_buns"
+  }
+ ],
+ "grid": [
+  "              ",
+  " ############ ",
+  " #WWWWWWWWWW# ",
+  " #WWWWWWWWWW# ",
+  " #WWWWWWWWWW# ",
+  " #WWWWWWWWWW# ",
+  " #WWWWWWWWWW# ",
+  " #WWWWWWWWWW# ",
+  " ######1##### ",
+  "              "
+ ]
+}

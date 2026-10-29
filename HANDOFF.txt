@@ -171,6 +171,48 @@ SESSION 5, PART 3 (2026-10-29): CAPSULE CORP HOME, FONTS, CLOTHING. On branch
     B." / Under it, in a different hand: "Accepted."
   - Dish names above, and the signs KITCHEN, PANTRY, GARDEN, GRAVITY ROOM, OTO, HOME.
 
+SESSION 5, PART 4 (2026-10-29): REGION KIT, FOUR REGIONS, A FULLER WEST CITY. On
+  feature/capsule-corp-home (the owner said to stay on the checked-out branch this time).
+  Owner's task: "build some additional assets for the game that could be used in many places ...
+  the city fleshed out, a desert area with canyons and valleys, a mountainous region, arctic ice
+  area, underground area with a huge lake". Owner's picks: a denser West City plus enterable
+  buildings; regions with enemies, pickups and a save lantern; on the world map; a glowing crystal
+  cavern. Read docs/REGIONS.md.
+  - Kit: 15 tile letters, 5 grounds, 4 skies, 30 props, 4 generators plus noise, wander,
+    reachability and cutaway helpers; city helpers street_furniture, dress_parks, scatter_townswomen.
+  - Regions: diablo_desert, granite_peaks, northern_ice_fields, crystal_cavern (world-map icons
+    canyon, peaks, ice, cave). Water now renders as its own glossy surface everywhere.
+  - West City: a two-block shopping street with six shops (noodle bar, bakery and capsule shop
+    enterable), a market row, street furniture, park dressing, 14 named townswomen.
+  - Seven new dishes (20 on the Menu): Nomad flatbread, Goat-herder's cheese, Ice-hole fish soup,
+    Glowcap skewers, Cafe coffee and its cake, Street takoyaki, Mei's pork buns.
+  - Bug fixed: with no save, a fallen Oto respawned at the map's centre (inside the cavern lake);
+    she now gets up at the location's spawn.
+  - Tests: 0 failures (new: the regions, the kit's letters, the shops' doors, the respawn).
+  OPEN FOR THE OWNER: the world map's Tab overview still uses the old plain style (not UiKit).
+  WRITTEN BY CLAUDE, WAITING FOR REVIEW (tools/make_locations.py)
+  - Region names: Diablo Desert (from the DB world), Granite Peaks, Northern Ice Fields, Crystal Cavern.
+  - Nadia: "You walked here? Nobody walks here. Sit. The bread is nearly done." / Oto: "I can wait
+    for bread." / "You say that like it costs you something."
+  - Vesna: "Four hours up the switchbacks, and you're not even breathing hard." / "The goats think
+    you're one of them. Have some of their cheese. They won't mind."
+  - Yuki: "Careful out on the sea ice. The dark lines are open water, and it's very cold water." /
+    "We cut a hole this morning. The soup is mostly fish. The rest is also fish."
+  - Kaia: "I came down to dive the lake. It's the deepest water I've ever seen, and something lives
+    on the island." / "Want some glowcaps? They taste like mushrooms that are proud of themselves."
+  - Marisol: "Table for one? You look like a table for four." / "Our coffee comes with a cake. The
+    cake is not optional."
+  - Kesi: "I deliver all day and eat here all night. Try the takoyaki. Blow on it first." / Oto:
+    "Why?" / "...You'll see."
+  - Mei: "Sit anywhere. The counter's best: you can watch me cook." / "Pork buns, fresh. I make forty
+    a day. You may be the first person to eat forty."
+  - Clementine: "My sister bakes for Capsule Corp now. I got the shop. I think I got the better
+    deal." / Oto: "You got the shop with the bread in it." / "Exactly."
+  - Rei: "House capsules, car capsules, fridge capsules. The fridge capsules sell out first. I wonder
+    why." / Oto: "..." / "You've bought four this week."
+  - TOWNSWOMAN_LINES (six street lines), stall and street names, foe names (Sand Bandit, Frost
+    Raider, Crystal Crawler, Lake Crab, The Lake Warden, Training Drone).
+
 THE LIKELY TASK (the owner's words, end of session 4)
   "likely GUI options, dialogue boxes, talking animations, a cutscene editor or director and
   several cutscenes to test proof of concepts." Wait for the owner to say which; then use the

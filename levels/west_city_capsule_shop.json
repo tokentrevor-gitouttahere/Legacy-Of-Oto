@@ -1,0 +1,125 @@
+{
+ "id": "west_city_capsule_shop",
+ "name": "Capsule Shop",
+ "interior": true,
+ "tile": 1.5,
+ "sky": "interior",
+ "floor": "tile",
+ "wall_color": [
+  0.9,
+  0.93,
+  0.98
+ ],
+ "wall_tex": "panels",
+ "spawns": {
+  "default": [
+   7,
+   7
+  ],
+  "door": [
+   7,
+   7
+  ]
+ },
+ "exits": {
+  "1": {
+   "to": "west_city",
+   "spawn": "capsule_door"
+  }
+ },
+ "props": [
+  {
+   "type": "capsule_rack",
+   "at": [
+    2.6,
+    3
+   ],
+   "rot": 90
+  },
+  {
+   "type": "capsule_rack",
+   "at": [
+    10.4,
+    3
+   ],
+   "rot": 270
+  },
+  {
+   "type": "capsule_rack",
+   "at": [
+    2.6,
+    6
+   ],
+   "rot": 90
+  },
+  {
+   "type": "capsule_rack",
+   "at": [
+    10.4,
+    6
+   ],
+   "rot": 270
+  },
+  {
+   "type": "counter",
+   "at": [
+    6.5,
+    2.6
+   ],
+   "params": {
+    "length": 4
+   }
+  },
+  {
+   "type": "computer",
+   "at": [
+    6.5,
+    1.9
+   ],
+   "rot": 180
+  },
+  {
+   "type": "vending_machine",
+   "at": [
+    9,
+    1.9
+   ],
+   "rot": 180,
+   "params": {
+    "color": [
+     0.2,
+     0.45,
+     0.85
+    ]
+   }
+  }
+ ],
+ "npcs": [
+  {
+   "name": "Rei",
+   "at": [
+    6.5,
+    3.6
+   ],
+   "lines": [
+    "Rei|House capsules, car capsules, fridge capsules. The fridge capsules sell out first. I wonder why.",
+    "Oto|...",
+    "Rei|You've bought four this week."
+   ],
+   "outfit": "woman_riko_3",
+   "rot": 180
+  }
+ ],
+ "grid": [
+  "              ",
+  " ############ ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " #FFFFFFFFFF# ",
+  " ######1##### ",
+  "              "
+ ]
+}

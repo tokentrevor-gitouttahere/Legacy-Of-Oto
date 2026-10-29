@@ -66,7 +66,7 @@ func _raw_height(x: float, z: float) -> float:
 	for loc in locations:
 		var lp := _loc_pos(loc)
 		var dist := Vector2(x, z).distance_to(lp)
-		if loc.get("icon", "") == "mountain":
+		if loc.get("icon", "") in ["mountain", "peaks"]:
 			var ridge := 1.0 - absf(_detail.get_noise_2d(x * 0.5, z * 0.5))
 			h += maxf(0.0, 1.0 - dist / 650.0) * ridge * 260.0
 		var r := 120.0 if loc.get("icon", "") != "island" else 70.0
@@ -82,8 +82,11 @@ func _biome(x: float, z: float, h: float) -> Color:
 	if h < 5.0:
 		return Color(0.92, 0.85, 0.62)
 	for loc in locations:
-		if loc.get("icon", "") == "desert" and Vector2(x, z).distance_to(_loc_pos(loc)) < 480.0 + _detail.get_noise_2d(x, z) * 120.0:
+		var near := Vector2(x, z).distance_to(_loc_pos(loc)) < 480.0 + _detail.get_noise_2d(x, z) * 120.0
+		if loc.get("icon", "") in ["desert", "canyon"] and near:
 			return Color(0.85, 0.58, 0.35)
+		if loc.get("icon", "") == "ice" and near:
+			return Color(0.9, 0.95, 1.0)
 	if h > 210.0:
 		return Color(0.95, 0.96, 0.98)
 	if h > 120.0:
@@ -251,6 +254,26 @@ func _build_locations() -> void:
 				gh.scale = Vector3.ONE * 3.0
 				gh.position = base
 				add_child(gh)
+			"canyon":
+				for k in 7:
+					var m := Props.make("mesa", {"r": rng.randf_range(10, 22), "h": rng.randf_range(25, 55)})
+					m.position = base + Vector3(cos(k * 0.9) * 90.0, 0, sin(k * 0.9) * 90.0)
+					add_child(m)
+			"peaks":
+				for k in 5:
+					var c := Props.make("crag", {"size": rng.randf_range(10, 16)})
+					c.position = base + Vector3(cos(k * 1.3) * 60.0, 0, sin(k * 1.3) * 60.0)
+					add_child(c)
+			"ice":
+				for k in 6:
+					var sp := Props.make("ice_spike", {"size": rng.randf_range(8, 14)})
+					sp.position = base + Vector3(cos(k * 1.05) * 70.0, 0, sin(k * 1.05) * 70.0)
+					add_child(sp)
+			"cave":
+				var mouth := Props.make("cave_mouth")
+				mouth.scale = Vector3.ONE * 8.0
+				mouth.position = base
+				add_child(mouth)
 			"desert":
 				for k in 3:
 					var pod := Props.make("crater", {"r": 6.0})

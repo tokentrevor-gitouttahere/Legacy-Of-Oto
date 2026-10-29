@@ -13,7 +13,7 @@ Open one with `python tools/run.py shot level:<id>` or `GameState.travel("<id>",
 | `tile` | 2.0 | Metres per cell (use 1.5 for interiors) |
 | `base` | `grass` | Ground under markers that use `$base` (trees, spawn, exits) |
 | `floor` | base | Ground for walls/doors (`$floor`), used indoors |
-| `sky` | `day` | `day, dusk, night, dark_side, wasteland, namek, sky_high, world, interior` |
+| `sky` | `day` | `day, dusk, night, dark_side, wasteland, namek, sky_high, world, interior`, and for regions `desert, alpine, arctic, cavern` |
 | `backdrop` | none | String or list: `mountains, mesas, skyline, ocean, clouds` |
 | `interior` | false | Low cutaway south walls, closer camera |
 | `city_style` | `west` | How `B` blocks become buildings: `west` (domes, round towers), `modern`, `village` |
@@ -62,6 +62,10 @@ Cell coordinates are `[column, row]`, may be fractional, and refer to cell centr
 | `=` | road | `@` | default spawn |
 | `_` | pavement | `1`-`9` | exit (see `exits`) |
 | `+` | plaza | `W` `F` `C` | wood, tile, carpet floors |
+
+The region kit adds `K n k h q i I g d V X u Z w` (cliffs, sandstone, cactus, hoodoo, gravel,
+ice, ice spikes, snowy pine, drift, cave wall, crystals, mushrooms, stalagmite, deep water): see
+`docs/REGIONS.md`.
 
 ## Props
 
