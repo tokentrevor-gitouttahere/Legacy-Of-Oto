@@ -189,7 +189,7 @@ SESSION 5, PART 4 (2026-10-29): REGION KIT, FOUR REGIONS, A FULLER WEST CITY. On
   - Bug fixed: with no save, a fallen Oto respawned at the map's centre (inside the cavern lake);
     she now gets up at the location's spawn.
   - Tests: 0 failures (new: the regions, the kit's letters, the shops' doors, the respawn).
-  OPEN FOR THE OWNER: the world map's Tab overview still uses the old plain style (not UiKit).
+  - World map overview restyled with UiKit (branch feature/world-map-ui, from 26395ec): see docs/UI.md.
   WRITTEN BY CLAUDE, WAITING FOR REVIEW (tools/make_locations.py)
   - Region names: Diablo Desert (from the DB world), Granite Peaks, Northern Ice Fields, Crystal Cavern.
   - Nadia: "You walked here? Nobody walks here. Sit. The bread is nearly done." / Oto: "I can wait

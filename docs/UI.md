@@ -45,6 +45,10 @@ drawn as a key chip) and title cards use the same kit.
   piece, key item, the senzu, dishes and empty slots, on a tile in the stat's colour.
 - **HUD** (`hud.gd`): a portrait medallion (void eyes in Shadow forms), framed meters with a
   damage trail, a level gem, and a framed ki-sense panel.
+- **World map overview** (Tab, `world_map.gd` `MapView`): a hill-shaded chart in a UiKit frame,
+  sea shaded by depth and coasts inked, an icon per kind of place (city, mountain, island, desert,
+  tower, lookout, ice, cave), the landing in reach ringed in gold, Oto's heading, a compass, and
+  key hints; the game's own hint line hides while it is open.
 - **Title** (`title.gd`): a painted void sky and mountain ridge with the line of sunlight rising
   from the horizon. Oto stands in a 3D viewport, lit gold from the lit side and violet from the
   dark. The logo and a framed menu sit on the left, developer rooms in dim type, with a note

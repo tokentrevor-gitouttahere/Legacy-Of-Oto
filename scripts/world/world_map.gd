@@ -328,8 +328,10 @@ func _cam_offset() -> Vector3:
 func _process(delta: float) -> void:
 	if _map.visible and Input.is_action_just_pressed("map"):
 		_map.visible = false
+		Overlay.show_hint(true)
 	elif not _map.visible and Input.is_action_just_pressed("map") and not GameState.input_locked:
 		_map.visible = true
+		Overlay.show_hint(false)  # the map shows its own landing line and keys
 	if _map.visible:
 		_map.queue_redraw()
 	var in_dir := Vector2.ZERO
@@ -367,13 +369,29 @@ func _update_landing() -> void:
 
 # --- map overlay --------------------------------------------------------------
 
+## The Tab map: the terrain as a hill-shaded chart (deeper sea darker, coasts inked) in a
+## UiKit frame, an icon for each kind of place, the landing in reach picked out in gold, and
+## Oto's heading.
 func _build_map_ui() -> void:
 	var img := Image.create(RES, RES, false, Image.FORMAT_RGB8)
 	for j in RES:
 		for i in RES:
+			var h := heights[j * RES + i]
 			var c := colors[j * RES + i]
-			if heights[j * RES + i] < 1.0:
-				c = Color(0.16, 0.4, 0.72)
+			if h < 1.0:
+				c = Color(0.22, 0.5, 0.74).lerp(Color(0.06, 0.18, 0.4), clampf(-h / 45.0, 0.0, 1.0))
+			else:
+				# light from the north-west: slopes facing it brighter, the far side darker
+				var hx := heights[j * RES + mini(i + 1, RES - 1)] - heights[j * RES + maxi(i - 1, 0)]
+				var hz := heights[mini(j + 1, RES - 1) * RES + i] - heights[maxi(j - 1, 0) * RES + i]
+				c = c * clampf(1.0 - (hx + hz) * 0.006, 0.7, 1.25)
+				var coast := false
+				for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+					var ni := clampi(i + d.x, 0, RES - 1)
+					var nj := clampi(j + d.y, 0, RES - 1)
+					coast = coast or heights[nj * RES + ni] < 1.0
+				if coast:
+					c = c.darkened(0.35)
 			img.set_pixel(i, j, c)
 	var tex := ImageTexture.create_from_image(img)
 	var layer := CanvasLayer.new()
@@ -391,20 +409,105 @@ class MapView extends Control:
 	var tex: Texture2D
 
 	func _draw() -> void:
-		var side := minf(size.x, size.y) * 0.85
-		var origin := (size - Vector2(side, side)) * 0.5
-		draw_rect(Rect2(Vector2.ZERO, size), Color(0, 0, 0, 0.6))
+		var vs := get_viewport_rect().size
+		var t := Time.get_ticks_msec() / 1000.0
+		draw_rect(Rect2(Vector2.ZERO, vs), Color(0.02, 0.01, 0.05, 0.78))
+		var side := minf(vs.x * 0.62, vs.y - 236.0)
+		var origin := Vector2((vs.x - side) * 0.5, 92.0)
+		var frame := Rect2(origin - Vector2(18, 18), Vector2(side, side) + Vector2(36, 36))
+		UiKit.frame(self, frame, UiKit.GOLD, true, 14.0)
 		draw_texture_rect(tex, Rect2(origin, Vector2(side, side)), false)
-		draw_rect(Rect2(origin, Vector2(side, side)), Color.WHITE, false, 2.0)
-		var font := ThemeDB.fallback_font
+		draw_rect(Rect2(origin, Vector2(side, side)), Color(0, 0, 0, 0.5), false, 2.0)
+		# the title, between rules
+		var tf := UiKit.spaced(UiKit.display_font(true), 4)
+		UiKit.text(self, tf, Vector2(0, 58), "THE WORLD", 34, UiKit.GOLD_PALE, HORIZONTAL_ALIGNMENT_CENTER, vs.x, 5)
+		UiKit.rule(self, Vector2(vs.x * 0.5 - 260, 46), Vector2(vs.x * 0.5 - 120, 46), UiKit.GOLD, false)
+		UiKit.rule(self, Vector2(vs.x * 0.5 + 120, 46), Vector2(vs.x * 0.5 + 260, 46), UiKit.GOLD, false)
+		_compass(origin + Vector2(side - 46, 46))
 		var s: float = owner_map.size
-		for loc in owner_map.locations:
+		var near: Dictionary = owner_map._near
+		var placed: Array[Rect2] = []
+		var font := UiKit.body_font()
+		var locs: Array = owner_map.locations.duplicate()
+		locs.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["pos"][1] < b["pos"][1])
+		for loc: Dictionary in locs:
 			var p: Vector2 = owner_map._loc_pos(loc)
 			var sp := origin + (p / s + Vector2(0.5, 0.5)) * side
-			draw_circle(sp, 7.0, Level._color(loc.get("color", [1, 1, 1])))
-			draw_string(font, sp + Vector2(10, 6), loc["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.WHITE)
+			var col: Color = Level._color(loc.get("color", [1, 1, 1]))
+			var is_near: bool = not near.is_empty() and near.get("id", "") == loc["id"]
+			if is_near:
+				var pulse := 0.5 + 0.5 * sin(t * 5.0)
+				draw_arc(sp, 15.0 + pulse * 4.0, 0.0, TAU, 32, Color(UiKit.GOLD.r, UiKit.GOLD.g, UiKit.GOLD.b, 0.9), 2.5, true)
+			_marker(sp, str(loc.get("icon", "")), col)
+			# the name to the right, nudged down past any label it would overlap
+			var fs := 17 if not is_near else 19
+			var w := font.get_string_size(loc["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+			var lr := Rect2(sp + Vector2(14, -12), Vector2(w, 18))
+			for _i in 4:
+				var hit := false
+				for o: Rect2 in placed:
+					if o.intersects(lr):
+						hit = true
+				if not hit:
+					break
+				lr.position.y += 18.0
+			placed.append(lr)
+			UiKit.text(self, font, lr.position + Vector2(0, 15), loc["name"], fs, UiKit.GOLD_PALE if is_near else UiKit.TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, 5)
+		# Oto: a gem pointing the way she flies
 		var fp: Vector3 = owner_map.flyer.position
 		var pp := origin + (Vector2(fp.x, fp.z) / s + Vector2(0.5, 0.5)) * side
-		draw_circle(pp, 9.0, Color(0.6, 0.4, 0.95))
-		draw_circle(pp, 4.0, Color.WHITE)
-		draw_string(font, origin + Vector2(0, -12), "WORLD MAP  (Tab to close)", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
+		var v: Vector3 = owner_map.vel
+		var ang: float = atan2(v.x, -v.z) if v.length() > 2.0 else owner_map.flyer.rotation.y * -1.0 + PI
+		var fwd := Vector2(sin(ang), -cos(ang))
+		var rt := Vector2(-fwd.y, fwd.x)
+		draw_circle(pp, 13.0, Color(0.4, 0.25, 0.75, 0.35))
+		var arrow := PackedVector2Array([pp + fwd * 12.0, pp + rt * 7.0 - fwd * 6.0, pp - fwd * 2.0, pp - rt * 7.0 - fwd * 6.0])
+		draw_colored_polygon(arrow, UiKit.VIOLET.lightened(0.3))
+		draw_polyline(UiKit.closed(arrow), UiKit.INK, 1.5, true)
+		# the landing in reach, and the keys
+		var by := origin.y + side + 52.0
+		if not near.is_empty():
+			UiKit.text(self, UiKit.display_font(true), Vector2(0, by), "Over %s" % near["name"], 24, UiKit.GOLD_PALE, HORIZONTAL_ALIGNMENT_CENTER, vs.x, 4)
+			UiKit.key_row(self, Vector2(vs.x * 0.5 - 120, by + 32), [["E", "Land"], ["Tab", "Close map"]])
+		else:
+			UiKit.text(self, UiKit.body_font(true), Vector2(0, by), "Fly over a beam of light to land.", 18, UiKit.MUTED, HORIZONTAL_ALIGNMENT_CENTER, vs.x, 4)
+			UiKit.key_row(self, Vector2(vs.x * 0.5 - 60, by + 32), [["Tab", "Close map"]])
+
+	## A small icon for each kind of place, on a dark gem in the place's colour.
+	func _marker(c: Vector2, icon: String, col: Color) -> void:
+		UiKit.diamond(self, c, 11.0, UiKit.INK)
+		draw_polyline(UiKit.closed(PackedVector2Array([c + Vector2(0, -11), c + Vector2(11, 0), c + Vector2(0, 11), c + Vector2(-11, 0)])), col, 1.5, true)
+		var ink := col.lightened(0.25)
+		match icon:
+			"city":
+				draw_rect(Rect2(c + Vector2(-5, -2), Vector2(3, 6)), ink)
+				draw_rect(Rect2(c + Vector2(-1, -6), Vector2(3, 10)), ink)
+				draw_rect(Rect2(c + Vector2(3, -3), Vector2(3, 7)), ink)
+			"mountain", "peaks":
+				draw_colored_polygon(PackedVector2Array([c + Vector2(-6, 4), c + Vector2(-1, -5), c + Vector2(2, 0), c + Vector2(4, -3), c + Vector2(7, 4)]), ink)
+			"island":
+				draw_circle(c + Vector2(0, 2), 4.0, ink)
+				draw_line(c + Vector2(0, 1), c + Vector2(2, -6), ink, 1.5)
+			"desert", "canyon":
+				draw_colored_polygon(PackedVector2Array([c + Vector2(-6, 4), c + Vector2(-4, -3), c + Vector2(4, -3), c + Vector2(6, 4)]), ink)
+			"tower":
+				draw_rect(Rect2(c + Vector2(-1.5, -7), Vector2(3, 12)), ink)
+			"lookout":
+				draw_rect(Rect2(c + Vector2(-6, -2), Vector2(12, 3)), ink)
+				draw_line(c + Vector2(0, 1), c + Vector2(0, 5), ink, 1.5)
+			"ice":
+				for k in 3:
+					var a := k * PI / 3.0
+					draw_line(c - Vector2(cos(a), sin(a)) * 6.0, c + Vector2(cos(a), sin(a)) * 6.0, ink, 1.5)
+			"cave":
+				draw_arc(c + Vector2(0, 3), 5.5, PI, TAU, 12, ink, 2.0, true)
+				draw_rect(Rect2(c + Vector2(-2.5, -0.5), Vector2(5, 3.5)), UiKit.INK)
+			_:
+				draw_circle(c, 3.5, ink)
+
+	func _compass(c: Vector2) -> void:
+		draw_circle(c, 24.0, Color(0.02, 0.015, 0.04, 0.7))
+		draw_arc(c, 24.0, 0.0, TAU, 32, UiKit.GOLD_DIM, 1.5, true)
+		draw_colored_polygon(PackedVector2Array([c + Vector2(0, -20), c + Vector2(5, 0), c + Vector2(0, 4), c + Vector2(-5, 0)]), UiKit.GOLD)
+		draw_colored_polygon(PackedVector2Array([c + Vector2(0, 20), c + Vector2(5, 0), c + Vector2(0, -4), c + Vector2(-5, 0)]), UiKit.FAINT)
+		UiKit.text(self, UiKit.display_font(true), c + Vector2(-6, -26), "N", 16, UiKit.GOLD_PALE, HORIZONTAL_ALIGNMENT_LEFT, -1, 3)
