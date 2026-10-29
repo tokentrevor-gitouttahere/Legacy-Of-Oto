@@ -95,6 +95,39 @@ SESSION 5 SO FAR (before the stack below; not committed yet)
     (bust, waist, hips, stomach, ...) is allowed when the owner asks. CLAUDE.md and the notes
     below were reworded.
 
+SESSION 5, PART 2 (2026-10-29): UI, TITLE, TOWNSWOMEN. On branch feature/ui-title-npc-women (the
+  owner chose a branch this time and said: ASK EVERY TIME before branching). NOT committed yet.
+  Owner's task: "design and create UI to include speaking animations, dialog boxes, items, menus,
+  and make them look well made. A logo and title screen ... designing other outfits for the female
+  body shape", then "design dozens of female npc faces and outfits ... then recolor the ones you've
+  created for even more variety". Read docs/UI.md.
+  - UiKit (scripts/ui/ui_kit.gd): lacquer-and-gold panels, bars, gems, the Wall sigil, the logo.
+  - Dialogue: talking portraits (Oto and every townswoman lip-sync from their real face art;
+    others get an emblem), name plates, typing with pauses, a next gem, narration in italics.
+    Toasts, prompts and title cards restyled.
+  - Pause menu, HUD and item icons redrawn; title screen with logo, painted sky and a lit 3D Oto.
+  - 31 designed townswomen and 93 recolours (124 presets woman_*), clothes cast onto their bodies
+    (OutfitBuilder "cast"), cloth aprons for everyone. None has Oto's build or pieces.
+  - Tests: python tools/run.py test, 0 failures (new: women count, unique names, no Oto pieces or
+    build, recolour rule, cast clothing outside the body, portraits, item icons).
+  - Godot on this machine: tools/godot_path.txt points at the winget console exe
+    (C:\Users\Token\AppData\Local\Microsoft\WinGet\Packages\GodotEngine...\Godot_v4.7.2-stable_win64_console.exe).
+    The repo is now cloned at C:\Users\Token\source\repos\Legacy-Of-Oto.
+  OPEN FOR THE OWNER
+  - Cast clothing for Chi-Chi, Bulma and civilian_f/f2 too? (fixes their poke-through, changes their look)
+  - A web font (OFL download) so the web build gets the serif, not Godot's default font.
+  - Where to place the townswomen in levels (none placed yet).
+  WRITTEN BY CLAUDE, WAITING FOR REVIEW
+  - The 31 women's names and roles, and the 93 recolour names (scripts/characters/npc_women.gd).
+  - Title-menu notes: "Pick up from the last lamp she rested at." / "Level 60, every Shadow form,
+    and the fight that took them." / "Fly the world map from West City."
+  - Title footer: "A fan game. Dragon Ball belongs to its creators."
+  - Menu blurbs: "Three points each level, placed where she chooses." / "Hits harder up close." /
+    "Ki attacks hit harder." / "Takes less from every blow." / "Weighted gear trades strength and
+    speed for more EXP."
+  - ui_preview test lines (not in the story): Oto "The rice was good. I would like to know where the
+    rest of it went." and narration "Then she looks at the tray as if it owes her an explanation."
+
 THE LIKELY TASK (the owner's words, end of session 4)
   "likely GUI options, dialogue boxes, talking animations, a cutscene editor or director and
   several cutscenes to test proof of concepts." Wait for the owner to say which; then use the

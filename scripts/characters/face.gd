@@ -70,7 +70,11 @@ static var _tri := {}
 static var _defined := {}
 
 static func look(id: String) -> Dictionary:
-	return _defined.get(id, LOOKS.get(id, {}))
+	if _defined.has(id):
+		return _defined[id]
+	if LOOKS.has(id):
+		return LOOKS[id]
+	return NpcWomen.look(id)  # the townswomen (npc_women.gd)
 
 ## Add a look at run time (the gallery's nose trials); its textures cache under `id`.
 static func define_look(id: String, lk: Dictionary) -> void:

@@ -19,14 +19,14 @@ extends Node3D
 ##   --gallery expressions [--page N] [--shadow]  Oto's head in each expression, 4 a page
 ## Use with tools/run.py shot to get screenshots.
 
-const PER_PAGE := {"outfits": 6, "props": 8}
+const PER_PAGE := {"outfits": 6, "props": 8, "women": 6}
 
 func _ready() -> void:
 	var args := OS.get_cmdline_user_args()
 	var mode: String = GameState.flags.get("gallery_mode", "outfits")
 	var page: int = GameState.flags.get("gallery_page", 0)
 	Overlay.fade_from(0.3)
-	Overlay.hint("Left/Right: page   Up/Down: outfits, props, models, beasts   Enter: back to title")
+	Overlay.hint("Left/Right: page   Up/Down: outfits, women, props, models, beasts   Enter: back to title")
 	var i := args.find("--gallery")
 	if i >= 0 and i + 1 < args.size():
 		mode = args[i + 1]
@@ -49,6 +49,8 @@ func _ready() -> void:
 		_models(cam)
 	elif mode == "beasts":
 		_beasts(cam)
+	elif mode == "women":  # the townswomen of npc_women.gd, six to a page
+		_women(page, cam)
 	elif mode == "faces":
 		Overlay.hint("")
 		_faces(page)
@@ -253,7 +255,7 @@ func _process(_delta: float) -> void:
 		return
 	var mode: String = GameState.flags.get("gallery_mode", "outfits")
 	var page: int = GameState.flags.get("gallery_page", 0)
-	var modes := ["outfits", "props", "models", "beasts"]
+	var modes := ["outfits", "women", "props", "models", "beasts"]
 	var t := Time.get_ticks_msec() / 1000.0
 	for c in get_children():
 		if c is Beast:
@@ -274,7 +276,7 @@ func _process(_delta: float) -> void:
 		page = 0
 		changed = true
 	if changed:
-		var total: int = Outfits.presets().size() if mode == "outfits" else Props.types().size()
+		var total: int = Outfits.presets().size() if mode == "outfits" else (NpcWomen.ids().size() if mode == "women" else Props.types().size())
 		var per: int = PER_PAGE.get(mode, 1)
 		page = mini(page, maxi((total - 1) / per, 0))
 		GameState.flags["gallery_mode"] = mode
@@ -512,6 +514,21 @@ func _outfits(page: int, cam: Camera3D) -> void:
 		_label(shown[k], ch.position + Vector3(0, 2.25, 0))
 	cam.position = Vector3(0, 1.6, 6.5)
 	cam.look_at(Vector3(0, 1.0, 0))
+	cam.fov = 50
+
+func _women(page: int, cam: Camera3D) -> void:
+	var keys := NpcWomen.ids()
+	var n: int = PER_PAGE["women"]
+	var shown := keys.slice(page * n, page * n + n)
+	for k in shown.size():
+		var ch := Outfits.make_character(shown[k])
+		ch.position = Vector3((k - (shown.size() - 1) / 2.0) * 1.25, 0, 0)
+		ch.rotation.y = 0.3 if k % 2 == 0 else -0.3
+		add_child(ch)
+		var sp := NpcWomen.spec(shown[k])
+		_label(str(sp["name"]), ch.position + Vector3(0, 2.0, 0), 0.0045)
+	cam.position = Vector3(0, 1.35, 5.6)
+	cam.look_at(Vector3(0, 0.95, 0))
 	cam.fov = 50
 
 func _props(page: int, cam: Camera3D) -> void:

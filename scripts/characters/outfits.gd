@@ -249,15 +249,24 @@ static func landmarks(model_key: String) -> Dictionary:
 static func presets() -> Array:
 	return PRESETS.keys()
 
+## A preset by name: the table above, or one of the women in npc_women.gd ("woman_...").
+static func preset_spec(preset: String) -> Dictionary:
+	if PRESETS.has(preset):
+		return PRESETS[preset]
+	return NpcWomen.spec(preset)
+
+static func has_preset(preset: String) -> bool:
+	return PRESETS.has(preset) or NpcWomen.has(preset)
+
 ## Base mesh a preset is designed for ("oto" = the female base).
 static func model_for(preset: String) -> String:
-	return PRESETS.get(preset, {}).get("model", "male_base")
+	return preset_spec(preset).get("model", "male_base")
 
 ## A dressed character: base mesh + outfit, scaled by the preset's "scale".
 static func make_character(preset: String) -> Node3D:
 	var visual := ModelLoader.make(model_for(preset))
 	apply(visual, preset)
-	visual.scale = Vector3.ONE * float(PRESETS.get(preset, {}).get("scale", 1.0))
+	visual.scale = Vector3.ONE * float(preset_spec(preset).get("scale", 1.0))
 	return visual
 
 ## Is this figure Oto: the female base with her own build?
@@ -284,11 +293,11 @@ static func _without_oto_pieces(spec: Dictionary, preset: String) -> Dictionary:
 	return out
 
 static func apply(visual: Node3D, preset: String) -> void:
-	if not PRESETS.has(preset):
+	if not has_preset(preset):
 		push_warning("Outfits: unknown preset '%s'" % preset)
 		return
 	var key: String = visual.get_meta("model_key", "oto")
-	var spec: Dictionary = PRESETS[preset]
+	var spec: Dictionary = preset_spec(preset)
 	# the body: the plain base, or the preset's build (docs/BODY_STUDY.md); the outfit is built on it
 	if not visual.get_meta("custom_body", false) and (spec.has("build") or visual.has_meta("base_body")):
 		BodyShape.set_build(visual, spec.get("build", ""))

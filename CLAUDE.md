@@ -11,7 +11,9 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 | --- | --- |
 | `project.godot` | Autoloads: GameState, Overlay, PauseMenu, Controls |
 | `scripts/game_state.gd` | Level, stats, forms, charge tier, ki techniques, gear, key items, flags, the Menu, saving, `travel()` / `travel_world()` |
-| `scripts/overlay.gd` | Dialogue (`await Overlay.say(["Name|line"])`), fades, cards, toasts, prompts |
+| `scripts/overlay.gd` | Dialogue (`await Overlay.say(["Name|line"])`) with talking portraits, fades, cards, toasts, prompts |
+| `scripts/ui/` | `UiKit` (colours, fonts, panels, bars, the logo), `Portrait` (talking dialogue portraits), `ItemIcons`; see `docs/UI.md` |
+| `scripts/characters/npc_women.gd` | `NpcWomen`: 31 designed townswomen (face + outfit) and three recolours of each, presets `woman_<id>[_2..4]` |
 | `scripts/player.gd` | Oto: movement, combat, forms, interaction, optional `blocker` for walls |
 | `scripts/enemy.gd`, `life_saiyan.gd`, `ki_shot.gd` | Enemies (behaviours, tiers, drops), the prologue boss, projectiles |
 | `scripts/boss_kit.gd` | `BossKit`: boss phases, ki absorption, drain on contact |
@@ -23,7 +25,7 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 | `scripts/characters/body_shape.gd` | `BodyShape`: reshape the female base (bust, waist, hips, butt, stomach) as a copy, with the skinned body moved to match; presets in `assets/models/body_presets.json`; the slider tool is `scenes/body_editor.tscn` (title menu). Not used by the game's characters yet (`docs/BODY_STUDY.md`) |
 | `scripts/world/` | `Props` library, `Mats` textures, `Skies`, `Level` tile maps, `Fixture` (gates, doors, lanterns...), `location.gd`, `world_map.gd` |
 | `scripts/tools/dev_tests.gd` | Headless rule checks, run by `python tools/run.py test` |
-| `scenes/` | title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests, body_editor, body_study |
+| `scenes/` | title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests, body_editor, body_study, ui_preview |
 | `levels/*.json` | Tile-map locations; `levels/world.json` places them on the world map |
 | `assets/models/` | OBJ meshes and `landmarks.json` (body measurements for clothing) |
 | `docs/MECHANICS_REFERENCE.md` | Legacy of Goku II systems vs ours, gameplay backlog, open decisions. Read before building a gameplay system |
@@ -36,6 +38,8 @@ python tools/run.py import                         # re-import, report script er
 python tools/run.py shot <scene|level:id>          # screenshot -> tools/out/<name>.png, prints errors
 python tools/run.py shot level:west_city --args="--far"
 python tools/run.py shot gallery --args="--gallery props --page 2"
+python tools/run.py shot gallery --resolution 1600x900 --args="--gallery women --page 0"   # the townswomen in 3D
+python tools/run.py shot ui_preview --frames 120 --args="--ui dialogue --speaker Mei"   # dialogue, narration, toast, prompt, card, portraits
 python tools/run.py levels                         # validate all levels/*.json
 python tools/run.py test                           # headless rule checks (PASS/FAIL lines)
 python tools/gen_level.py city --id foo ...        # generate a new tile map (city/town/wild/island/interior)
@@ -105,4 +109,8 @@ More sims: `--sim charge|north|interact`. Test arena only: `--pickups`, `--behav
   `Rig.attach` skins every outfit piece to the skeleton afterwards (fit checks read
   `Rig.fit_arrays`). male_base and goku are still unrigged with procedural motion.
   Re-time strikes with `scripts/tools/probe_anims.gd` when an animation changes.
+- UI is drawn with `UiKit` (`docs/UI.md`); new screens use its `frame`, `bar` and `text`, not raw
+  `draw_string` on the fallback font. A new speaker with a face gets a portrait automatically.
+- New townswoman: add a design to `NpcWomen.DESIGNS` (plus three names to `NAMES` for her
+  recolours); never Oto's build or pieces. Her clothes are cast onto her body (`"cast": true`).
 - Credit asset creators in `CREDITS.md` (CC BY 4.0 requires it).

@@ -417,5 +417,5 @@ func dressed(amounts: Dictionary, preset := "oto") -> Node3D:
 		visual.set_meta("build_name", OTO)
 	visual.set_meta("custom_body", true)  # Outfits.apply leaves this body as it is
 	Outfits.apply(visual, preset)
-	visual.scale = Vector3.ONE * float(Outfits.PRESETS.get(preset, {}).get("scale", 1.0))
+	visual.scale = Vector3.ONE * float(Outfits.preset_spec(preset).get("scale", 1.0))
 	return visual

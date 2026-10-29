@@ -20,6 +20,8 @@ func _ready() -> void:
 	await _test_face()
 	await _test_body_shape()
 	await _test_oto_owned()
+	await _test_women()
+	_test_ui()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -613,6 +615,69 @@ func _test_oto_owned() -> void:
 	for n: Node in [oto, male, not_hers, other_shape, her_shape]:
 		n.queue_free()
 	await get_tree().process_frame
+
+## The townswomen (npc_women.gd): dozens of them, each her own person, none with Oto's body or
+## pieces, and their cast clothing outside their bodies.
+func _test_women() -> void:
+	var ids := NpcWomen.ids()
+	_check(ids.size() >= 100 and NpcWomen.DESIGNS.size() >= 24, "there are dozens of townswomen (%d designs, %d with recolours)" % [NpcWomen.DESIGNS.size(), ids.size()])
+	var names := {}
+	var bad: Array = []
+	var own: Dictionary = BodyShape.amounts_of(BodyShape.OTO)
+	for id: String in ids:
+		var sp := NpcWomen.spec(id)
+		names[sp["name"]] = true
+		if sp.get("build", "") == BodyShape.OTO or (sp.has("build") and BodyShape.same_shape(BodyShape.amounts_of(sp["build"]), own)):
+			bad.append(id)
+		for part: String in ["top", "bottom"]:
+			if sp.has(part) and (Outfits.OTO_ONLY[part] as Array).has((sp[part] as Dictionary).get("style", "")):
+				bad.append(id)
+		for a: Dictionary in sp.get("acc", []):
+			if (Outfits.OTO_ONLY["acc"] as Array).has(a.get("style", "")) or not (Outfits.ACCESSORIES as Array).has(a.get("style", "")):
+				bad.append(id)
+		if Face.look(id).is_empty() or not FaceParts.EYES.has(Face.look(id).get("eyes", "")) or not FaceParts.BROWS.has(Face.look(id).get("brows", "")) 				or not FaceParts.MOUTHS.has(Face.look(id).get("mouth", "")) or not FaceParts.NOSES.has(Face.look(id).get("nose", "none")):
+			bad.append(id)
+	_check(names.size() == ids.size(), "every townswoman has her own name (%d names for %d women)" % [names.size(), ids.size()])
+	_check(bad.is_empty(), "no townswoman has Oto's body or pieces, and every face and accessory is a real part %s" % [bad])
+	var a := NpcWomen.spec("woman_mei")
+	var b := NpcWomen.spec("woman_mei_2")
+	_check(a["top"]["style"] == b["top"]["style"] and a["top"]["color"] != b["top"]["color"] and a["hair"]["color"] != b["hair"]["color"],
+		"a recolour keeps the cut and changes the clothes and hair colours")
+	# cast clothing: no point of her top or trousers inside her body (a curvy build and the plain base)
+	for id: String in ["woman_mei", "woman_riko", "woman_marisol"]:
+		var w := Outfits.make_character(id)
+		add_child(w)
+		var body := Garment.body_frame(w)
+		var pieces := 0
+		var inside := 0
+		var where := {}
+		for mi: MeshInstance3D in w.find_children("*", "MeshInstance3D", true, false):
+			if not mi.has_meta("axis"):
+				continue
+			pieces += 1
+			var ax: Callable = mi.get_meta("axis")
+			var gv: PackedVector3Array = Rig.fit_arrays(mi)[Mesh.ARRAY_VERTEX]
+			for i in range(0, gv.size(), 5):
+				var o: Vector3 = ax.call(gv[i].y)
+				var dir := Vector3(gv[i].x - o.x, 0, gv[i].z - o.z)
+				var hit := Face.cast(body["tm"], body["xf"], o, dir.normalized())
+				if not hit.is_empty() and ((hit["position"] as Vector3) - o).length() > dir.length() + 0.0005:
+					inside += 1
+					where[mi.name] = [snappedf(((hit["position"] as Vector3) - o).length() - dir.length(), 0.0001), gv[i]]
+		_check(pieces >= 1 and inside == 0, "%s's cast clothing sits outside her body (%d pieces, %d points inside) %s" % [NpcWomen.spec(id)["name"], pieces, inside, where])
+		w.queue_free()
+	await get_tree().process_frame
+
+## The UI kit: speakers find their portraits, and a woman's portrait has real face art.
+func _test_ui() -> void:
+	_check(UiKit.speaker_look("Oto") == "oto" and UiKit.speaker_look("Mei") == "woman_mei" and UiKit.speaker_look("Goku") == "",
+		"dialogue speakers find their portraits (Oto, a townswoman, and an emblem for the rest)")
+	var tex := Face.texture("woman_lune", "eyes", "open", "", NpcWomen._c(NpcWomen.spec("woman_lune")["skin"]))
+	_check(tex != null and tex.get_width() > 0, "a townswoman's portrait draws her own eyes")
+	var known := true
+	for id: String in Items.DB.keys() + Items.KEYS.keys() + Dishes.DB.keys():
+		known = known and ItemIcons.tint(id) != UiKit.MUTED
+	_check(known, "every gear piece, key item and dish has an icon colour")
 
 ## The body shaper (docs/BODY_STUDY.md): the shape itself, the skinned copy, and the outfit.
 func _test_body_shape() -> void:

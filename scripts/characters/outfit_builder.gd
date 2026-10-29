@@ -15,6 +15,7 @@ var body := {}  # Garment.body_frame of the visual, when known: fitted clothing 
 var bodice_point := Callable()  # a point on the fitted bodice (theta, y), for pieces that lie on it
 var bodice_mesh: Mesh = null    # the fitted bodice, for pieces that lie over it
 var _sash_g := {}  # the fitted sash's shape (Garment.tube result), built on first use
+var cast := false  # preset "cast": ordinary tops, trousers and skirts are cast onto the body too (the townswomen)
 
 func _init(landmarks: Dictionary, height: float) -> void:
 	L = landmarks
@@ -232,6 +233,7 @@ func tube(y0: float, y1: float, w0: float, w1: float, depth_ratio: float, m: Mat
 # --- whole outfit -------------------------------------------------------------
 
 func build(spec: Dictionary) -> void:
+	cast = spec.get("cast", false) and not body.is_empty()
 	if spec.has("hair"):
 		_hair(spec["hair"])
 	if spec.has("top"):
@@ -275,6 +277,8 @@ func _hips(c: Color, loose: float) -> void:
 func _top(t: Dictionary) -> void:
 	var c := col(t.get("color"), Color.WHITE)
 	var under := col(t.get("under"), c)
+	if cast and _cast_top(t, c, under):
+		return
 	match t.get("style", "none"):
 		"gi":
 			_shell(c, 1.18)
@@ -346,6 +350,8 @@ func _legs(c: Color, thigh_k: float, knee_k: float, ankle_k: float, to_y: float)
 
 func _bottom(b: Dictionary) -> void:
 	var c := col(b.get("color"), Color(0.3, 0.3, 0.35))
+	if cast and _cast_bottom(b, c):
+		return
 	match b.get("style", "none"):
 		"pants":
 			_hips(c, 1.1)
@@ -550,6 +556,155 @@ func _fitted_trousers(c: Color) -> void:
 			"folds": 7, "fold_k": 0.3, "fold_min": 2.0, "cols": 64, "rows": 44,
 		}, m, "trouser_leg_" + ("l" if side > 0.0 else "r"))
 
+# --- cast clothing (the townswomen) ---------------------------------------------
+# The ordinary styles, cast onto the real body with Garment instead of built from boxes and
+# cones, so a bust or hips never come through. Used when a preset has "cast": true (and a body).
+
+## The top edge of a torso garment: a neckline in front ("round", "scoop", "v", "boat"),
+## armholes at the sides, a shallow dip at the back of the neck.
+func _neckline(kind: String) -> Callable:
+	var sh := f("shoulder_y") - 0.004 * H
+	var armpit := pt("arm_root").y - f("arm_r") * 1.7  # clear of the arm's underside (a T-pose arm meets the side rays)
+	var low: float = {"round": f("shoulder_y") - 0.028 * H, "scoop": f("chest_y") + 0.018 * H,
+		"v": f("chest_y") - 0.012 * H, "boat": sh - 0.012 * H}.get(kind, sh - 0.02 * H)
+	var wide: float = {"round": 0.55, "scoop": 0.8, "v": 0.6, "boat": 0.95}.get(kind, 0.6)
+	var shape: float = {"round": 1.6, "scoop": 1.3, "v": 0.75, "boat": 2.5}.get(kind, 1.0)
+	return func(th: float) -> float:
+		var a := absf(wrapf(th, -PI, PI))
+		if a < wide:
+			return lerpf(low, sh, pow(smoothstep(0.0, wide, a), 1.0 / shape))
+		if a < 0.95:
+			return sh
+		if a < 1.35:
+			return lerpf(sh, armpit, smoothstep(0.95, 1.35, a))
+		if a < 1.8:
+			return armpit
+		if a < 2.2:
+			return lerpf(armpit, sh, smoothstep(1.8, 2.2, a))
+		return sh - 0.008 * H * smoothstep(2.6, PI, a)
+
+## One cast torso piece from `hem` up to its neckline; `opts` overrides Garment.tube settings
+## ("mat" replaces the cloth material).
+func _cast_torso(c: Color, neck: String, ease: float, hem: float, node_name: String, opts := {}) -> Dictionary:
+	var spec := {
+		"axis": _axis(func(_y: float) -> float: return 0.0), "top": _neckline(neck),
+		"bottom": func(_th: float) -> float: return hem,
+		"ease": ease, "max_r": f("chest_hw") * 1.75, "bridge": 4, "hang": 0.45,
+		"folds": 6, "fold_k": 0.25, "fold_min": 0.5, "cols": 72, "rows": 36,
+	}
+	spec.merge(opts, true)
+	return _garment(spec, opts.get("mat", cloth(c)), node_name)
+
+## Returns false for styles it does not cast (they fall back to the box builders).
+func _cast_top(t: Dictionary, c: Color, under: Color) -> bool:
+	var style: String = t.get("style", "none")
+	var waist := f("waist_y")
+	var hip := f("hip_y")
+	match style:
+		"tank":
+			_cast_torso(c, "scoop", 3.0, waist - 0.05 * H, "top")
+		"bodysuit":
+			_cast_torso(c, "round", 2.5, f("crotch_y") - 0.01 * H, "top", {"hang": 0.9, "folds": 0})
+			_sleeves(c, t.get("sleeves", "long"), 1.02)
+		"tunic":
+			_cast_torso(c, "round", 7.0, hip - 0.03 * H, "top", {"flare": 12.0})
+			_sleeves(c, t.get("sleeves", "long"), 1.12)
+		"gi":
+			_cast_torso(under, "round", 3.0, waist - 0.03 * H, "undershirt", {"folds": 0})
+			_cast_torso(c, "v", 12.0, hip - 0.01 * H, "top", {"folds": 8, "fold_k": 0.35, "hang": 0.3})
+			_sleeves(c, t.get("sleeves", "none"), 1.1)
+		"jacket":
+			_cast_torso(c, "round", 10.0, hip - 0.02 * H, "top", {"hang": 0.35})
+			_sleeves(c, t.get("sleeves", "long"), 1.15)
+			ring(f("neck_y") - 0.01 * H, f("neck_r") * 1.9, f("neck_r") * 1.9, 0.45, cloth(c.darkened(0.15)))
+		"vest":
+			_cast_torso(under, "round", 3.0, waist - 0.04 * H, "undershirt", {"folds": 0})
+			_cast_torso(c, "v", 9.0, waist - 0.035 * H, "top", {"hang": 0.5})
+		"lab_coat":
+			_cast_torso(under, "round", 3.0, waist - 0.04 * H, "undershirt", {"folds": 0})
+			_cast_torso(c, "v", 14.0, f("knee_y") + 0.02 * H, "top", {"hang": 0.1, "folds": 7, "fold_k": 0.3, "flare": 10.0})
+			_sleeves(c, "long", 1.15)
+		"armor":
+			_cast_torso(under, "round", 2.5, f("crotch_y") - 0.01 * H, "undersuit", {"hang": 0.9, "folds": 0})
+			_sleeves(under, t.get("sleeves", "short"), 1.02)
+			var am := Mats.get_mat(c, "panels", 3.0, {"rough": 0.4})
+			_cast_torso(c, "boat", 18.0, waist + 0.015 * H, "armor", {"hang": 0.9, "bridge": 8, "folds": 0, "mat": am})
+			var pad := Mats.get_mat(col(t.get("pads"), c), "panels", 3.0, {"rough": 0.4})
+			for side: float in [1.0, -1.0]:
+				var a := pt("arm_root", side)
+				var p := ball(a + Vector3(0, f("arm_r") * 1.2, 0), Vector3(f("arm_r") * 2.6, f("arm_r") * 1.1, f("arm_r") * 2.3), pad)
+				p.rotation.z = -0.35 * side
+		"dress":
+			# one piece: fitted over the bust, drawn in at the waist, then falling straight from the
+			# hips to the hem with a little flare
+			var hem := f("ankle_y") + 0.06 * H
+			_cast_torso(c, t.get("neck", "scoop"), 4.0, hem, "dress", {
+				"hang": 0.0, "folds": 10, "fold_k": 0.25, "fold_min": 1.0, "rows": 64, "max_r": f("hip_hw") * 2.4,
+				"flare": 45.0, "flare_from": hip - 0.02 * H,
+				"cinch": func(y: float) -> float: return smoothstep(waist - 0.03 * H, waist, y) * (1.0 - smoothstep(waist + 0.015 * H, waist + 0.05 * H, y)),
+			})
+			_sleeves(c, t.get("sleeves", "short"), 1.1)
+		_:
+			return false
+	return true
+
+## The hips of a cast lower garment, waist to just under the crotch; returns the crotch height.
+func _cast_hips(c: Color, ease: float, node_name: String) -> float:
+	var up := Face.cast(body["tm"], body["xf"], Vector3(0, f("knee_y"), Garment.centre_z(body, 0.0, f("hip_y"))), Vector3.UP)
+	var crotch: float = (up["position"] as Vector3).y if not up.is_empty() else f("crotch_y")
+	_garment({
+		"axis": _axis(func(_y: float) -> float: return 0.0),
+		"bottom": func(_th: float) -> float: return crotch - 0.025 * H,
+		"top": func(_th: float) -> float: return f("waist_y") - 0.012 * H,
+		"ease": ease, "max_r": f("hip_hw") * 1.6, "bridge": 3, "hang": 0.4,
+		"folds": 6 if ease > 8.0 else 0, "fold_k": 0.2, "cols": 72, "rows": 22,
+	}, cloth(c), node_name)
+	return crotch
+
+## Two cast legs from the crotch down to `bottom`; `gather` pulls the hem in (baggy trousers).
+func _cast_legs(c: Color, crotch: float, bottom: float, ease: float, gather: bool, node_name: String) -> void:
+	var knee := f("knee_y")
+	for side: float in [1.0, -1.0]:
+		var x0 := f("leg_x") * side
+		var x_of := func(y: float) -> float:
+			if y > knee:
+				return x0 * lerpf(1.05, 1.0, (y - knee) / maxf(crotch - knee, 0.01))
+			return x0 * lerpf(1.08, 1.05, (y - bottom) / maxf(knee - bottom, 0.01))
+		var spec := {
+			"axis": _axis(x_of),
+			"bottom": func(_th: float) -> float: return bottom,
+			"top": func(_th: float) -> float: return crotch - 0.004 * H,
+			"ease": ease, "max_r": f("thigh_r") * 2.2, "bridge": 2, "hang": 0.06 if ease > 8.0 else 0.6,
+			"folds": 7 if ease > 8.0 else 0, "fold_k": 0.3, "fold_min": 1.5, "cols": 48, "rows": 36,
+		}
+		if gather:
+			spec["cinch"] = func(y: float) -> float: return 1.0 - smoothstep(bottom, bottom + 0.05 * H, y)
+		_garment(spec, cloth(c), node_name + ("_l" if side > 0.0 else "_r"))
+
+func _cast_bottom(b: Dictionary, c: Color) -> bool:
+	var ankle := f("ankle_y") + 0.012 * H
+	match b.get("style", "none"):
+		"pants":
+			_cast_legs(c, _cast_hips(c, 5.0, "trousers_hips"), ankle, 7.0, false, "trouser_leg")
+		"baggy":
+			_cast_legs(c, _cast_hips(c, 12.0, "trousers_hips"), ankle + 0.02 * H, 20.0, true, "trouser_leg")
+		"tights":
+			_cast_legs(c, _cast_hips(c, 2.0, "tights_hips"), ankle, 2.0, false, "tights_leg")
+		"shorts":
+			_cast_legs(c, _cast_hips(c, 5.0, "shorts_hips"), f("knee_y") + 0.1 * H, 7.0, false, "shorts_leg")
+		"skirt":
+			var waist := f("waist_y") - 0.012 * H
+			_garment({
+				"axis": _axis(func(_y: float) -> float: return 0.0),
+				"bottom": func(th: float) -> float: return f("knee_y") + 0.04 * H + 0.004 * H * sin(th * 4.0),
+				"top": func(_th: float) -> float: return waist,
+				"ease": 5.0, "max_r": f("hip_hw") * 2.4, "bridge": 3, "hang": 0.0,
+				"folds": 10, "fold_k": 0.25, "fold_min": 1.2, "flare": 28.0, "flare_from": f("hip_y") - 0.03 * H, "cols": 72, "rows": 30,
+			}, cloth(c), "skirt")
+		_:
+			return false
+	return true
+
 # --- feet ---------------------------------------------------------------------
 
 func _feet(ft: Dictionary) -> void:
@@ -739,7 +894,12 @@ func _acc(a: Dictionary) -> void:
 			for side: float in [1.0, -1.0]:
 				ball(h + Vector3(side * f("head_r") * 1.0, -f("head_ry") * 0.45, 0), Vector3.ONE * 0.012 * H, Mats.get_mat(c, "", 1.0, {"metal": 0.8, "rough": 0.2}))
 		"apron":
-			box(Vector3(0, (f("chest_y") + f("knee_y")) * 0.5, f("chest_z") + f("chest_hd") * 1.25), Vector3(f("chest_hw") * 1.6, f("chest_y") - f("knee_y"), 0.01 * H), m)
+			# tied at the waist and hanging over the thighs as cloth (a flat board stood off the
+			# chest before, and floated in front of a bust)
+			ring(f("waist_y"), f("waist_hw") * 1.12, f("waist_hd") * 1.12, 0.12, m, f("waist_z"))
+			var pin := Vector3(0, f("waist_y") - 0.006 * H, f("waist_z") + f("waist_hd") * 1.15 + 0.004 * H)
+			var drop := f("waist_y") - f("knee_y") + 0.02 * H
+			cloth_panel(pin, Vector3.RIGHT, f("hip_hw") * 1.35, drop, 6, 9, leg_colliders(1.35, [1.0, -1.0]), c).name = "Apron"
 		"antennae":
 			for side: float in [1.0, -1.0]:
 				var base := h + Vector3(side * f("head_r") * 0.3, f("head_ry") * 0.75, f("head_rz") * 0.5)
