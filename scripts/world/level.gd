@@ -150,6 +150,11 @@ func spawn_point(spawn_name: String) -> Vector3:
 func exit_at(pos: Vector3) -> Dictionary:
 	return exits_by_cell.get(cell_of(pos), {})
 
+## The ground under a point ("grass", "wood", ...), for footsteps.
+func ground_at(pos: Vector3) -> String:
+	var c := cell_of(pos)
+	return _ground_name(tile_def(c.x, c.y))
+
 func is_interior() -> bool:
 	return data.get("interior", false)
 

@@ -42,6 +42,8 @@ func _physics_process(delta: float) -> void:
 		var d := Vector2(e.position.x - position.x, e.position.z - position.z).length()
 		if d <= _radius() + (1.0 if e is Fixture else 0.6):
 			e.hurt(damage, direction, level > 0, "ki")
+			if level > 0:
+				Sfx.play("explosion", 1.3 - level * 0.15, -6.0 + level * 3.0)
 			if level < 2:
 				queue_free()
 				return

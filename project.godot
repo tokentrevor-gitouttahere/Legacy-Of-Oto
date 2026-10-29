@@ -10,6 +10,7 @@ config/features=PackedStringArray("4.7")
 [autoload]
 
 GameState="*res://scripts/game_state.gd"
+Sfx="*res://scripts/sfx.gd"
 Overlay="*res://scripts/overlay.gd"
 PauseMenu="*res://scripts/pause_menu.gd"
 Controls="*res://scripts/controls.gd"

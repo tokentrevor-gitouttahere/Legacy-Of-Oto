@@ -24,6 +24,7 @@ func play() -> void:
 	camera_at(spot + Vector3(-9, 2.5, 12), spot + Vector3(6, 4, 4), 55)
 	await Overlay.fade_from(1.2)
 	# she streaks in low over the canyon, the camera turning to follow
+	Sfx.play("flight", 0.9)
 	fly(oto, oto.position, spot + Vector3(0, 2.2, 0), 2.6, spot + Vector3(14, 3.5, 8))
 	await camera_follow(oto, Vector3(-6, 1.8, 8), 2.6, 0.8)
 	# she pulls up, turns on the spire, draws her hands back and gathers ki between them
@@ -33,6 +34,7 @@ func play() -> void:
 	await move(oto, spot, 0.45)
 	face_expr(oto, "cold")
 	var aura := CutFx.aura(self, oto)
+	Sfx.loop_on("ki_charge")
 	camera_to(spot + Vector3(6.5, 1.6, -2.0), spot + Vector3(-0.3, 1.25, -2.6), 0.8, 45)  # side-on: the beam crosses the frame
 	anim(oto, "beam", 0.55)  # slowed: the gather is the held breath before the shot
 	var hands := func() -> Vector3: return (bone_pos(oto, "RightHand") + bone_pos(oto, "LeftHand")) * 0.5
@@ -41,10 +43,15 @@ func play() -> void:
 	# the beam, from both hands
 	anim_speed(oto, 1.0)
 	orb.queue_free()
+	Sfx.loop_off("ki_charge")
+	Sfx.play("ki_orb", 0.8)
+	Sfx.loop_on("ki_beam")
 	CutFx.beam(self, hands.call(), target + Vector3(0, 2.5, 0), 0.22, 1.2, 0.3)
 	shake(1.2, 0.12)
 	camera_to(spot + Vector3(12, 3.0, -9), spot.lerp(target, 0.6) + Vector3(0, 1.8, 0), 0.6, 55)
 	await wait(0.22)
+	Sfx.play("explosion")
+	Sfx.play("rock_break", 0.8)
 	CutFx.impact(self, target + Vector3(0, 2.5, 0), 2.6, CutFx.VOID_GLOW.lightened(0.3))
 	CutFx.debris(self, target + Vector3(0, 2.5, 0), Color(0.8, 0.5, 0.32), 22, 11.0)
 	CutFx.dust_ring(self, target, 9.0)
@@ -52,6 +59,7 @@ func play() -> void:
 	shake(0.6, 0.3)
 	await wait(1.2)
 	# she turns to us: her stance, and the title
+	Sfx.loop_off("ki_beam")
 	aura.queue_free()
 	face(oto, spot + Vector3(0, 0, 10))
 	camera_to(spot + Vector3(0, 1.2, 4.6), spot + Vector3(0, 1.15, 0), 0.9, 40)

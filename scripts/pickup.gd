@@ -134,15 +134,18 @@ func _collect(p: Player) -> void:
 	if CAPSULES.has(parsed[0]):
 		var stat_name: String = CAPSULES[parsed[0]]["stat"]
 		var gained := GameState.add_capsule(stat_name, parsed[1])
+		Sfx.play("capsule", 1.0 + int(parsed[1]) * 0.03)
 		if gained > 0:
 			Overlay.toast("%s capsule: %s +%d" % [String(parsed[0]).capitalize(), stat_name.capitalize(), gained])
 		else:
 			Overlay.toast("%s is already at its peak." % stat_name.capitalize())
 	elif kind == "senzu":
 		GameState.senzu += 1
+		Sfx.play("key_item")
 		Overlay.toast("A senzu bean. Into her pocket, for later.", 2.0)
 	else:
 		var f: Dictionary = FOOD[kind]
+		Sfx.play("food", 1.3 if kind == "ki_mote" else 1.0)
 		if f.has("hp"):
 			p.heal(f["hp"])
 		if f.has("ki"):

@@ -150,6 +150,7 @@ func hurt(amount: float, dir: Vector3, launch: bool, kind := "melee") -> void:
 			_drop(food_drop, Vector3(0.6, 0, 0.3))
 		if randf() < ki_chance:
 			_drop("ki_mote", Vector3(-0.6, 0, 0.3))
+		Sfx.play("enemy_down")
 		died.emit()
 		queue_free()
 

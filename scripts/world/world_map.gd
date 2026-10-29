@@ -338,6 +338,8 @@ func _process(delta: float) -> void:
 	if not GameState.input_locked:
 		in_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	var boost := not GameState.input_locked and Input.is_action_pressed("special")
+	if not GameState.input_locked and Input.is_action_just_pressed("special"):
+		Sfx.play("flight")
 	var target := Vector3(in_dir.x, 0, in_dir.y) * (BOOST if boost else CRUISE)
 	vel = vel.lerp(target, minf(3.0 * delta, 1.0))
 	var p := flyer.position + vel * delta

@@ -228,6 +228,9 @@ SESSION 5, PART 5 (2026-10-29): CUTSCENES. Branch feature/cutscene-intro (from m
     clips; new Void Beam and Void Burst techniques exist but are NOT unlocked (memory ladder: the
     owner picks the rung). Test arena has all four. 130 PASS. docs/CUTSCENES.md has the table.
   OPEN: which memory-ladder rung gives back Void Beam and Void Burst.
+  SOUND (branch feature/sound): owner chose Kenney CC0 packs (downloaded with approval), picked from a
+  preview page: style A blip babble for Oto 209 Hz, women 340, men 118, Goku 172 (x1.25, rising);
+  33 effects wired through the Sfx autoload. docs/SOUND.md. No music yet.
 
 THE LIKELY TASK (the owner's words, end of session 4)
   "likely GUI options, dialogue boxes, talking animations, a cutscene editor or director and

@@ -37,3 +37,10 @@
 - **Nunito** by Vernon Adams, Cyreal and Jacques Le Bailly (The Nunito Project Authors),
   SIL Open Font License 1.1: `assets/fonts/Nunito-*.ttf`, licence in `assets/fonts/OFL-Nunito.txt`.
   From github.com/google/fonts.
+
+## Sound
+
+- **Kenney** (Kenney Vleugels, kenney.nl), Creative Commons CC0: the sound effects and the babble
+  blips in `assets/audio/`, from the packs Impact Sounds, Sci-fi Sounds, Interface Sounds,
+  RPG Audio and Digital Audio. Licence text in `assets/audio/LICENSE-Kenney-CC0.txt`. Credit is not
+  required by CC0; given gladly.

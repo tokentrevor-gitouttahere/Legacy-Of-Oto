@@ -26,6 +26,7 @@ func _ready() -> void:
 	_test_regions()
 	await _test_cutscene()
 	await _test_ki_techniques()
+	_test_sound()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -841,6 +842,23 @@ func _test_ki_techniques() -> void:
 	for n: Node in [p, inline, aside, near]:
 		n.queue_free()
 	await get_tree().process_frame
+
+## Sound (sfx.gd): every named effect and voice blip loads, and each speaker gets the right
+## babble voice.
+func _test_sound() -> void:
+	var missing: Array = []
+	for n: String in Sfx.SOUNDS.keys() + Sfx.LOOPS.keys():
+		if load(Sfx.SFX_DIR + n + ".ogg") == null:
+			missing.append(n)
+	for v: String in Sfx.VOICES:
+		if load(Sfx.VOICE_DIR + str(Sfx.VOICES[v]["blip"]) + ".ogg") == null:
+			missing.append(v)
+	_check(missing.is_empty() and Sfx.SOUNDS.size() >= 30, "all %d sound effects and the four voices' blips load %s" % [Sfx.SOUNDS.size() + Sfx.LOOPS.size(), missing])
+	_check(Sfx.voice_of("Oto") == "oto" and Sfx.voice_of("Goku") == "goku" and Sfx.voice_of("Mei") == "woman"
+		and Sfx.voice_of("Chi-Chi") == "woman" and Sfx.voice_of("Dr. Brief") == "man" and Sfx.voice_of("Krillin") == "man",
+		"each speaker babbles in the right voice (Oto, Goku, women, men)")
+	_check(is_equal_approx(float(Sfx.VOICES["oto"]["pitch"]), 209.0) and is_equal_approx(float(Sfx.VOICES["woman"]["pitch"]), 340.0),
+		"Oto's babble is pitched at 209 Hz and the women's at 340 Hz, as picked")
 
 ## The body shaper (docs/BODY_STUDY.md): the shape itself, the skinned copy, and the outfit.
 func _test_body_shape() -> void:

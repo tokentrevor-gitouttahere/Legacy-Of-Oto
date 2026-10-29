@@ -54,6 +54,8 @@ func _end() -> void:
 		return
 	_done = true
 	GameState.input_locked = false
+	for l: String in ["ki_charge", "ki_beam"]:  # a skip must not leave a loop running
+		Sfx.loop_off(l)
 	finish()
 
 func _process(delta: float) -> void:

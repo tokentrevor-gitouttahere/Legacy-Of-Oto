@@ -9,7 +9,7 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 
 | Path | What |
 | --- | --- |
-| `project.godot` | Autoloads: GameState, Overlay, PauseMenu, Controls |
+| `project.godot` | Autoloads: GameState, Sfx, Overlay, PauseMenu, Controls |
 | `scripts/game_state.gd` | Level, stats, forms, charge tier, ki techniques, gear, key items, flags, the Menu, saving, `travel()` / `travel_world()` |
 | `scripts/overlay.gd` | Dialogue (`await Overlay.say(["Name|line"])`) with talking portraits, fades, cards, toasts, prompts |
 | `scripts/cutscene/` | `Cutscene` director (sets, actors, poses, flight, camera, skip) and `CutFx` (trail, charge, beam, impact, debris, aura); the game opens on `scenes/intro.tscn`. See `docs/CUTSCENES.md` |
@@ -29,6 +29,7 @@ canon outcomes intact and follow the design document's tone and memory-ladder ru
 | `scenes/` | intro (the opening cutscene, the main scene), title, prologue_fight, paozu (story), location (any level), world_map, test_arena, gallery, dev_tests, body_editor, body_study, ui_preview |
 | `levels/*.json` | Tile-map locations; `levels/world.json` places them on the world map. Capsule Corp home (where Oto lives): `capsule_corp_home` (hall and living room) leads to `capsule_corp_kitchen`, `_pantry`, `_garden`, `_gravity` and `oto_room`, and to the lab and West City |
 | Regions | `diablo_desert`, `granite_peaks`, `northern_ice_fields`, `crystal_cavern`, built with the region kit: tile letters, props, skies and generators in `docs/REGIONS.md` (read it before building a new outdoor or cave area). West City shops: `west_city_noodle_bar`, `_bakery`, `_capsule_shop` |
+| `scripts/sfx.gd` | `Sfx` autoload: sound effects, loops, footsteps and speaking babble (Oto, women, men, Goku); Kenney CC0 files in `assets/audio/`. See `docs/SOUND.md` |
 | `assets/fonts/` | EB Garamond (titles, names) and Nunito (text), SIL OFL; used through `UiKit` |
 | `assets/models/` | OBJ meshes and `landmarks.json` (body measurements for clothing) |
 | `docs/MECHANICS_REFERENCE.md` | Legacy of Goku II systems vs ours, gameplay backlog, open decisions. Read before building a gameplay system |

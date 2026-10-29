@@ -50,6 +50,7 @@ static func log_dish(id: String) -> bool:
 	if id in GameState.dishes:
 		return false
 	GameState.dishes.append(id)
+	Sfx.play("dish")
 	var count := GameState.dishes.size()
 	if MILESTONES.has(count):
 		var m: Dictionary = MILESTONES[count]

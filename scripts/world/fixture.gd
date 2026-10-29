@@ -134,6 +134,7 @@ func _apply(instant: bool) -> void:
 	if instant:
 		bar.visible = false
 		return
+	Sfx.play("door" if type == "key_door" else "gate")
 	var tw := create_tween()
 	tw.tween_property(bar, "scale:y", 0.01, 0.7).set_trans(Tween.TRANS_QUAD)
 	tw.tween_callback(bar.hide)
@@ -172,9 +173,11 @@ func interact(p: Player) -> void:
 			p.hp = p.max_hp
 			p.ki = p.max_ki
 			GameState.save_game(p.position)
+			Sfx.play("lantern")
 			Overlay.toast("She rests by the lamp. Game saved.", 2.0)
 		"food_pot":
 			p.heal(0.1)
+			Sfx.play("food")
 			Overlay.toast("Chi-Chi's leftovers", 1.2)
 		"fishing_spot":
 			await _fish(p)
@@ -220,6 +223,7 @@ func hurt(amount: float, _dir: Vector3, _launch: bool, _kind := "melee") -> void
 		open = true
 		GameState.flags[id] = true
 		remove_from_group("breakables")
+		Sfx.play("rock_break")
 		_crumble(false)
 
 func _crumble(instant: bool) -> void:

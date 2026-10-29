@@ -149,6 +149,14 @@ func say(lines: Array) -> void:
 			while budget >= 1.0 and _text.visible_characters < tx.length():
 				var ch := tx[_text.visible_characters]
 				_text.visible_characters += 1
+				# a letter or digit: a syllable of babble (Sfx paces them by the voice's speed)
+				if sp != "" and (ch.to_lower() != ch.to_upper() or ch.is_valid_int()):
+					var rest := tx.substr(_text.visible_characters)
+					var end := rest.length()
+					for mark: String in [".", "!", "?"]:
+						if rest.find(mark) >= 0:
+							end = mini(end, rest.find(mark))
+					Sfx.babble(sp, end < 6)
 				budget -= 1.0 + float(REST.get(ch, 0.0))
 			_portrait.talking = budget >= -1.0  # the mouth rests on the pauses
 			if _pressed():
@@ -163,6 +171,7 @@ func say(lines: Array) -> void:
 			wait += get_process_delta_time()
 			if auto and wait > 0.02:
 				break
+		Sfx.play("dialogue_next")
 	_box.visible = false
 	GameState.input_locked = prev
 

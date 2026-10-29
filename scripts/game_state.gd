@@ -61,6 +61,8 @@ var _defeated := false
 ## Fade out and load a tile-map location (res://levels/<id>.json).
 func travel(level_id: String, spawn := "default") -> void:
 	input_locked = true
+	if in_location:
+		Sfx.play("door")
 	await Overlay.fade_to(Color.BLACK, 0.5)
 	input_locked = false
 	pending_level = level_id
@@ -127,6 +129,7 @@ func cycle_ki_move() -> void:
 func learn_ki_move(id: String) -> void:
 	if id not in ki_moves and KI_MOVES.has(id):
 		ki_moves.append(id)
+		Sfx.play("key_item")
 		Overlay.toast("Learned: %s" % KI_MOVES[id]["name"], 3.0)
 
 func xp_needed(lv: int) -> int:
@@ -142,6 +145,7 @@ func add_xp(amount: int) -> void:
 		level += 1
 		stat_points += 3
 		leveled_up.emit(level)
+		Sfx.play("level_up")
 		Overlay.toast("Level %d!  +3 stat points" % level)
 	if level >= LEVEL_CAP:
 		xp = 0
@@ -200,6 +204,7 @@ func give_item(id: String) -> void:
 func give_key(id: String) -> void:
 	if id not in key_items:
 		key_items.append(id)
+		Sfx.play("key_item")
 		Overlay.toast("Received: %s" % Items.key_name(id))
 
 func has_key(id: String) -> bool:

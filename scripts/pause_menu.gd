@@ -37,6 +37,9 @@ func _process(delta: float) -> void:
 	_t += delta
 	_open = minf(_open + delta * 6.0, 1.0)
 	var rows := _row_count()
+	for a: String in ["move_down", "move_up", "move_left", "move_right"]:
+		if Input.is_action_just_pressed(a):
+			Sfx.play("ui_move")
 	if Input.is_action_just_pressed("move_down"):
 		cursor = (cursor + 1) % rows
 	if Input.is_action_just_pressed("move_up"):
@@ -49,9 +52,10 @@ func _process(delta: float) -> void:
 		cursor = 0
 	if Input.is_action_just_pressed("attack"):
 		if tab == 0:
-			GameState.spend_point(GameState.STATS[cursor])
+			Sfx.play("ui_confirm" if GameState.spend_point(GameState.STATS[cursor]) else "ui_error")
 		elif tab == 1:
 			GameState.cycle_equipment(GameState.SLOTS[cursor])
+			Sfx.play("ui_confirm")
 		elif tab == 2:
 			_eat_senzu()
 	_ctl.queue_redraw()
@@ -66,6 +70,7 @@ func _row_count() -> int:
 
 func _open_menu() -> void:
 	is_open = true
+	Sfx.play("ui_open")
 	tab = 0
 	cursor = 0
 	_open = 0.0
@@ -82,6 +87,7 @@ func open_tab(t: int) -> void:
 
 func _close() -> void:
 	is_open = false
+	Sfx.play("ui_back")
 	visible = false
 	Overlay.show_hint(true)
 	get_tree().paused = false

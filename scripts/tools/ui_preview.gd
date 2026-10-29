@@ -32,6 +32,8 @@ func _ready() -> void:
 			Overlay.set_prompt("E: Talk to Mei")
 		"card":
 			Overlay.card("Mt. Paozu\nThe day after the light", 99.0)
+		"voices":  # the babble reel: each voice speaks a line, advanced on its own
+			_voice_reel()
 
 func _arg(args: PackedStringArray, key: String, def: String) -> String:
 	var i := args.find(key)
@@ -94,3 +96,22 @@ func _portraits(page: int) -> void:
 		l.add_theme_font_size_override("font_size", 13)
 		l.add_theme_color_override("font_color", UiKit.speaker_color(who))
 		layer.add_child(l)
+
+const REEL := [
+	"Oto|Every meal on this planet, at least once. I will start with yours.",
+	"Mei|Sit anywhere! The counter's best: you can watch me cook.",
+	"Dr. Brief|A Saiyan with no tail? Fascinating. Would you mind standing on this scale?",
+	"Goku|Hey! You're pretty strong, huh? Wanna spar after lunch? I'm starving!",
+]
+
+func _voice_reel() -> void:
+	Overlay.say(REEL)
+	for line: String in REEL:
+		var n := line.split("|")[1].length()
+		await get_tree().create_timer(n / 48.0 * 1.35 + 0.9).timeout
+		for down: bool in [true, false]:  # a real key event, as a player's press would be
+			var ev := InputEventAction.new()
+			ev.action = "interact"
+			ev.pressed = down
+			Input.parse_input_event(ev)
+			await get_tree().process_frame

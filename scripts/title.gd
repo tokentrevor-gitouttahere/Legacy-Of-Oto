@@ -100,6 +100,8 @@ func _process(delta: float) -> void:
 	_fg.queue_redraw()
 	if _busy:
 		return
+	if Input.is_action_just_pressed("move_down") or Input.is_action_just_pressed("move_up"):
+		Sfx.play("ui_move")
 	if Input.is_action_just_pressed("move_down"):
 		cursor = (cursor + 1) % items.size()
 	if Input.is_action_just_pressed("move_up"):
@@ -109,6 +111,7 @@ func _process(delta: float) -> void:
 
 func _choose() -> void:
 	_busy = true
+	Sfx.play("ui_confirm")
 	match items[cursor]:
 		"Continue":
 			GameState.continue_game()

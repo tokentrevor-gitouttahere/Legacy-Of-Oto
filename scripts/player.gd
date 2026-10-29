@@ -52,6 +52,8 @@ var max_stamina := 100.0
 var form := 0
 var cinematic := false  # scripted control: no input, no physics
 var blocker := Callable()  # optional (pos: Vector3) -> bool, e.g. Level.is_blocked
+var ground_at := Callable()  # optional (pos: Vector3) -> ground name, for footsteps (Level.ground_at)
+var _step_t := 0.0
 var respawn_at := Vector3.INF  # where she gets up when she falls with no save (a location sets its spawn)
 var outfit := "oto"  # Outfits preset applied in _ready ("" for none)
 
@@ -155,6 +157,7 @@ func set_form(f: int, force := false) -> void:
 		return
 	if not force and (f > GameState.max_form or (f > form and ki < 10.0)):
 		return
+	Sfx.play("form_up" if f > form else "form_down")
 	form = f
 	_apply_form_visual()
 
@@ -189,6 +192,7 @@ func _physics_process(delta: float) -> void:
 	iframes = maxf(iframes - delta, 0.0)
 	_rig_busy = maxf(_rig_busy - delta, 0.0)
 	_update_ki_queue(delta)
+	_update_sound(delta)
 	_since_fight += delta
 	_update_flurry(delta)
 	if combo_timer == 0.0:
@@ -425,12 +429,15 @@ func _start_beam() -> void:
 	_beam_tick = 0.0
 	var from := _ki_origin()
 	CutFx.beam(get_parent(), from, from + facing * BEAM_RANGE, 0.12, BEAM_TIME - 0.12, 0.28)
+	Sfx.loop_on("ki_beam")
 	_rig_busy = BEAM_TIME + 0.3
 
 func _update_beam(delta: float) -> void:
 	if _beam_left <= 0.0:
 		return
 	_beam_left -= delta
+	if _beam_left <= 0.0:
+		Sfx.loop_off("ki_beam")
 	ki = maxf(ki - BEAM_KI * delta, 0.0)
 	_beam_tick -= delta
 	if _beam_tick > 0.0:
@@ -453,6 +460,7 @@ func _void_burst() -> void:
 	_ki_anim("ki_area", 1.4)
 	_ki_later(func() -> void:
 		var at := position + Vector3(0, 0.6, 0)
+		Sfx.play("explosion", 0.85)
 		CutFx.impact(get_parent(), at, BURST_RADIUS * 0.7, CutFx.VOID_GLOW.lightened(0.3))
 		CutFx.dust_ring(get_parent(), position, BURST_RADIUS, CutFx.VOID_RIM)
 		var dmg: float = (10.0 + GameState.stat("power") * 1.5) * GameState.FORM_DAMAGE[form]
@@ -474,6 +482,7 @@ func _fire(level: int) -> void:
 	var dmg: float = (6.0 + GameState.stat("power") * 1.2 + level * 8.0) * GameState.FORM_DAMAGE[form]
 	shot.setup(facing, level, dmg)
 	get_parent().add_child(shot)
+	Sfx.play("ki_orb", 1.0 + (2 - level) * 0.1)
 
 ## A stream of small shots, slightly scattered.
 func _fire_blast() -> void:
@@ -487,6 +496,7 @@ func _fire_blast() -> void:
 	var dmg: float = (2.0 + GameState.stat("power") * 0.45) * GameState.FORM_DAMAGE[form]
 	shot.setup(facing.rotated(Vector3.UP, randf_range(-0.06, 0.06)), 0, dmg)
 	get_parent().add_child(shot)
+	Sfx.play("ki_blast")
 
 func heavy_winding() -> bool:
 	return attack_hold >= HEAVY_DELAY
@@ -536,9 +546,12 @@ func _update_flurry(delta: float) -> void:
 		_flurry.pop_front()
 		var dmg := _flurry_dmg * (0.34 if last else 0.22)
 		var center := position + facing * 1.2
+		var landed := false
 		for e in get_tree().get_nodes_in_group("enemies") + get_tree().get_nodes_in_group("breakables"):
 			if e.position.distance_to(center) <= (2.2 if e is Fixture else 1.6):
 				e.hurt(dmg, facing, last)
+				landed = true
+		Sfx.play(("punch_heavy" if last else "punch") if landed else "swing")
 
 ## Play a strike on the rig so that its first blow lands STRIKE_LEAD after now.
 func _strike_anim(anim_name: String, speed: float) -> void:
@@ -581,9 +594,30 @@ func _calm() -> bool:
 func _melee(step: int) -> void:
 	var dmg: float = (4.0 + GameState.stat("strength") * 0.8 + (2.0 if step == 3 else 0.0)) * GameState.FORM_DAMAGE[form]
 	var center := position + facing * 1.0
+	var landed := false
 	for e in get_tree().get_nodes_in_group("enemies") + get_tree().get_nodes_in_group("breakables"):
 		if e.position.distance_to(center) <= (2.0 if e is Fixture else 1.3):
 			e.hurt(dmg, facing, step == 3)
+			landed = true
+	Sfx.play(("punch_heavy" if step == 3 else "punch") if landed else "swing")
+
+## The charge hum while she charges ki (V) or gathers an orb or beam, and her footsteps.
+func _update_sound(delta: float) -> void:
+	if ki_charging or charging:
+		Sfx.loop_on("ki_charge")
+	elif Sfx.looping("ki_charge"):
+		Sfx.loop_off("ki_charge")
+	if _moving and _ground_speed > 0.5 and hitstun <= 0.0:
+		_step_t -= delta * _ground_speed
+		if _step_t <= 0.0:
+			_step_t = 0.75  # one step per 0.75 m
+			Sfx.step(ground_at.call(position) if ground_at.is_valid() else "grass")
+	else:
+		_step_t = 0.0
+
+func _exit_tree() -> void:
+	Sfx.loop_off("ki_charge")
+	Sfx.loop_off("ki_beam")
 
 ## Restore a share of max HP (food, rest). Shows the gain as a green number.
 func heal(frac: float) -> void:
@@ -607,6 +641,7 @@ func hurt(amount: float, from_pos: Vector3) -> void:
 	var mult := 1.0 - minf(GameState.stat("endurance") * 0.015, 0.7)
 	if guarding:
 		mult *= 0.2
+	Sfx.play("guard" if guarding else "hurt")
 	hp -= amount * mult
 	charge_hold = 0.0
 	DamageNumber.number(get_parent(), position, amount * mult, DamageNumber.GUARDED if guarding else DamageNumber.PLAYER_HIT)
