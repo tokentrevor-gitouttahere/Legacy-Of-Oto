@@ -25,6 +25,7 @@ func _ready() -> void:
 	_test_home()
 	_test_regions()
 	await _test_cutscene()
+	await _test_ki_techniques()
 	if FileAccess.file_exists(GameState.save_path):
 		DirAccess.remove_absolute(GameState.save_path)
 	print("TESTS DONE: %d failure(s)" % _fails)
@@ -798,6 +799,48 @@ func _test_cutscene() -> void:
 	_check(ProjectSettings.get_setting("application/run/main_scene") == "res://scenes/intro.tscn", "the game opens on the intro cutscene")
 	var src := FileAccess.get_file_as_string("res://scripts/cutscene/intro.gd")
 	_check(src.contains("title.tscn") and src.contains("func finish"), "the intro ends on the title screen, and a skip goes there too")
+
+## The ki techniques on the rig: the new two wait for the memory ladder, the Void Beam hurts
+## what is in line and nothing beside it, the Void Burst hurts what is close, and shots leave
+## from between her hands.
+func _test_ki_techniques() -> void:
+	GameState.new_run()
+	_check(not ("void_beam" in GameState.ki_moves) and not ("void_burst" in GameState.ki_moves) and GameState.KI_MOVES.has("void_beam"),
+		"Void Beam and Void Burst exist but are not in her starting kit (the memory ladder gives them back)")
+	var arena := Rect2(-30, -30, 60, 60)
+	var p := Player.new()
+	p.arena = arena
+	p.outfit = "oto"
+	add_child(p)
+	await get_tree().process_frame
+	p.facing = Vector3(0, 0, 1)
+	p.ki = p.max_ki
+	var inline := _enemy("chase", Vector3(0, 0, 6), arena, null)
+	var aside := _enemy("chase", Vector3(5, 0, 6), arena, null)
+	for e: Enemy in [inline, aside]:
+		e.max_hp = 9999.0
+		e.hp = 9999.0
+		e.set_physics_process(false)
+		e.set_process(false)
+	p._start_beam()
+	for i in 20:
+		p._update_beam(0.05)
+	_check(inline.hp < 9999.0 and is_equal_approx(aside.hp, 9999.0), "the Void Beam hurts what is in line, and nothing beside it")
+	var near := _enemy("chase", Vector3(0, 0, -2.5), arena, null)
+	near.max_hp = 9999.0
+	near.hp = 9999.0
+	near.set_physics_process(false)
+	var far_hp := aside.hp
+	p.ki = p.max_ki
+	p._void_burst()
+	for i in 20:
+		p._update_ki_queue(0.02)
+	_check(near.hp < 9999.0 and is_equal_approx(aside.hp, far_hp), "the Void Burst hurts what is close, and not what is far")
+	var o := p._ki_origin()
+	_check(o.y > 0.7 and o.y < 1.6 and (o - p.global_position).dot(p.facing) > -0.2, "ki leaves from her hands, at chest height in front of her (%.2f m up)" % o.y)
+	for n: Node in [p, inline, aside, near]:
+		n.queue_free()
+	await get_tree().process_frame
 
 ## The body shaper (docs/BODY_STUDY.md): the shape itself, the skinned copy, and the outfit.
 func _test_body_shape() -> void:

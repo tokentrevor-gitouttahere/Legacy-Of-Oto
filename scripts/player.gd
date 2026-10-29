@@ -16,6 +16,13 @@ const CHARGE_THRESHOLDS := [0.45, 1.1]
 const CHARGE_COST := [8.0, 20.0, 40.0]
 const BLAST_INTERVAL := 0.14
 const BLAST_COST := 2.0
+const BEAM_GATHER := 0.7     # seconds of holding before the Void Beam can fire
+const BEAM_TIME := 1.2       # how long it lasts
+const BEAM_KI := 18.0        # ki per second while it lasts (and to start it)
+const BEAM_RANGE := 16.0
+const BURST_COST := 0.35     # share of max ki
+const BURST_RADIUS := 4.5
+const KI_LEAD := 0.1         # seconds from the press to the ki leaving her hands
 const HEAVY_DELAY := 0.3  # hold attack this long to start winding up the flurry
 const HEAVY_CHARGE := 0.45  # then this long until it is ready; release to strike
 const BARRIER_DRAIN := 10.0
@@ -63,6 +70,9 @@ var charge_time := 0.0
 var ki_charging := false
 var charge_hold := 0.0  # seconds `charge` has been held still (see GameState.CHARGE_TIERS)
 var blast_timer := 0.0
+var _ki_queue: Array = []    # [[seconds until it leaves her hands, Callable], ...]
+var _beam_left := 0.0        # the Void Beam is firing for this long
+var _beam_tick := 0.0
 var _still_from_empty := false
 var attack_hold := 0.0
 var heavy_swing := 0.0
@@ -178,6 +188,7 @@ func _physics_process(delta: float) -> void:
 	heavy_swing = maxf(heavy_swing - delta, 0.0)
 	iframes = maxf(iframes - delta, 0.0)
 	_rig_busy = maxf(_rig_busy - delta, 0.0)
+	_update_ki_queue(delta)
 	_since_fight += delta
 	_update_flurry(delta)
 	if combo_timer == 0.0:
@@ -308,21 +319,147 @@ func _update_charge(delta: float, dir: Vector3) -> void:
 		charging = false
 		charge_time = 0.0
 		return
+	_update_beam(delta)
 	if GameState.ki_move() == "ki_blast":
 		charging = false
 		charge_time = 0.0
 		blast_timer = maxf(blast_timer - delta, 0.0)
 		if _pressed("special") and blast_timer == 0.0:
-			_fire_blast()
+			_ki_anim("ki_blast_1h", 1.8)
+			_ki_later(_fire_blast)
 			blast_timer = BLAST_INTERVAL
 		return
-	if _pressed("special"):
+	if GameState.ki_move() == "void_burst":
+		if _just("special") and _beam_left <= 0.0:
+			_void_burst()
+		return
+	var move := GameState.ki_move()
+	var clip := "beam" if move == "void_beam" else "ki_blast_2h"
+	if _pressed("special") and _beam_left <= 0.0:
+		if not charging:
+			_ki_gather(clip)
 		charging = true
 		charge_time += delta
 	elif charging:
-		_fire(charge_level())
 		charging = false
+		if move == "void_beam":
+			if charge_time >= BEAM_GATHER and ki >= BEAM_KI * 0.5:
+				_ki_anim("beam", 1.0)
+				_ki_later(_start_beam)
+			else:
+				_rig_busy = 0.0
+		else:
+			var lv := charge_level()
+			_ki_anim("ki_blast_2h", 1.6)
+			_ki_later(func() -> void: _fire(lv))
 		charge_time = 0.0
+
+# --- ki attacks on the rig -----------------------------------------------------------
+
+## Play a ki attack so its release comes KI_LEAD after now (rig.gd "hits"), as a strike does.
+func _ki_anim(clip: String, speed: float) -> void:
+	_since_fight = 0.0
+	var ap: AnimationPlayer = visual.get_meta("anim", null) if visual else null
+	var rig: Dictionary = visual.get_meta("rig", {}) if visual else {}
+	if ap == null or not rig.get("hits", {}).has(clip):
+		return
+	var release: float = rig["hits"][clip][0]
+	var start := maxf(release - KI_LEAD * speed, 0.0)
+	ap.play(clip, 0.05, speed)
+	ap.seek(start, true)
+	_rig_busy = KI_LEAD + 0.35
+
+## Hold the gather pose (hands drawn back) while she charges.
+func _ki_gather(clip: String) -> void:
+	_since_fight = 0.0
+	var ap: AnimationPlayer = visual.get_meta("anim", null) if visual else null
+	var rig: Dictionary = visual.get_meta("rig", {}) if visual else {}
+	if ap == null or not rig.get("gathers", {}).has(clip):
+		return
+	ap.play(clip, 0.12, 1.0)
+	ap.seek(float(rig["gathers"][clip]), true)
+	ap.pause()
+	_rig_busy = 999.0  # held until the release replaces it
+
+## Run `fn` when the ki leaves her hands (at once without a rig).
+func _ki_later(fn: Callable) -> void:
+	if visual and visual.has_meta("anim"):
+		_ki_queue.append([KI_LEAD, fn])
+	else:
+		fn.call()
+
+func _update_ki_queue(delta: float) -> void:
+	for q: Array in _ki_queue:
+		q[0] = float(q[0]) - delta
+	while not _ki_queue.is_empty() and float(_ki_queue[0][0]) <= 0.0:
+		var fn: Callable = _ki_queue.pop_front()[1]
+		fn.call()
+
+## Where ki leaves her, in world space: between her hands when rigged, else in front of her chest.
+func _ki_origin() -> Vector3:
+	var sk: Skeleton3D = visual.get_meta("skeleton", null) if visual else null
+	if sk:
+		var sum := Vector3.ZERO
+		var n := 0
+		for b in sk.get_bone_count():
+			var bn := sk.get_bone_name(b)
+			if bn.ends_with("RightHand") or bn.ends_with("LeftHand"):
+				sum += sk.global_transform * sk.get_bone_global_pose(b).origin
+				n += 1
+		if n == 2:
+			var p := sum / n
+			return Vector3(p.x, maxf(p.y, global_position.y + 0.6), p.z) + facing * 0.15
+	return global_position + facing * 0.9 + Vector3(0, 1.0, 0)
+
+## The same, in the space shots live in (the player's parent).
+func _ki_origin_local() -> Vector3:
+	var par := get_parent() as Node3D
+	return par.to_local(_ki_origin()) if par else position + facing * 0.9 + Vector3(0, 1.0, 0)
+
+## The Void Beam: a piercing line of void ki that hurts everything along it while it lasts.
+func _start_beam() -> void:
+	if ki < BEAM_KI * 0.5:
+		return
+	ki -= BEAM_KI * 0.5
+	_beam_left = BEAM_TIME
+	_beam_tick = 0.0
+	var from := _ki_origin()
+	CutFx.beam(get_parent(), from, from + facing * BEAM_RANGE, 0.12, BEAM_TIME - 0.12, 0.28)
+	_rig_busy = BEAM_TIME + 0.3
+
+func _update_beam(delta: float) -> void:
+	if _beam_left <= 0.0:
+		return
+	_beam_left -= delta
+	ki = maxf(ki - BEAM_KI * delta, 0.0)
+	_beam_tick -= delta
+	if _beam_tick > 0.0:
+		return
+	_beam_tick = 0.15
+	var dmg: float = (3.0 + GameState.stat("power") * 0.6) * GameState.FORM_DAMAGE[form]
+	for e in get_tree().get_nodes_in_group("enemies") + get_tree().get_nodes_in_group("breakables"):
+		var d: Vector3 = e.position - position
+		var along := d.dot(facing)
+		var off := (d - facing * along).length()
+		if along > 0.0 and along < BEAM_RANGE and off < 1.1:
+			e.hurt(dmg, facing, false, "ki")
+
+## The Void Burst: a ring of ki round her that throws back whatever is close.
+func _void_burst() -> void:
+	var cost := max_ki * BURST_COST
+	if ki < cost:
+		return
+	ki -= cost
+	_ki_anim("ki_area", 1.4)
+	_ki_later(func() -> void:
+		var at := position + Vector3(0, 0.6, 0)
+		CutFx.impact(get_parent(), at, BURST_RADIUS * 0.7, CutFx.VOID_GLOW.lightened(0.3))
+		CutFx.dust_ring(get_parent(), position, BURST_RADIUS, CutFx.VOID_RIM)
+		var dmg: float = (10.0 + GameState.stat("power") * 1.5) * GameState.FORM_DAMAGE[form]
+		for e in get_tree().get_nodes_in_group("enemies") + get_tree().get_nodes_in_group("breakables"):
+			var d: Vector3 = e.position - position
+			if d.length() <= BURST_RADIUS:
+				e.hurt(dmg, d.normalized() if d.length() > 0.1 else facing, true, "ki"))
 
 func _fire(level: int) -> void:
 	var cost: float = CHARGE_COST[level]
@@ -333,7 +470,7 @@ func _fire(level: int) -> void:
 			return
 	ki -= cost
 	var shot := KiShot.new()
-	shot.position = position + facing * 0.9 + Vector3(0, 1.0, 0)
+	shot.position = _ki_origin_local()
 	var dmg: float = (6.0 + GameState.stat("power") * 1.2 + level * 8.0) * GameState.FORM_DAMAGE[form]
 	shot.setup(facing, level, dmg)
 	get_parent().add_child(shot)
@@ -346,7 +483,7 @@ func _fire_blast() -> void:
 	var shot := KiShot.new()
 	shot.small = true
 	var side := facing.cross(Vector3.UP).normalized() * randf_range(-0.25, 0.25)
-	shot.position = position + facing * 0.9 + side + Vector3(0, 1.0, 0)
+	shot.position = _ki_origin_local() + side
 	var dmg: float = (2.0 + GameState.stat("power") * 0.45) * GameState.FORM_DAMAGE[form]
 	shot.setup(facing.rotated(Vector3.UP, randf_range(-0.06, 0.06)), 0, dmg)
 	get_parent().add_child(shot)

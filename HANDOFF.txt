@@ -224,6 +224,10 @@ SESSION 5, PART 5 (2026-10-29): CUTSCENES. Branch feature/cutscene-intro (from m
     ki_blast_2h_b, ki_area, ki_area_b. All in place. The intro uses beam. Not in combat yet.
   - pose_sheet scene for picking poses. Tests: 126 PASS, 0 FAIL.
   - The Godot web export templates are installed on this laptop now (web_* only).
+  - Ki animations in combat (branch feature/ki-attack-anims): Charged Orb and Ki Blast play their
+    clips; new Void Beam and Void Burst techniques exist but are NOT unlocked (memory ladder: the
+    owner picks the rung). Test arena has all four. 130 PASS. docs/CUTSCENES.md has the table.
+  OPEN: which memory-ladder rung gives back Void Beam and Void Burst.
 
 THE LIKELY TASK (the owner's words, end of session 4)
   "likely GUI options, dialogue boxes, talking animations, a cutscene editor or director and

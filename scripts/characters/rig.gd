@@ -48,7 +48,11 @@ const RIGS := {
 		# Seconds into each animation where a strike lands (each hand's furthest reach ahead of
 		# the chest, measured by scripts/tools/probe_anims.gd).
 		"hits": {"l_punch": [0.57], "r_punch": [0.40], "cross_punch": [1.13], "quad_punch": [0.235, 0.444, 0.679, 0.914],
-			"kick": [1.26], "roundhouse_kick": [1.0], "flying_kick": [0.45]},
+			"kick": [1.26], "roundhouse_kick": [1.0], "flying_kick": [0.45],
+			# ki releases: the hands' furthest reach (docs/CUTSCENES.md)
+			"ki_blast_1h": [1.11], "ki_blast_2h": [1.35], "beam": [1.0], "ki_area": [1.83]},
+		# where each ki attack's hands are drawn back, gathering (a held pose while charging)
+		"gathers": {"ki_blast_2h": 0.94, "beam": 0.72, "ki_area": 0.74},
 		# Ground speed the walks were made for (m/s): stride from the feet, per cycle.
 		"walk_speed": {"walk": 1.47, "hot_walk": 1.0},
 	},

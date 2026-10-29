@@ -1,7 +1,7 @@
 extends Node
 ## Autoload. Registers the input map and handles developer launch arguments
 ## (everything after `--`): --scene <res://...>  --shot <png>  --frames <n>
-## --zoom  --far  --timescale <x>  --auto-dialogue  --sim <fight|menu|walk|map|charge|north>
+## --zoom  --far  --timescale <x>  --auto-dialogue  --sim <fight|menu|walk|map|charge|north|ki>
 ## --setlevel <n>  --setform <n>  --givekey <id>  (and --spawn <name> in locations)
 
 var zoom := false
@@ -100,6 +100,8 @@ func _process(delta: float) -> void:
 			_press("special", phase > 1.5 and fmod(_t, 2.0) < 0.8)
 			_press("transform", fmod(_t, 1.5) < 0.1)
 			_press("guard", fmod(_t, 7.0) > 6.0)
+		"ki":  # hold special for 1.1 s, let go for 0.9 s: charge and fire the current ki technique
+			_press("special", fmod(_t, 2.0) < 1.1)
 		"menu":
 			_press("menu", fmod(_t, 3.0) < 0.1)
 			_press("move_down", fmod(_t, 0.7) < 0.1)

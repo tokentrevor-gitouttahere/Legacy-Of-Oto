@@ -78,6 +78,12 @@ func _ready() -> void:
 		GameState.key_items.append("rusty_key")
 		GameState.dishes.append("noodle_bowl")
 		PauseMenu.open_tab.call_deferred(int(args[mi + 1]))
+	for m: String in ["void_beam", "void_burst"]:  # the arena has every ki technique to try
+		if m not in GameState.ki_moves:
+			GameState.ki_moves.append(m)
+	var ki := args.find("--kimove")  # developer: start on a technique (charged_orb, ki_blast, void_beam, void_burst)
+	if ki >= 0 and ki + 1 < args.size():
+		GameState.ki_move_index = maxi(GameState.ki_moves.find(args[ki + 1]), 0)
 	if "--sense" in args:  # developer view of the scan panel (--scouter for exact numbers)
 		GameState.sensing = true
 		if "--scouter" in args:

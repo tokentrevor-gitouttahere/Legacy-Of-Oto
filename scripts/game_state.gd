@@ -25,6 +25,9 @@ const CHARGE_TIERS := [
 const KI_MOVES := {
 	"charged_orb": {"name": "Charged Orb", "text": "Hold to charge three levels; the third pierces."},
 	"ki_blast": {"name": "Ki Blast", "text": "Hold for a stream of small, cheap shots."},
+	# not in her starting kit: the memory ladder decides when she gets them back (learn_ki_move)
+	"void_beam": {"name": "Void Beam", "text": "Hold to gather, release for a piercing beam that drains ki while it lasts."},
+	"void_burst": {"name": "Void Burst", "text": "A ring of void ki around her that throws back everything close."},
 }
 
 var level := 1

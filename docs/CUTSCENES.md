@@ -63,7 +63,19 @@ fire (the Shadow forms' rule), and tidy themselves up.
 | `ki_area` | Standing 2H Magic Area Attack 01 | 2.97 s | release at 1.83 |
 | `ki_area_b` | Standing 2H Magic Area Attack 02 | 3.27 s | release at 1.47 |
 
-They are not used in combat yet: wiring them to the ki techniques is a gameplay decision.
+In combat (player.gd, `_ki_anim` / `_ki_gather` / `_ki_later`): each technique plays its clip so
+the release lands `KI_LEAD` (0.1 s) after the press, and the ki leaves from between her hands.
+
+| Technique | Clip | Notes |
+| --- | --- | --- |
+| Charged Orb | `ki_blast_2h` | holds the gather pose while charging, fires on release |
+| Ki Blast | `ki_blast_1h` | a push per shot of the stream |
+| Void Beam (new) | `beam` | hold 0.7 s, release: a piercing beam for 1.2 s, 18 ki/s, hurts along a 16 m line |
+| Void Burst (new) | `ki_area` | 35% of max ki: a 4.5 m ring that hurts and throws back |
+
+Void Beam and Void Burst are NOT in her starting kit: the memory ladder gives them back
+(`GameState.learn_ki_move`), which rung is the owner's call. The test arena has all four
+(`--kimove void_beam`, `--sim ki`). `cast_spell`, `ki_blast_2h_b` and `ki_area_b` are spare.
 
 ## The intro (`scenes/intro.tscn`, `scripts/cutscene/intro.gd`)
 
